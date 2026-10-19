@@ -120,6 +120,13 @@ Po każdym etapie punkt kontrolny i akceptacja użytkownika; commit po każdym e
   ```
 - **Problemy i rozwiązania:** `vp test` z katalogu głównego nie widział aliasu (→ `test.projects`); `vp build` z katalogu głównego wymagał celu (→ `defaultPackage`); `vp dev --port` ignoruje `defaultPackage` (→ `vp -C apps/web dev --port`); `vp add -w` nieobsługiwane przez Bun; shadcn wymagał presetu; fałszywe ostrzeżenia `react/only-export-components` dla tras i `components/ui` (wyłączone override'em). Szczegóły w wnioskach.
 
+- Commit `bdf2784`. Pytanie użytkownika o worktree: zmiany są w worktree `.claude/worktrees/...` na gałęzi `chore/project-bootstrap`; problemy z aliasami nie wynikały z lokalizacji. Decyzja: dokończyć etapy 6–7 w worktree i scalić / otworzyć PR na końcu.
+- **Korekta użytkownika:** zamiast pakietu `cn` używamy `clsx` + `tailwind-merge`.
+  - `vp -C apps/web remove cn`, `vp -C apps/web add clsx tailwind-merge`; `src/lib/utils.ts` w klasycznej postaci shadcn; import w `button.tsx` → `@/lib/utils`.
+  - `shadcn add card --dry-run --view` pokazał, że nowe komponenty nadal importują `"cn"` → dodano regułę `no-restricted-imports` dla `apps/web/**` w głównym `vite.config.ts`; sprawdzono, że `vp check` zgłasza błąd przy imporcie `"cn"`.
+  - Zaktualizowano wniosek o shadcn i indeks `lessons.md`.
+  - Weryfikacja: `vp check` pass, `vp test` 3/3, `vp build` pass.
+
 ## Decyzje i założenia
 
 - `docs/prompts/00-bootstrap.md` pełni rolę zatwierdzonej specyfikacji całej fazy 0; osobne specyfikacje dla etapów 5–6 nie powstają (decyzja użytkownika).

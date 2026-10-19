@@ -14,7 +14,7 @@ Faza 0, etap 5: `vp dlx shadcn@latest init` w `apps/web` (Vite+, Tailwind v4, Bu
 
 - `vp dlx shadcn@latest init --help` pokazał pomoc `vp dlx`, a `init -- --help` potraktował `--help` jako nazwę komponentu.
 - `init -t vite -b radix -y` mimo `-y` zatrzymał się na pytaniu o preset.
-- shadcn 4.x dodał inne zależności niż w starszych wersjach: `cn` (zamiast `clsx` + `tailwind-merge`), `radix-ui`, `shadcn` (import `shadcn/tailwind.css`), `@fontsource-variable/geist`, `tw-animate-css`, `class-variance-authority`, `lucide-react`.
+- shadcn 4.x dodał inne zależności niż w starszych wersjach: `cn` (zamiast `clsx` + `tailwind-merge`; na prośbę użytkownika zastąpiony z powrotem przez `clsx` + `tailwind-merge`), `radix-ui`, `shadcn` (import `shadcn/tailwind.css`), `@fontsource-variable/geist`, `tw-animate-css`, `class-variance-authority`, `lucide-react`.
 
 ## Przyczyna
 
@@ -26,7 +26,8 @@ Uruchamiaj `vp dlx shadcn@latest init -t vite -b radix -p nova --no-monorepo --n
 
 ## Jak go stosować
 
-- Komponenty dodawaj `vp -C apps/web dlx shadcn@latest add <komponent>`; pliki w `src/components/ui/` są generowane i nie przepisuje się ich ręcznie.
+- Komponenty dodawaj `vp -C apps/web dlx shadcn@latest add <komponent>`; pliki w `src/components/ui/` są generowane i nie przepisuje się ich ręcznie, z jednym wyjątkiem poniżej.
+- Projekt używa `clsx` + `tailwind-merge` (decyzja użytkownika), a shadcn 4.x (styl `radix-nova`) w każdym komponencie importuje `cn` z pakietu `"cn"` i może dodać go do zależności. Po `shadcn add` zamień import na `import { cn } from "@/lib/utils";` i usuń pakiet (`vp -C apps/web remove cn`). Reguła `no-restricted-imports` w głównym `vite.config.ts` blokuje import `"cn"` w `vp check`.
 - Nieznany pakiet dodany przez narzędzie zweryfikuj w `node_modules/<pakiet>/package.json` (repozytorium, `scripts`, `bin`) zanim zostanie zacommitowany.
 
 ## Powiązania

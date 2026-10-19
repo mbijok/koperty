@@ -16,7 +16,7 @@ Przed dodaniem sprawdź, czy podobny wniosek już istnieje; jeśli tak, zaktuali
 
 ## Frontend
 
-- Inicjalizuj shadcn/ui nieinteraktywnie z jawnym presetem (`-p nova`) i weryfikuj dodane przez niego zależności. ([szczegóły](lessons/2026-10-19-shadcn-init-noninteractive.md))
+- Inicjalizuj shadcn/ui nieinteraktywnie z jawnym presetem (`-p nova`), weryfikuj dodane zależności i po `shadcn add` zamieniaj import `"cn"` na `@/lib/utils`. ([szczegóły](lessons/2026-10-19-shadcn-init-noninteractive.md))
 
 ## Vite+
 

@@ -25,6 +25,19 @@ export default defineConfig({
         rules: {
           "react/rules-of-hooks": "error",
           "react/only-export-components": ["warn", { allowConstantExport: true }],
+          // shadcn 4.x components import `cn` from the `cn` package; the project uses clsx + tailwind-merge.
+          "no-restricted-imports": [
+            "error",
+            {
+              paths: [
+                {
+                  name: "cn",
+                  message:
+                    'Import cn from "@/lib/utils" (clsx + tailwind-merge) and remove the `cn` dependency.',
+                },
+              ],
+            },
+          ],
         },
       },
       {
