@@ -36,8 +36,9 @@ jobs:
       - name: Format, lint, types
         run: vp check
 
-      - name: Unit tests
-        run: vp test
+      # Fails when any measured file is below 100% coverage (thresholds in vite.config.ts).
+      - name: Unit tests with coverage
+        run: vp test --coverage
 
       - name: Build
         run: vp build

@@ -158,6 +158,7 @@ Wszystkie komendy uruchamiasz z katalogu głównego repozytorium. Komendy Supaba
 | Serwer deweloperski                                              | `vp dev` (z dodatkowymi flagami: `vp -C apps/web dev --port <port>`)                            |
 | Formatowanie, lint, typy                                         | `vp check` (poprawki: `vp check --fix`)                                                         |
 | Testy jednostkowe                                                | `vp test`                                                                                       |
+| Testy jednostkowe z progiem pokrycia 100% (jak w CI)             | `vp test --coverage`                                                                            |
 | Kontrola katalogu `.ai/` (nazwy, statusy, indeks wniosków)       | `vp run check:ai`                                                                               |
 | Hook pre-commit (`vp staged`: `vp check --fix`, kontrola `.ai/`) | instalowany przez `vp install` (skrypt `prepare` → `vp config`); wyłączenie: `vp hooks disable` |
 | Build produkcyjny                                                | `vp build`                                                                                      |
@@ -173,6 +174,7 @@ Wszystkie komendy uruchamiasz z katalogu głównego repozytorium. Komendy Supaba
 - Każda reguła domenowa ma testy na poziomie bazy (pgTAP), łącznie z przypadkami brzegowymi: zera, kwoty ujemne, przekroczenie puli, zaokrąglenia przy podziale.
 - Każda tabela z danymi budżetu ma testy RLS potwierdzające, że członek budżetu A nie widzi ani nie modyfikuje danych budżetu B, a osoba niezalogowana nie ma dostępu do niczego.
 - Logikę po stronie frontendu (formatowanie, mapowanie danych, hooki) testuj w Vitest.
+- Każda nowa funkcja i każdy zmieniony kod TypeScript (moduły, funkcje, hooki, komponenty, skrypty) muszą mieć 100% pokrycia testami jednostkowymi we wszystkich metrykach: linie, gałęzie, funkcje i instrukcje. Próg jest liczony dla każdego pliku osobno i egzekwowany w CI przez `vp test --coverage`; zadanie z pokryciem poniżej 100% nie jest skończone. Wykluczenia z pomiaru (wyłącznie pliki generowane, komponenty shadcn/ui i punkt wejścia `main.tsx`) są w `test.coverage.exclude` w głównym `vite.config.ts`. Nowe wykluczenie lub komentarz wyłączający pomiar (`v8 ignore`) wymaga uzasadnienia i mojej zgody.
 - Kluczowe ścieżki użytkownika obejmij testami E2E (Playwright), gdy powstaną.
 - Testy piszesz na podstawie kryteriów akceptacji z PRD. Jeśli kryteria nie pozwalają jednoznacznie ustalić oczekiwanego wyniku, zapytaj.
 
@@ -180,7 +182,7 @@ Wszystkie komendy uruchamiasz z katalogu głównego repozytorium. Komendy Supaba
 
 Zadanie jest skończone, gdy:
 
-- `vp check`, `vp test` i `vp build` przechodzą bez błędów,
+- `vp check`, `vp test --coverage` (100% pokrycia) i `vp build` przechodzą bez błędów,
 - przy zmianach w bazie: `supabase db reset` i `supabase test db` przechodzą, a typy są wygenerowane na nowo,
 - nowa logika ma testy, w tym przypadki brzegowe i testy dostępu,
 - dokumentacja (PRD, architektura, ADR, ten plik) odzwierciedla wprowadzone zmiany,

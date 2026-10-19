@@ -14,6 +14,7 @@
     "check:ai": "node scripts/check-ai.ts"
   },
   "devDependencies": {
+    "@vitest/coverage-v8": "5.0.5",
     "supabase": "^2.121.0",
     "vite": "catalog:",
     "vite-plus": "catalog:"

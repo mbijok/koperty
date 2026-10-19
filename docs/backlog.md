@@ -2,7 +2,7 @@
 
 Zadania typu „vertical slice”: każde dostarcza działający kawałek od bazy (migracja, RLS, RPC, testy pgTAP) po interfejs. Kolejność w tabeli jest kolejnością realizacji. Każde zadanie realizujemy według [docs/prompts/feature-workflow.md](prompts/feature-workflow.md), zaczynając od specyfikacji w `.ai/specs/`.
 
-Wszystkie zadania mają wspólne kryteria ukończenia: Definition of Done z [AGENTS.md](../AGENTS.md) (`vp check`, `vp test`, `vp build`, `supabase test db`, testy RLS, typy wygenerowane, specyfikacja w `.ai/specs/implemented/`, log i wnioski). Poniżej wymieniono tylko kryteria specyficzne dla zadania.
+Wszystkie zadania mają wspólne kryteria ukończenia: Definition of Done z [AGENTS.md](../AGENTS.md) (`vp check`, `vp test --coverage` ze 100% pokrycia, `vp build`, `supabase test db`, testy RLS, typy wygenerowane, specyfikacja w `.ai/specs/implemented/`, log i wnioski). Poniżej wymieniono tylko kryteria specyficzne dla zadania.
 
 | Kolejność | Zadanie                                         | User stories        | Zależy od  | Status               |
 | --------- | ----------------------------------------------- | ------------------- | ---------- | -------------------- |

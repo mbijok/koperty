@@ -145,6 +145,7 @@ Weryfikacja zmian:
 ```bash
 vp check                           # formatowanie, lint, typy
 vp test                            # testy jednostkowe (Vitest)
+vp test --coverage                 # testy z progiem 100% pokrycia (jak w CI)
 vp run check:ai                    # spójność katalogu .ai/
 vp build                           # build produkcyjny
 vp exec supabase test db           # testy bazy (pgTAP)

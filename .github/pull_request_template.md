@@ -15,7 +15,7 @@
 
 **Jakość**
 
-- [ ] `vp check`, `vp test` i `vp build` przechodzą
+- [ ] `vp check`, `vp test --coverage` (100% pokrycia nowego i zmienionego kodu) i `vp build` przechodzą
 - [ ] Zmiany w bazie: `vp exec supabase db reset` i `vp exec supabase test db` przechodzą, typy wygenerowane na nowo (albo: brak zmian w bazie)
 - [ ] Nowa logika ma testy, w tym przypadki brzegowe (zera, kwoty ujemne, przekroczenie puli, zaokrąglenia) i testy dostępu (członek budżetu A vs B, `member` vs `owner`, osoba niezalogowana)
 - [ ] Reguły domenowe są w bazie (RPC, ograniczenia), nie w komponentach React; zapis tylko przez RPC

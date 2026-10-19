@@ -1,7 +1,8 @@
 import { mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
-import { describe, expect, it } from "vite-plus/test";
+import { fileURLToPath } from "node:url";
+import { afterEach, describe, expect, it, vi } from "vite-plus/test";
 import { checkAiDir } from "./check-ai.ts";
 
 const doc = (status: string) => `---\ntitle: Test\nstatus: ${status} # comment\n---\n\n# Test\n`;
@@ -74,5 +75,61 @@ describe("checkAiDir", () => {
       "specs/drafts/: unexpected directory",
       "lessons/2026-10-19-unlinked-lesson.md: not linked in lessons.md",
     ]);
+  });
+
+  it("reports missing directories and a missing lessons index", () => {
+    const empty = mkdtempSync(join(tmpdir(), "check-ai-"));
+    const missingDirs = [
+      "specs/: missing directory",
+      "specs/implemented/: missing directory",
+      "specs/archive/: missing directory",
+      "runs/: missing directory",
+      "lessons/: missing directory",
+    ];
+    expect(checkAiDir(empty)).toEqual([...missingDirs, "lessons.md: missing index"]);
+
+    writeFileSync(join(empty, "lessons.md"), "# Wnioski\n");
+    expect(checkAiDir(empty)).toEqual(missingDirs);
+  });
+});
+
+const scriptPath = fileURLToPath(new URL("check-ai.ts", import.meta.url));
+
+function mockConsoleAndExit() {
+  return {
+    // Throwing mirrors process.exit: nothing after the call runs.
+    exit: vi.spyOn(process, "exit").mockImplementation(() => {
+      throw new Error("process.exit");
+    }),
+    log: vi.spyOn(console, "log").mockImplementation(() => {}),
+    error: vi.spyOn(console, "error").mockImplementation(() => {}),
+  };
+}
+
+async function runCli(...args: string[]) {
+  vi.spyOn(process, "argv", "get").mockReturnValue(["node", scriptPath, ...args]);
+  // A fresh module instance re-runs the CLI entry point with the mocked argv.
+  vi.resetModules();
+  await import("./check-ai.ts");
+}
+
+describe("check-ai CLI", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("prints problems and exits with code 1", async () => {
+    const dir = makeAiDir({ "runs/notes.md": "" });
+    const { exit, error } = mockConsoleAndExit();
+    await expect(runCli(dir)).rejects.toThrow("process.exit");
+    expect(error).toHaveBeenCalledWith(expect.stringContaining(`✗ ${dir}/runs/notes.md`));
+    expect(exit).toHaveBeenCalledWith(1);
+  });
+
+  it("checks .ai by default and confirms a consistent directory", async () => {
+    const { exit, log } = mockConsoleAndExit();
+    await runCli();
+    expect(exit).not.toHaveBeenCalled();
+    expect(log).toHaveBeenCalledWith("✓ .ai/ is consistent");
   });
 });
