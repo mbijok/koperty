@@ -25,6 +25,8 @@ jobs:
       - uses: voidzero-dev/setup-vp@68f39c78aaf39be468cabd2afb09c162574c84af # v1.21.2
         with:
           cache: true
+          # Socket Firewall Free blocks known-malicious packages during `vp install`.
+          sfw: true
           run-install: |
             - args: ['--frozen-lockfile']
 
@@ -51,6 +53,8 @@ jobs:
       - uses: voidzero-dev/setup-vp@68f39c78aaf39be468cabd2afb09c162574c84af # v1.21.2
         with:
           cache: true
+          # Socket Firewall Free blocks known-malicious packages during `vp install`.
+          sfw: true
           run-install: |
             - args: ['--frozen-lockfile']
 
@@ -60,3 +64,7 @@ jobs:
 
       - name: pgTAP tests
         run: vp exec supabase test db
+
+      # Supabase security and performance advisors (missing RLS, unindexed FKs, unsafe functions…).
+      - name: Database advisors
+        run: vp exec supabase db advisors --local --type all --fail-on warn

@@ -97,12 +97,14 @@ Katalog `.ai/` to wspólna, wersjonowana pamięć projektu dla wszystkich agent�
 - Reguły domenowe (przydziały, salda, przesunięcia, walidacje kwot) realizuj w Postgresie: funkcje wywoływane przez RPC, ograniczenia (`CHECK`, klucze obce), triggery tam, gdzie to uzasadnione. Operacje wieloetapowe muszą być atomowe (jedna funkcja, jedna transakcja).
 - Klient (web, w przyszłości iOS) tylko wywołuje te funkcje i prezentuje wyniki. Nie powielaj reguł domenowych w komponentach React. Walidacja w UI służy wyłącznie wygodzie użytkownika.
 - Zapis danych budżetu odbywa się wyłącznie przez funkcje RPC (`security definer`, `set search_path = ''`, z jawnym sprawdzeniem `auth.uid()` i roli w budżecie). Tabele nie mają polityk zapisu, a odczyt idzie przez polityki RLS `select` ([ADR 0003](docs/adr/0003-business-logic-in-database.md)).
+- Błędy biznesowe funkcji RPC zgłaszaj jako `raise exception '<KOD>' using errcode = 'PT<status>'` ze stałym kodem z katalogu w [docs/architecture.md](docs/architecture.md#kontrakt-błędów); kodów nie zmieniaj ani nie usuwaj. Nigdy nie używaj SQLSTATE `40001`.
 - Logika wymagająca sekretów lub zewnętrznych API (np. model AI w etapie 3) trafia do Edge Functions.
 - Salda kopert wyliczaj z historii operacji (widoki lub funkcje), zamiast przechowywać je jako ręcznie edytowalne pola. Odstępstwo wymaga ADR.
 
 **Dane i bezpieczeństwo**
 
 - Każda tabela z danymi budżetu ma kolumnę `budget_id` i włączone RLS z politykami sprawdzającymi członkostwo w budżecie. Nigdy nie wyłączaj RLS.
+- Uprawnienia nadawaj wyłącznie jawnie w migracjach: `grant select` na tabelach i `grant execute` na funkcjach tylko dla `authenticated`; `anon` nie dostaje nic. Nie polegaj na domyślnych uprawnieniach (`auto_expose_new_tables = false`, domyślne `EXECUTE` dla `PUBLIC` wyłączone w pierwszej migracji).
 - Klucz `service_role` nigdy nie trafia do frontendu ani do repozytorium. Frontend korzysta wyłącznie z klucza publicznego i polityk RLS.
 - Kwoty przechowuj jako liczby całkowite w groszach (`bigint` w bazie, `number` w TypeScript). Nigdy nie używaj liczb zmiennoprzecinkowych do pieniędzy. Formatowanie na złotówki tylko w warstwie prezentacji.
 - Daty operacji przechowuj jako `date` (data lokalna), a nie znacznik czasu, żeby uniknąć przesunięć stref czasowych. Strefa domyślna: `Europe/Warsaw`.

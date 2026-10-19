@@ -16,14 +16,21 @@ export default defineConfig({
     rules: {
       "vite-plus/prefer-vite-plus-imports": "error",
       "typescript/no-explicit-any": "error",
+      "import/no-cycle": "error",
+      // Side-effect imports are only allowed for stylesheets.
+      "import/no-unassigned-import": ["warn", { allow: ["**/*.css"] }],
     },
     options: { typeAware: true, typeCheck: true },
+    plugins: ["typescript", "unicorn", "oxc", "import", "promise", "jsx-a11y", "vitest"],
+    categories: { correctness: "error", suspicious: "warn", perf: "warn" },
     overrides: [
       {
         files: ["apps/web/**"],
         plugins: ["react", "typescript", "oxc"],
         rules: {
           "react/rules-of-hooks": "error",
+          // Obsolete with the automatic JSX runtime (React 17+).
+          "react/react-in-jsx-scope": "off",
           "react/only-export-components": ["warn", { allowConstantExport: true }],
           // shadcn 4.x components import `cn` from the `cn` package; the project uses clsx + tailwind-merge.
           "no-restricted-imports": [

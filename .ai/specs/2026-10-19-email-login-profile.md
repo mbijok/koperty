@@ -97,6 +97,10 @@ Użytkownik loguje się adresem e-mail bez hasła (link lub kod OTP), ma profil 
 Migracja `vp exec supabase migration new create_profiles`:
 
 ```sql
+-- Uprawnienia tylko jawne (engineering-standards P-01). Globalnie, bo domyślne EXECUTE dla PUBLIC
+-- nie jest przypisane do schematu; sama wersja `in schema public` nie wystarcza (sprawdzone lokalnie).
+alter default privileges revoke execute on functions from public;
+
 create schema if not exists private;  -- niewystawiony przez PostgREST
 
 create table public.profiles (
@@ -111,22 +115,23 @@ create table public.profiles (
 - Trigger `on_auth_user_created` (`after insert on auth.users`) wywołuje `private.handle_new_user()` (`security definer`, `set search_path = ''`), która wstawia profil z `left(split_part(new.email, '@', 1), 50)`.
 - Profile użytkowników istniejących przed migracją: lokalnie i w testach baza jest pusta; na produkcji jeszcze nie ma użytkowników, więc backfill nie jest potrzebny.
 - `updated_at` ustawia `update_profile`; osobny trigger `updated_at` nie jest potrzebny, bo zapis idzie tylko przez RPC.
+- Uprawnienia: `grant select on public.profiles to authenticated;` – i nic więcej. `auto_expose_new_tables = false` (faza 0, P-01) sprawia, że bez tego `grant` tabela jest niedostępna dla ról API.
 
 ### Funkcje RPC
 
-| Funkcja          | Wejście               | Wynik  | Reguły i błędy                                                                                                                                                                         |
-| ---------------- | --------------------- | ------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `update_profile` | `p_display_name text` | `void` | `security definer`, `set search_path = ''`; brak `auth.uid()` → `NOT_AUTHENTICATED`; `btrim`, długość 1–50 → inaczej `DISPLAY_NAME_INVALID`; aktualizuje wyłącznie profil wywołującego |
+| Funkcja          | Wejście               | Wynik  | Reguły i błędy                                                                                                                                                                                             |
+| ---------------- | --------------------- | ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `update_profile` | `p_display_name text` | `void` | `security definer`, `set search_path = ''`; brak `auth.uid()` → `NOT_AUTHENTICATED` (`PT401`); `btrim`, długość 1–50 → inaczej `DISPLAY_NAME_INVALID` (`PT400`); aktualizuje wyłącznie profil wywołującego |
 
-Uprawnienia: `revoke execute on function public.update_profile from public, anon; grant execute ... to authenticated`.
+Uprawnienia: `grant execute on function public.update_profile(text) to authenticated;` (domyślne `EXECUTE` dla `PUBLIC` wyłączone na początku migracji). Funkcja `private.handle_new_user()` nie dostaje żadnych uprawnień – wywołuje ją tylko trigger.
 
-Kody błędów zgłaszane jako `raise exception '<KOD>' using errcode = 'P0001'`; klient mapuje `message` na komunikat po polsku.
+Błędy według [kontraktu błędów](../../docs/architecture.md#kontrakt-błędów): `raise exception '<KOD>' using errcode = 'PT<status>'`; klient mapuje `message` na komunikat po polsku. Pierwsze kody w katalogu: `NOT_AUTHENTICATED`, `DISPLAY_NAME_INVALID`.
 
 ### Polityki RLS
 
 - `alter table public.profiles enable row level security;`
 - `select` dla `authenticated`: `using (id = (select auth.uid()))`.
-- Brak polityk `insert` / `update` / `delete`; dodatkowo `revoke insert, update, delete on public.profiles from anon, authenticated`.
+- Brak polityk `insert` / `update` / `delete` i brak uprawnień zapisu (jedynym `grant` jest `select` dla `authenticated`).
 - `anon`: brak polityk, więc brak dostępu.
 
 ### Edge Functions
@@ -143,12 +148,17 @@ Nie dotyczy.
 
 - **Klient:** `src/lib/database.types.ts` z `vp exec supabase gen types typescript --local`; `createClient<Database>` w `src/lib/supabase.ts`.
 - **Sesja w routerze:** kontekst routera rozszerzony o `auth` (bieżąca sesja z `supabase.auth.getSession()`); `supabase.auth.onAuthStateChange` unieważnia router i czyści cache zapytań przy wylogowaniu.
+- **Wzorzec Router + Query** ([engineering-standards](../../docs/engineering-standards.md) 4.3, P-07), ustalany w tym zadaniu dla wszystkich kolejnych ekranów:
+  - `createRouter({ routeTree, context: { queryClient, auth }, defaultPreload: "intent", defaultPreloadStaleTime: 0, defaultPendingComponent, defaultErrorComponent })`,
+  - odczyt profilu: `profileQueryOptions()` w `src/features/profile/api.ts` → `loader` trasy `_authenticated` wywołuje `context.queryClient.ensureQueryData(profileQueryOptions())` → komponenty używają `useSuspenseQuery(profileQueryOptions())`,
+  - zapis: `useMutation` z RPC, po sukcesie `invalidateQueries({ queryKey: queryKeys.profile.me() })`,
+  - wywołania `supabase.*` wyłącznie w `src/features/*/api.ts` (`profile`, `auth`).
 - **Trasy (pliki w `src/routes/`):**
   - `login.tsx` – `/login?redirect=…`: krok 1 e-mail (`signInWithOtp({ email, options: { emailRedirectTo: origin } })`), krok 2 kod (`verifyOtp({ email, token, type: "email" })`) z przyciskiem „Wyślij ponownie”; zalogowanego przekierowuje dalej,
   - `_authenticated.tsx` – trasa układu z `beforeLoad`: brak sesji → `redirect({ to: "/login", search: { redirect: location.href } })`; nagłówek z nazwą i „Wyloguj”,
   - `_authenticated/index.tsx` – dotychczasowa strona główna, teraz chroniona („Cześć, {nazwa}”),
   - `_authenticated/profile.tsx` – edycja nazwy (RPC `update_profile` przez `useMutation`, po sukcesie unieważnienie klucza profilu).
-- **Wspólne moduły:** `src/lib/query-keys.ts` (`queryKeys.profile.me()`), `src/lib/rpc-errors.ts` (mapa kod → komunikat, domyślny komunikat dla nieznanych błędów), `src/lib/email.ts` (walidacja formatu e-maila dla wygody UI).
+- **Wspólne moduły:** `src/lib/query-keys.ts` (`queryKeys.profile.me()`), `src/lib/rpc-errors.ts` (zamiana błędu PostgREST na `AppError { code, message }` z komunikatem po polsku, domyślny komunikat dla nieznanych kodów), `src/lib/email.ts` (walidacja formatu e-maila dla wygody UI), `src/lib/redirect.ts` (bezpieczny adres powrotu: tylko ścieżki wewnętrzne).
 - **Komponenty shadcn:** `input`, `label`, `card` (przez CLI; import `cn` z `@/lib/utils` – patrz wniosek o shadcn).
 - Teksty po polsku, układ mobile first, etykiety pól i komunikaty błędów dostępne dla czytników ekranu.
 
@@ -158,7 +168,7 @@ Zmiana addytywna: nowy schemat `private`, nowa tabela, trigger i funkcja. Brak w
 
 ## Plan implementacji
 
-1. Testy pgTAP dla `profiles` (trigger, RLS, zakaz zapisu, `update_profile`) – czerwone.
+1. Helpery testów `supabase/tests/000-setup-helpers.test.sql` i testy niezmienników `supabase/tests/001-invariants.test.sql`; testy pgTAP dla `profiles` (trigger, RLS, zakaz zapisu, `update_profile`) – czerwone.
 2. Migracja `create_profiles`, `db reset`, testy zielone; wygenerowanie typów i typowany klient.
 3. Szablon wiadomości i konfiguracja Auth; ręczne sprawdzenie wiadomości w Mailpit.
 4. Moduły `query-keys`, `rpc-errors`, `email` z testami Vitest.
@@ -169,12 +179,18 @@ Zmiana addytywna: nowy schemat `private`, nowa tabela, trigger i funkcja. Brak w
 
 ## Strategia testów
 
+- **Helpery pgTAP** (P-03) w `supabase/tests/000-setup-helpers.test.sql` – plik bez `rollback`, uruchamiany jako pierwszy, tworzy schemat `tests` (tylko w bazie testowej/lokalnej, nie w migracjach):
+  - `tests.create_user(email text) returns uuid` – wstawia użytkownika do `auth.users` (uruchamia trigger profilu),
+  - `tests.authenticate_as(user_id uuid)` – `set local role authenticated` i `request.jwt.claims` z `sub`,
+  - `tests.clear_authentication()` – powrót do roli `anon` bez claims.
+- **Niezmienniki** (`supabase/tests/001-invariants.test.sql`): każda tabela w `public` ma włączone RLS; żadna funkcja w `public` nie ma `EXECUTE` dla `anon`; każda funkcja `security definer` w `public` i `private` ma ustawione `search_path`; `authenticated` nie ma `insert` / `update` / `delete` na tabelach `public`.
 - **pgTAP** (`supabase/tests/profiles.test.sql`):
   - utworzenie użytkownika w `auth.users` tworzy profil z nazwą z e-maila (AC-7), także dla długiej części lokalnej (obcięcie do 50),
   - A widzi tylko swój profil, B tylko swój, `anon` – zero wierszy (AC-10),
   - bezpośredni `insert` / `update` / `delete` jako `authenticated` odrzucony (AC-11),
-  - `update_profile`: przycięcie spacji (AC-8), pusta, same spacje, 51 znaków → `DISPLAY_NAME_INVALID`, 50 znaków przechodzi (AC-9); wywołanie jako `anon` odrzucone; użytkownik nie może zmienić cudzego profilu.
-- **Vitest:** mapowanie kodów błędów (znany, nieznany, brak kodu), walidacja e-maila (przypadki poprawne i błędne), funkcja budująca adres powrotu po zalogowaniu (tylko ścieżki wewnętrzne – ochrona przed open redirect).
+  - `update_profile`: przycięcie spacji (AC-8), pusta, same spacje, 51 znaków → `throws_ok(..., 'PT400', 'DISPLAY_NAME_INVALID')`, 50 znaków przechodzi (AC-9); wywołanie jako `anon` odrzucone (brak `EXECUTE`); użytkownik nie może zmienić cudzego profilu.
+- **CI:** zadanie bazy uruchamia też `supabase db advisors --local --type all --fail-on warn` (P-04) i – po powstaniu `database.types.ts` – kontrolę aktualności typów (`gen types` + `git diff --exit-code`), dodawaną w tym zadaniu.
+- **Vitest:** mapowanie błędów PostgREST na `AppError` (znany kod, nieznany kod, brak kodu, błąd sieci), walidacja e-maila (przypadki poprawne i błędne), funkcja budująca adres powrotu po zalogowaniu (tylko ścieżki wewnętrzne – ochrona przed open redirect).
 - **E2E:** poza zakresem (T-01); ścieżki AC-1–AC-6 sprawdzone ręcznie z Mailpit i opisane w logu przebiegu.
 
 ## Ryzyka i otwarte pytania

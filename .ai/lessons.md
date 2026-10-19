@@ -12,7 +12,7 @@ Przed dodaniem sprawdź, czy podobny wniosek już istnieje; jeśli tak, zaktuali
 
 ## Baza i Supabase
 
-- Nie polegaj na domyślnych uprawnieniach Supabase: nadawaj jawne `grant`, odbieraj `execute` od `public`/`anon` i testuj to w pgTAP. ([szczegóły](lessons/2026-10-19-supabase-local-api-exposure.md))
+- Nie polegaj na domyślnych uprawnieniach Supabase: nadawaj jawne `grant`, domyślne `EXECUTE` dla `PUBLIC` wyłączaj globalnym `alter default privileges` (nie `in schema`) i testuj to w pgTAP. ([szczegóły](lessons/2026-10-19-supabase-local-api-exposure.md))
 - Uruchamiaj Supabase CLI przez `vp exec supabase`; nie twórz `.gitkeep` w `supabase/migrations` i nie instaluj pgTAP w testach. ([szczegóły](lessons/2026-10-19-supabase-cli-local-setup.md))
 
 ## Frontend

@@ -36,3 +36,10 @@ Reguły domenowe realizujemy w Postgresie: ograniczenia (`CHECK`, klucze obce, u
 
 - komponenty React nie zawierają reguł domenowych; walidacja w UI tylko dla wygody (AGENTS.md),
 - każda funkcja RPC ma testy pgTAP: reguły, przypadki brzegowe i dostęp (członek innego budżetu, `member` vs `owner`, `anon`).
+
+## Uzupełnienie (2026-10-19)
+
+Doprecyzowanie po researchu standardów ([engineering-standards.md](../engineering-standards.md), P-01 i P-02):
+
+- uprawnienia nadajemy wyłącznie jawnie: `auto_expose_new_tables = false`, globalne `alter default privileges revoke execute on functions from public`, a w migracjach `grant select` na tabelach i `grant execute` na funkcjach tylko dla `authenticated`,
+- błędy biznesowe zgłaszamy z SQLSTATE `PTxyz` (status HTTP) i stałym kodem w `message` – katalog w [architekturze](../architecture.md#kontrakt-błędów).

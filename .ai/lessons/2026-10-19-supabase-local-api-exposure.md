@@ -24,7 +24,8 @@ Nie polegaj na domyślnych uprawnieniach: w każdej migracji nadawaj jawne `gran
 
 ## Jak go stosować
 
-- Propozycja P-01 w `docs/engineering-standards.md`: `auto_expose_new_tables = false` i `alter default privileges ... revoke execute on functions from public, anon, authenticated`.
+- `auto_expose_new_tables = false` w `supabase/config.toml` (wdrożone) – sprawdzone lokalnie: nowa tabela nie ma `select` dla `anon` ani `authenticated`.
+- Domyślne `EXECUTE` dla `PUBLIC` wyłączaj globalnie: `alter default privileges revoke execute on functions from public`. Wariant `alter default privileges in schema public revoke ...` **nie działa** na to uprawnienie (sprawdzone lokalnie: `anon` dalej mógł wykonać nową funkcję). Potem `grant execute ... to authenticated` dla każdej funkcji RPC.
 - Test niezmiennika: żadna funkcja w `public` nie jest wykonywalna przez `anon`, każda tabela ma RLS.
 
 ## Powiązania

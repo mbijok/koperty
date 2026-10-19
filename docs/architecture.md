@@ -149,8 +149,9 @@ Kluczowe ograniczenia:
 ### Zasada ogólna
 
 - **Odczyt:** bezpośrednio z tabel przez PostgREST, filtrowany politykami RLS `select`.
-- **Zapis:** wyłącznie przez funkcje RPC. Tabele nie mają polityk `insert` / `update` / `delete`, a role `anon` i `authenticated` nie mają uprawnień zapisu (`revoke insert, update, delete`). Funkcje RPC są `security definer` z `set search_path = ''`, same sprawdzają `auth.uid()` i rolę w budżecie, a potem wykonują zapis w jednej transakcji. Uzasadnienie: [ADR 0003](adr/0003-business-logic-in-database.md).
+- **Zapis:** wyłącznie przez funkcje RPC. Tabele nie mają polityk `insert` / `update` / `delete`, a role `anon` i `authenticated` nie mają uprawnień zapisu (dostają tylko jawne `grant select`). Funkcje RPC są `security definer` z `set search_path = ''`, same sprawdzają `auth.uid()` i rolę w budżecie, a potem wykonują zapis w jednej transakcji. Uzasadnienie: [ADR 0003](adr/0003-business-logic-in-database.md).
 - RLS jest włączone na wszystkich tabelach schematu `public` (także na tych bez polityk – wtedy dostęp jest zabroniony).
+- **Uprawnienia tylko jawne:** `auto_expose_new_tables = false` w `supabase/config.toml` (jak w nowych projektach Supabase), więc nowa tabela nie jest dostępna dla ról API bez `grant`. Pierwsza migracja wyłącza domyślne `EXECUTE` dla `PUBLIC` na nowych funkcjach (`alter default privileges revoke execute on functions from public` – sama wersja `in schema public` nie wystarcza, bo domyślne uprawnienie `PUBLIC` jest globalne). Każda migracja nadaje jawnie: `grant select on <tabela> to authenticated` i `grant execute on function <funkcja> to authenticated`; `anon` nie dostaje nic.
 
 ### Funkcje pomocnicze
 
@@ -177,11 +178,23 @@ Osoba niezalogowana (`anon`) nie ma dostępu do żadnej tabeli ani funkcji RPC.
 
 ### Testy dostępu (pgTAP)
 
-Dla każdej tabeli: członek budżetu A nie widzi i nie modyfikuje danych budżetu B; `member` nie wykonuje operacji zastrzeżonych dla `owner`; `anon` nie ma dostępu; bezpośredni `insert` / `update` / `delete` na tabeli jest odrzucany.
+Dla każdej tabeli: członek budżetu A nie widzi i nie modyfikuje danych budżetu B; `member` nie wykonuje operacji zastrzeżonych dla `owner`; `anon` nie ma dostępu; bezpośredni `insert` / `update` / `delete` na tabeli jest odrzucany. Do tego jeden plik testów niezmienników: każda tabela w `public` ma RLS, żadna funkcja w `public` nie jest wykonywalna przez `anon`, każda funkcja `security definer` ma ustawione `search_path`. Wspólne helpery testów (`tests.create_user`, `tests.authenticate_as`, `tests.clear_authentication`) leżą w `supabase/tests/000-setup-helpers.test.sql`.
 
 ## 4. Operacje RPC
 
-Konwencje: funkcje w schemacie `public`, nazwy `snake_case` w formie czasownik_rzeczownik, parametry z prefiksem `p_`, kwoty w groszach (`bigint`), miesiąc jako `date` (pierwszy dzień miesiąca). Błędy biznesowe zgłaszane przez `raise exception` ze stabilnym kodem w `message` (np. `ENVELOPE_ARCHIVED`), który klient mapuje na komunikat po polsku. Wszystkie funkcje wymagają zalogowanego użytkownika.
+Konwencje: funkcje w schemacie `public`, nazwy `snake_case` w formie czasownik_rzeczownik, parametry z prefiksem `p_`, kwoty w groszach (`bigint`), miesiąc jako `date` (pierwszy dzień miesiąca). Wszystkie funkcje wymagają zalogowanego użytkownika.
+
+### Kontrakt błędów
+
+Błąd biznesowy to `raise exception '<KOD>' using errcode = 'PT<status>'`. PostgREST zwraca wtedy status HTTP z SQLSTATE, a stały kod w polu `message`, który klient mapuje na komunikat po polsku. Kody są częścią API (także dla aplikacji iOS): nie zmieniamy ani nie usuwamy istniejących, nowe dopisujemy do katalogu. Nigdy nie używamy SQLSTATE `40001` (PostgREST 14 ponawia wtedy transakcję w nieskończoność).
+
+| SQLSTATE / HTTP | Znaczenie                                                  | Kody (wstępny katalog; ostatecznie ustala specyfikacja danej funkcji)                                                                |
+| --------------- | ---------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `PT400`         | niepoprawne dane wejściowe                                 | `DISPLAY_NAME_INVALID`, `BUDGET_NAME_INVALID`, `ENVELOPE_NAME_INVALID`, `AMOUNT_INVALID`, `SPLITS_INVALID`, `ENVELOPE_LIST_MISMATCH` |
+| `PT401`         | brak zalogowanego użytkownika                              | `NOT_AUTHENTICATED`                                                                                                                  |
+| `PT403`         | brak członkostwa lub wymaganej roli                        | `FORBIDDEN`                                                                                                                          |
+| `PT404`         | obiekt nie istnieje (lub jest niewidoczny dla użytkownika) | `NOT_FOUND`, `INVITATION_INVALID`                                                                                                    |
+| `PT409`         | konflikt ze stanem danych                                  | `ENVELOPE_NAME_TAKEN`, `ENVELOPE_ARCHIVED`, `ENVELOPE_BALANCE_NOT_ZERO`, `LAST_OWNER`, `SOLE_OWNER_WITH_MEMBERS`                     |
 
 ### Budżety i członkostwo
 
