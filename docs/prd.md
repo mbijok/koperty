@@ -1,6 +1,6 @@
 # PRD: Koperty – MVP (web)
 
-> **Status:** wersja robocza do przeglądu (faza 0). Słownik pojęć: [README.md](../README.md#słownik-domenowy). Pozycje oznaczone **[Z]** to założenia do potwierdzenia (zebrane w sekcji „Ryzyka i otwarte pytania”).
+> **Status:** zaakceptowany (faza 0, 2026-10-19). Słownik pojęć: [README.md](../README.md#słownik-domenowy). Pozycje oznaczone **[Z]** to założenia potwierdzone w przeglądzie (zebrane w sekcji „Ryzyka i otwarte pytania”).
 
 ## 1. Problem i cel produktu
 
@@ -45,6 +45,7 @@ Rejestracja jest otwarta: każda osoba z adresem e-mail może założyć konto. 
 - logowanie hasłem i przez dostawców OAuth (Google, Sign in with Apple),
 - zaproszenia na konkretny adres e-mail i kody zaproszeń,
 - tryb offline, wiele walut, import z banku, eksport danych,
+- odświeżanie na żywo i powiadomienia o zmianach wprowadzonych przez innych członków (dane odświeżają się przy wejściu na ekran),
 - role inne niż `owner` / `member` (np. tylko do odczytu).
 
 ## 4. Reguły domenowe
@@ -308,7 +309,7 @@ Projekt nie zbiera metryk produktowych ani analityki użycia (decyzja). MVP uzna
 
 ## 8. Ryzyka i otwarte pytania
 
-### Założenia do potwierdzenia
+### Założenia (potwierdzone)
 
 - **[Z1]** Przydział to jedna edytowalna, nieujemna kwota dla pary (koperta, miesiąc), a nie lista dowolnych operacji (w tym ujemnych). Zmniejszenie przydziału zwraca środki do puli.
 - **[Z2]** Pula liczona jest globalnie dla budżetu: wszystkie przychody − wszystkie przydziały, także na przyszłe miesiące (przychód z przyszłą datą też ją zwiększa).
@@ -327,4 +328,4 @@ Projekt nie zbiera metryk produktowych ani analityki użycia (decyzja). MVP uzna
 
 ### Otwarte pytania
 
-- Czy członkowie budżetu mają być powiadamiani o zmianach wprowadzonych przez innych (odświeżanie na żywo, powiadomienia)? Założenie MVP: nie, dane odświeżają się przy wejściu na ekran.
+Brak.

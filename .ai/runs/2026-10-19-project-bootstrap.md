@@ -75,6 +75,11 @@ Po każdym etapie punkt kontrolny i akceptacja użytkownika; commit po każdym e
 - Utworzono `docs/prd.md` (23 user stories US-01–US-23, reguły domenowe, NFR, ryzyka). Założenia, których wywiad nie rozstrzygnął, oznaczono w PRD jako [Z1]–[Z5] do potwierdzenia w przeglądzie.
 - Zaktualizowano `AGENTS.md`: sekcja „Otwarte decyzje” zamieniona na „Rozstrzygnięte decyzje” + odesłanie do założeń [Z1]–[Z5].
 - Zaktualizowano `README.md`: hosting (Cloudflare Pages) i opis „przenoszenia reszty” w etapie 2.
+- Commit `fb13290`. Przegląd użytkownika: założenia [Z1]–[Z5] potwierdzone, odświeżanie na żywo poza MVP. PRD oznaczony jako zaakceptowany, sekcja „Otwarte decyzje” w `AGENTS.md` pusta. Etap zaakceptowany.
+
+### Etap 4. Architektura i decyzje
+
+- **Co zrobiono:** rozpoczęto `docs/architecture.md` i ADR 0000–0007.
 
 ## Decyzje i założenia
 

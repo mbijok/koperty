@@ -203,7 +203,7 @@ Ustalone w [docs/prd.md](docs/prd.md). Zmiana którejkolwiek wymaga aktualizacji
 
 ## Otwarte decyzje
 
-Nie rozstrzygaj ich samodzielnie. Założenia do potwierdzenia są oznaczone w [docs/prd.md](docs/prd.md) jako **[Z1]**–**[Z5]**.
+Brak. Nowe decyzje produktowe lub architektoniczne, które wyjdą w trakcie pracy, dopisz tutaj i nie rozstrzygaj ich samodzielnie; ustalenia trafiają do PRD lub ADR.
 
 ## Czego nie robić
 
