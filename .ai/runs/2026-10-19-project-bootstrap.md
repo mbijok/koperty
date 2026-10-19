@@ -1,0 +1,197 @@
+---
+title: Faza 0 – fundamenty projektu
+started: 2026-10-19
+spec: docs/prompts/00-bootstrap.md (traktowany jako zatwierdzona specyfikacja fazy 0 – decyzja użytkownika)
+status: completed
+---
+
+# Faza 0 – fundamenty projektu
+
+## Cel
+
+Przygotowanie fundamentów pod pracę z agentami AI: pamięć projektu (`.ai/`), PRD, architektura i ADR, szkielet repozytorium, kontrola jakości i CI, proces i backlog. Bez implementacji funkcjonalności domenowych. Instrukcje: [docs/prompts/00-bootstrap.md](../../docs/prompts/00-bootstrap.md).
+
+## Plan
+
+1. Weryfikacja kontekstu.
+2. Struktura `.ai/`.
+3. PRD na podstawie wywiadu.
+4. Architektura i ADR.
+5. Szkielet repozytorium.
+6. Kontrola jakości i CI.
+7. Proces i plan pracy.
+
+Po każdym etapie punkt kontrolny i akceptacja użytkownika; commit po każdym etapie.
+
+## Przebieg kroków
+
+> Wpisy dla etapów 1 i 2 dodane w etapie 2, bo katalog `.ai/` wcześniej nie istniał (wymuszony wyjątek od zasady zakładania logu na początku przebiegu).
+
+### Etap 1. Weryfikacja kontekstu
+
+- **Co zrobiono:** przeczytano `README.md`, `AGENTS.md`, `CLAUDE.md`, `00-bootstrap.md`; przedstawiono podsumowanie rozumienia produktu, architektury i procesu oraz listę niejasności.
+- **Komendy:**
+  ```bash
+  date +%F
+  command -v vp bun supabase docker git gh
+  ```
+- **Wynik:** `vp` 1.3.0, Bun 1.4.3, `gh` dostępne; brak Supabase CLI i Dockera.
+
+### Etap 2. Struktura `.ai/`
+
+- **Co zrobiono:**
+  - zmieniono nazwę gałęzi `claude/bootstrap-setup-c092fc` → `chore/project-bootstrap` (bazą jest `master`),
+  - przeniesiono `00-bootstrap.md` z katalogu głównego głównej kopii repozytorium (był tylko w indeksie, niezacommitowany) do `docs/prompts/00-bootstrap.md`; commit `993ef24`,
+  - utworzono `.ai/specs/{implemented,archive}/` (z `.gitkeep`), `.ai/runs/`, `.ai/lessons/`,
+  - utworzono wzorce `.ai/specs/_template.md`, `.ai/runs/_template.md`, `.ai/lessons/_template.md`,
+  - utworzono `.ai/lessons.md` z instrukcją formatu i pustymi sekcjami obszarów,
+  - założono ten log.
+- **Komendy:**
+  ```bash
+  git branch -m chore/project-bootstrap
+  mkdir -p .ai/specs/implemented .ai/specs/archive .ai/runs .ai/lessons
+  git check-ignore -v .ai .ai/lessons.md   # brak dopasowań – .ai/ nie jest ignorowany
+  ```
+- **Wynik:** struktura gotowa, `.ai/` nie jest ignorowany przez `.gitignore`. Commit `9b0b75e`. Etap zaakceptowany przez użytkownika.
+
+### Etap 3. PRD na podstawie wywiadu
+
+- **Co zrobiono:** rozpoczęto wywiad; partia 1 pytań dotyczy „Otwartych decyzji” z `AGENTS.md` (koniec okresu, ujemne saldo, wiele budżetów, role, logowanie).
+- **Wynik partii 1 (decyzje użytkownika):**
+  - koniec okresu: saldo koperty zawsze przechodzi na kolejny miesiąc (saldo = suma historii),
+  - saldo koperty może być ujemne, z wyraźnym oznaczeniem w UI,
+  - jedna osoba może należeć do wielu budżetów (przełącznik budżetu),
+  - role: `owner` i `member`, możliwych kilku właścicieli,
+  - logowanie: e-mail z magic linkiem / OTP, bez haseł i bez OAuth w MVP.
+- Partia 2: zaproszenia, hosting, podział wydatku i zaokrąglenia, definicja okresu, doprecyzowania z partii 1.
+- **Wynik partii 2 (decyzje użytkownika):**
+  - zaproszenia: link z jednorazowym tokenem ważnym 7 dni, z możliwością unieważnienia,
+  - hosting frontendu: Cloudflare Pages,
+  - podział wydatku: kwoty części w groszach, suma musi równać się kwocie wydatku (wymusza baza); podpowiedzi procentowe/po równo tylko w UI; wydatek ma datę, opcjonalny opis, autora (automatycznie), edycję i usuwanie dla każdego członka,
+  - okres: miesiąc kalendarzowy; przydziały na przyszłe miesiące dozwolone,
+  - pula „do rozdysponowania” może być ujemna, z wyraźnym oznaczeniem w UI (zatem przydział nie jest ograniczony pulą),
+  - „przenoszenie reszty” (etap 2): opcjonalny zwrot niewykorzystanej reszty z koperty do puli na koniec miesiąca, konfigurowany per koperta.
+- **Wynik partii 3 (decyzje użytkownika):** otwarta rejestracja; koperta (nazwa, kolejność, archiwizacja) i przychód (kwota, data, opis, autor) w wersji minimalnej; podsumowanie miesiąca jako tabela per koperta + sumy i pula; wymagania niefunkcjonalne potwierdzone (WCAG 2.1 AA, mobile first od 360 px, PWA bez offline, < 2 s / < 500 ms, usunięcie konta z anonimizacją, tylko PLN); brak metryk produktowych.
+- Utworzono `docs/prd.md` (23 user stories US-01–US-23, reguły domenowe, NFR, ryzyka). Założenia, których wywiad nie rozstrzygnął, oznaczono w PRD jako [Z1]–[Z5] do potwierdzenia w przeglądzie.
+- Zaktualizowano `AGENTS.md`: sekcja „Otwarte decyzje” zamieniona na „Rozstrzygnięte decyzje” + odesłanie do założeń [Z1]–[Z5].
+- Zaktualizowano `README.md`: hosting (Cloudflare Pages) i opis „przenoszenia reszty” w etapie 2.
+- Commit `fb13290`. Przegląd użytkownika: założenia [Z1]–[Z5] potwierdzone, odświeżanie na żywo poza MVP. PRD oznaczony jako zaakceptowany, sekcja „Otwarte decyzje” w `AGENTS.md` pusta. Etap zaakceptowany.
+
+### Etap 4. Architektura i decyzje
+
+- **Co zrobiono:**
+  - `docs/architecture.md`: diagram komponentów, diagram ER (profiles, budgets, budget_members, invitations, envelopes, incomes, allocations, expenses, expense_splits), strategia RLS, lista RPC z odwołaniami do US, Edge Function `delete-account`, zasady wersjonowania API,
+  - `docs/adr/0000-template.md` i ADR 0001–0007 (status: zaakceptowany),
+  - `AGENTS.md`: dopisana reguła „zapis wyłącznie przez RPC” (z ADR 0003).
+- **Decyzje (do akceptacji w przeglądzie):** zapis wyłącznie przez RPC `security definer`, odczyt przez RLS `select`; spójność budżetu przez złożone klucze obce; suma części wydatku pilnowana odroczonym triggerem; tokeny zaproszeń przechowywane jako hash; `profiles.display_name` do pokazywania autora.
+- **Otwarte:** źródło nazwy wyświetlanej autora; propozycje nowych ADR (hosting Cloudflare Pages, logowanie bez haseł).
+- Commit `17942c3`. Przegląd użytkownika: nazwa wyświetlana = część e-maila przed `@`, zmienialna (dopisano US-24 w PRD i regułę w 4.11; `update_profile` → US-24); dodano ADR 0008 (Cloudflare Pages) i ADR 0009 (logowanie bez haseł). Architektura oznaczona jako zaakceptowana. Etap zaakceptowany.
+
+### Etap 5. Szkielet repozytorium
+
+- **Co zrobiono:** rozpoznanie przed implementacją (wymagane przez bootstrap): przeczytano dokumentację Vite+ (`llms-full.txt`: create, package management, monorepo, env) i wykonano próbne `vp create` w katalogu tymczasowym (poza repozytorium).
+- **Komendy:**
+  ```bash
+  curl -sSfL https://viteplus.dev/llms-full.txt -o vp.txt
+  vp create vite:monorepo --directory mono --package-manager bun --no-interactive --no-git --no-agent --no-editor --no-hooks
+  vp create vite:application --directory apps/web --no-interactive --no-agent --no-editor -- --template react-ts
+  ```
+- **Wynik:** szablon monorepo zapisuje `devEngines.packageManager` (bun 1.4.3), `catalog` z wersjami `vite-plus` i aliasem `vite` → `@voidzero-dev/vite-plus-core`, workspaces `apps/*`, `packages/*`, `tools/*` i przykładowe pakiety `apps/website`, `packages/utils`. Szablon aplikacji React tworzy `apps/web/vite.config.ts` z `defineConfig` z `vite` (nie `vite-plus`), własnym blokiem `lint` i bez `strict` w `tsconfig.app.json`. Przedstawiono plan użytkownikowi, czekam na akceptację.
+- **Akceptacja użytkownika:** plan, lista zależności, routing oparty na plikach, `VITE_SUPABASE_URL` / `VITE_SUPABASE_PUBLISHABLE_KEY`; użytkownik zainstalował OrbStack (`brew install --cask orbstack`).
+- **Co zrobiono (implementacja):**
+  - monorepo: `package.json` (workspaces `apps/*`, `packages/*`, `devEngines.packageManager` bun 1.4.3, `catalog`, `overrides` dla `vite` i `vitest@5.0.5`), główny `vite.config.ts` (lint + overrides React, fmt, `test.projects`, `defaultPackage`), `tsconfig.json`, wpisy `*.local` i `.claude/worktrees/` w `.gitignore`,
+  - `apps/web`: szablon `react-ts`, usunięte demo, `strict: true`, alias `@/`, `lang="pl"`, `vite.config.ts` z `vite-plus` (TanStack Router plugin, React, Tailwind, `test`),
+  - zależności: `@tanstack/react-router`, `@tanstack/router-plugin` (dev), `@tanstack/react-query`, `tailwindcss`, `@tailwindcss/vite`, `@supabase/supabase-js`; shadcn dodał `cn`, `radix-ui`, `shadcn`, `class-variance-authority`, `lucide-react`, `tw-animate-css`, `@fontsource-variable/geist` (odstępstwo od listy przedstawionej w planie: `cn` zamiast `clsx` + `tailwind-merge`, zweryfikowany – repozytorium shadcn-ui, brak skryptów instalacyjnych),
+  - routing plikowy: `src/routes/__root.tsx`, `src/routes/index.tsx` (przykładowa trasa z komponentem `Button`), `routeTree.gen.ts` commitowany, wykluczony z lint/fmt; `QueryClient` w `src/lib/query-client.ts`,
+  - `apps/web/.env.example`, `src/lib/supabase-config.ts` (walidacja zmiennych), `src/lib/supabase.ts` (klient), test Vitest `supabase-config.test.ts`,
+  - Supabase: `vp add -D supabase` (2.121.0), `supabase init` (`project_id = "koperty"`, `site_url` → 5173), `seed.sql`, test pgTAP `supabase/tests/000-infrastructure.test.sql`,
+  - README „Uruchomienie lokalne”, AGENTS.md: tabela komend i zasada konfiguracji Vite+ w monorepo,
+  - 5 wniosków w `.ai/lessons/` i indeks w `.ai/lessons.md`.
+- **Komendy weryfikacji:**
+  ```bash
+  vp check                      # pass: formatowanie, lint, typy (0 błędów, 0 ostrzeżeń)
+  vp test                       # 1 plik, 3 testy – pass
+  vp build                      # pass (defaultPackage → apps/web)
+  vp exec supabase start        # pass (OrbStack)
+  vp exec supabase db reset     # pass
+  vp exec supabase test db      # Files=1, Tests=3, Result: PASS
+  vp exec supabase gen types typescript --local   # działa (brak tabel)
+  vp dev                        # serwer na 5173, /src/main.tsx → 200
+  ```
+- **Problemy i rozwiązania:** `vp test` z katalogu głównego nie widział aliasu (→ `test.projects`); `vp build` z katalogu głównego wymagał celu (→ `defaultPackage`); `vp dev --port` ignoruje `defaultPackage` (→ `vp -C apps/web dev --port`); `vp add -w` nieobsługiwane przez Bun; shadcn wymagał presetu; fałszywe ostrzeżenia `react/only-export-components` dla tras i `components/ui` (wyłączone override'em). Szczegóły w wnioskach.
+
+- Commit `bdf2784`. Pytanie użytkownika o worktree: zmiany są w worktree `.claude/worktrees/...` na gałęzi `chore/project-bootstrap`; problemy z aliasami nie wynikały z lokalizacji. Decyzja: dokończyć etapy 6–7 w worktree i scalić / otworzyć PR na końcu.
+- **Korekta użytkownika:** zamiast pakietu `cn` używamy `clsx` + `tailwind-merge`.
+  - `vp -C apps/web remove cn`, `vp -C apps/web add clsx tailwind-merge`; `src/lib/utils.ts` w klasycznej postaci shadcn; import w `button.tsx` → `@/lib/utils`.
+  - `shadcn add card --dry-run --view` pokazał, że nowe komponenty nadal importują `"cn"` → dodano regułę `no-restricted-imports` dla `apps/web/**` w głównym `vite.config.ts`; sprawdzono, że `vp check` zgłasza błąd przy imporcie `"cn"`.
+  - Zaktualizowano wniosek o shadcn i indeks `lessons.md`.
+  - Weryfikacja: `vp check` pass, `vp test` 3/3, `vp build` pass.
+
+- Commit `8250869`. Etap 5 zaakceptowany.
+
+### Etap 6. Kontrola jakości i CI
+
+- **Co zrobiono:**
+  - dokumentacja Vite+ (CI) i README `voidzero-dev/setup-vp`: akcja instaluje Vite+ (wersja z `catalog`), Node i Bun z `devEngines`, uruchamia `vp install` z cache; tag `v1` jest zamrożony – użyto dokładnej wersji przypiętej po SHA (setup-vp v1.21.2 `68f39c7…`, actions/checkout v7.0.1 `3d3c42e…`),
+  - `vp env pin lts` → `devEngines.runtime` Node 24.22.0 (jedno źródło wersji Node dla lokalnie i CI),
+  - `.github/workflows/ci.yml`: PR i push na `master`, `permissions: contents: read`, `concurrency`, kroki: `vp install --frozen-lockfile` (przez setup-vp), `vp node scripts/check-ai.ts`, `vp check`, `vp test`, `vp build`,
+  - `scripts/check-ai.ts` (nazwy `YYYY-MM-DD-slug.md` z poprawną datą i slugiem 2–5 słów, status zgodny z katalogiem specyfikacji, status logów, nieznane podkatalogi `specs/`, podlinkowanie wniosków w `lessons.md`) + `scripts/check-ai.test.ts` (4 testy); projekt `scripts` dodany do `test.projects`,
+  - `.github/pull_request_template.md` z checklistą DoD (jakość, `.ai/`, dokumentacja i bezpieczeństwo),
+  - AGENTS.md (tabela komend) i README: komenda kontroli `.ai/`.
+- **Komendy:**
+  ```bash
+  vp node scripts/check-ai.ts                          # ✓ .ai/ is consistent
+  vp check                                             # pass
+  vp test                                              # 2 pliki, 7 testów – pass
+  vp build                                             # pass
+  vp install --frozen-lockfile                         # bez zmian w bun.lock
+  vp dlx -s @action-validator/cli .github/workflows/ci.yml   # exit 0
+  vp exec supabase stop && vp exec supabase db start && vp exec supabase test db   # sam Postgres: PASS w 12 s
+  ```
+- **Problem:** `run-install` w setup-vp przyjmuje tekst YAML (`run-install: |`), a nie mapę – poprawione przed walidacją.
+- **Do decyzji użytkownika:** testy bazy w CI (rekomendacja: tak, osobne zadanie z `supabase db start`), kontrola przed commitem (`staged`).
+
+- Commit `3b3e647`. Użytkownik zaakceptował obie rekomendacje (testy bazy w CI, kontrola przed commitem).
+- **Testy bazy w CI:** zadanie `db` w `ci.yml` (setup-vp + `vp install --frozen-lockfile`, `vp exec supabase db start`, `vp exec supabase test db`). Lokalnie zweryfikowano świeży start (`supabase stop --no-backup`, `db start` stosuje migracje i seed, `test db` PASS, 32 s).
+- **Pre-commit:** blok `staged` w głównym `vite.config.ts` (`"*": "vp check --fix"`, `".ai/**": () => "vp run check:ai"`), `.vite-hooks/pre-commit` (`vp staged`), skrypty `prepare` (`vp config --no-agent`) i `check:ai` w `package.json`; `vp config --no-agent` zainstalował dispatcher (`core.hooksPath = .vite-hooks/_`).
+- **Problem:** w hooku `vp node` → `Command 'node' not found` (lokalne CLI nie ma `vp node`). Rozwiązanie: skrypt `check:ai` i `vp run check:ai` w hooku, CI, README, AGENTS.md i szablonie PR. Test negatywny: commit z `.ai/runs/bad-name.md` zablokowany komunikatem o nazwie pliku. Wniosek: `.ai/lessons/2026-10-19-vite-plus-hooks-local-cli.md`.
+- Walidacja workflow (`@action-validator/cli`) – exit 0; `vp check` pass.
+
+- Commit `12c9280`. Etap 6 zaakceptowany.
+
+### Etap 7. Proces i plan pracy
+
+- **Co zrobiono:**
+  - `docs/prompts/feature-workflow.md`: prompt z 5 etapami i punktami kontrolnymi (lessons → specyfikacja i akceptacja → log i `in-progress` → testy, implementacja, weryfikacja → domknięcie),
+  - `docs/backlog.md`: 17 pozycji w kolejności realizacji (15 vertical slices S-01–S-15 pokrywających US-01–US-24 oraz zadania techniczne T-01 E2E i T-02 wdrożenie), z user stories, zakresem, kryteriami ukończenia i zależnościami,
+  - pierwsze zadanie: S-01 „Logowanie i profil” – uzasadnienie: wszystkie dalsze funkcje wymagają `auth.uid()`, a zadanie ustala wzorce (migracja, RLS, RPC, pgTAP, typowany klient, klucze zapytań, mapowanie błędów, ochrona tras) przy najmniejszym zakresie domenowym; specyfikacja `.ai/specs/2026-10-19-email-login-profile.md` (status `draft`),
+  - `AGENTS.md` i `README.md`: faza 1 (MVP) zamiast fazy 0, odesłania do backlogu, struktura repozytorium (`scripts/`, `.vite-hooks/`, `docs/backlog.md`),
+  - wniosek procesowy o pracy w worktree.
+- **Komendy:** `vp check --fix`, `vp run check:ai`, `vp test`.
+
+## Decyzje i założenia
+
+- `docs/prompts/00-bootstrap.md` pełni rolę zatwierdzonej specyfikacji całej fazy 0; osobne specyfikacje dla etapów 5–6 nie powstają (decyzja użytkownika).
+- Plik bootstrapu przeniesiony do `docs/prompts/` zamiast usunięcia (decyzja użytkownika).
+- Gałęzie zgodnie z konwencją z `AGENTS.md`, commit po każdym etapie (decyzja użytkownika).
+- Repozytorium jako monorepo Vite+ z workspace w katalogu głównym i aplikacją w `apps/web` (decyzja użytkownika).
+- Supabase CLI instalowane jako zależność deweloperska (`bun add -D supabase`) w etapie 5, razem z innymi niezbędnymi elementami (decyzja użytkownika). Docker nadal wymagany dla `supabase start` / `supabase test db`.
+- PWA nie wchodzi do szkieletu (etap 5); trafi do backlogu (założenie do potwierdzenia w etapie 7).
+- Nazwy zmiennych środowiskowych Supabase zostaną potwierdzone z użytkownikiem w etapie 5.
+- `status` w logu przyjmuje dodatkowo wartość `in-progress` na czas trwania przebiegu; wartości końcowe zgodnie z `AGENTS.md`.
+
+## Problemy
+
+- Brak Dockera na maszynie – zablokuje `supabase test db` w etapie 5, jeśli nie zostanie zainstalowany.
+
+## Status końcowy
+
+`completed` – wszystkie 7 etapów fazy 0 wykonane i zaakceptowane (etap 7 czeka na końcowe podsumowanie). Wyniki weryfikacji: `vp check`, `vp test` (7 testów), `vp build`, `vp exec supabase db reset`, `vp exec supabase test db` (3 testy pgTAP), `vp run check:ai` – pass; hook pre-commit sprawdzony negatywnie i pozytywnie. Workflow CI zwalidowany lokalnie, ale jeszcze nieuruchomiony na GitHubie (gałąź niewypchnięta).
+
+## Następne kroki
+
+- Etap 3: wywiad do PRD, zaczynając od „Otwartych decyzji” z `AGENTS.md`.
+- Po fazie 0:
+  - przegląd i zatwierdzenie specyfikacji S-01 (`.ai/specs/2026-10-19-email-login-profile.md`), w tym odpowiedzi na jej otwarte pytania,
+  - scalenie gałęzi `chore/project-bootstrap` do `master` lub PR (decyzja użytkownika) i pierwszy przebieg CI na GitHubie,
+  - realizacja S-01 według `docs/prompts/feature-workflow.md`.

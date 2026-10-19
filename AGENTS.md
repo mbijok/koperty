@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Instrukcje dla agentów kodujących pracujących w tym repozytorium. Opis produktu i kontekst znajdziesz w [README.md](README.md), wymagania w [docs/prd.md](docs/prd.md), architekturę w [docs/architecture.md](docs/architecture.md), a uzasadnienia decyzji w [docs/adr/](docs/adr/). Specyfikacje, logi przebiegów i wnioski z pracy agentów znajdują się w katalogu `.ai/` (zasady w sekcji „Katalog `.ai/`” poniżej).
+Instrukcje dla agentów kodujących pracujących w tym repozytorium. Opis produktu i kontekst znajdziesz w [README.md](README.md), wymagania w [docs/prd.md](docs/prd.md), architekturę w [docs/architecture.md](docs/architecture.md), uzasadnienia decyzji w [docs/adr/](docs/adr/), a plan prac w [docs/backlog.md](docs/backlog.md). Specyfikacje, logi przebiegów i wnioski z pracy agentów znajdują się w katalogu `.ai/` (zasady w sekcji „Katalog `.ai/`” poniżej).
 
 Ten plik jest jedynym źródłem zasad projektu dla wszystkich agentów (Claude Code, Codex, Cursor i innych). Pliki specyficzne dla narzędzi, takie jak `CLAUDE.md`, tylko go importują i dodają mechanikę danego narzędzia. Nowe zasady projektu dopisuj wyłącznie tutaj.
 
@@ -8,7 +8,7 @@ Ten plik jest jedynym źródłem zasad projektu dla wszystkich agentów (Claude 
 
 Aplikacja webowa do budżetu domowego metodą kopertową. Wiele niezależnych budżetów, każdy z jednym lub kilkoma członkami. Backend (Supabase) jest niezależny od klienta: aplikacja webowa jest pierwszym klientem, natywna aplikacja na iOS powstanie później i będzie korzystać z tych samych danych i reguł.
 
-**Aktualna faza:** 0, czyli fundamenty projektu. Nie implementuj funkcjonalności domenowych, dopóki nie zostaną opisane w PRD i zaplanowane.
+**Aktualna faza:** 1, czyli MVP aplikacji webowej (faza 0 – fundamenty – zakończona). Zadania realizuj w kolejności z [docs/backlog.md](docs/backlog.md) według [docs/prompts/feature-workflow.md](docs/prompts/feature-workflow.md), każde na podstawie zatwierdzonej specyfikacji. Nie implementuj funkcjonalności spoza PRD i backlogu.
 
 ## Język
 
@@ -96,12 +96,15 @@ Katalog `.ai/` to wspólna, wersjonowana pamięć projektu dla wszystkich agent�
 
 - Reguły domenowe (przydziały, salda, przesunięcia, walidacje kwot) realizuj w Postgresie: funkcje wywoływane przez RPC, ograniczenia (`CHECK`, klucze obce), triggery tam, gdzie to uzasadnione. Operacje wieloetapowe muszą być atomowe (jedna funkcja, jedna transakcja).
 - Klient (web, w przyszłości iOS) tylko wywołuje te funkcje i prezentuje wyniki. Nie powielaj reguł domenowych w komponentach React. Walidacja w UI służy wyłącznie wygodzie użytkownika.
+- Zapis danych budżetu odbywa się wyłącznie przez funkcje RPC (`security definer`, `set search_path = ''`, z jawnym sprawdzeniem `auth.uid()` i roli w budżecie). Tabele nie mają polityk zapisu, a odczyt idzie przez polityki RLS `select` ([ADR 0003](docs/adr/0003-business-logic-in-database.md)).
+- Błędy biznesowe funkcji RPC zgłaszaj jako `raise exception '<KOD>' using errcode = 'PT<status>'` ze stałym kodem z katalogu w [docs/architecture.md](docs/architecture.md#kontrakt-błędów); kodów nie zmieniaj ani nie usuwaj. Nigdy nie używaj SQLSTATE `40001`.
 - Logika wymagająca sekretów lub zewnętrznych API (np. model AI w etapie 3) trafia do Edge Functions.
 - Salda kopert wyliczaj z historii operacji (widoki lub funkcje), zamiast przechowywać je jako ręcznie edytowalne pola. Odstępstwo wymaga ADR.
 
 **Dane i bezpieczeństwo**
 
 - Każda tabela z danymi budżetu ma kolumnę `budget_id` i włączone RLS z politykami sprawdzającymi członkostwo w budżecie. Nigdy nie wyłączaj RLS.
+- Uprawnienia nadawaj wyłącznie jawnie w migracjach: `grant select` na tabelach i `grant execute` na funkcjach tylko dla `authenticated`; `anon` nie dostaje nic. Nie polegaj na domyślnych uprawnieniach (`auto_expose_new_tables = false`, domyślne `EXECUTE` dla `PUBLIC` wyłączone w pierwszej migracji).
 - Klucz `service_role` nigdy nie trafia do frontendu ani do repozytorium. Frontend korzysta wyłącznie z klucza publicznego i polityk RLS.
 - Kwoty przechowuj jako liczby całkowite w groszach (`bigint` w bazie, `number` w TypeScript). Nigdy nie używaj liczb zmiennoprzecinkowych do pieniędzy. Formatowanie na złotówki tylko w warstwie prezentacji.
 - Daty operacji przechowuj jako `date` (data lokalna), a nie znacznik czasu, żeby uniknąć przesunięć stref czasowych. Strefa domyślna: `Europe/Warsaw`.
@@ -125,7 +128,7 @@ Katalog `.ai/` to wspólna, wersjonowana pamięć projektu dla wszystkich agent�
 **Vite+**
 
 - Projekt używa Vite+, a nie samodzielnego Vite. Komendy uruchamiaj przez `vp`.
-- Konfiguracja jest w jednym pliku `vite.config.ts` z `defineConfig` importowanym z `vite-plus`. Nie twórz osobnych konfiguracji dla Oxlint, Oxfmt ani Vitest i nie dodawaj ESLint ani Prettier.
+- Repozytorium jest monorepo Vite+ (workspaces `apps/*`, `packages/*`). Konfiguracja jest w plikach `vite.config.ts` z `defineConfig` importowanym z `vite-plus`: główny `vite.config.ts` zawiera lint, formatowanie, `test.projects` i `defaultPackage`, a `vite.config.ts` pakietu (np. `apps/web`) tylko pluginy, aliasy i blok `test`. Ustawienia lintu i formatowania dla pakietów dodawaj przez `lint.overrides` / `fmt.overrides` w pliku głównym. Nie twórz osobnych konfiguracji dla Oxlint, Oxfmt ani Vitest i nie dodawaj ESLint ani Prettier.
 - Vite+ jest nowym narzędziem i Twoja wiedza o nim może być niepełna. W razie wątpliwości sprawdź dokumentację: https://viteplus.dev/llms-full.txt, zamiast zakładać konfigurację znaną z klasycznego Vite.
 
 **Menedżer pakietów: Bun**
@@ -143,23 +146,27 @@ Katalog `.ai/` to wspólna, wersjonowana pamięć projektu dla wszystkich agent�
 
 ## Komendy
 
-> Do zweryfikowania i uzupełnienia po przygotowaniu szkieletu projektu.
+Wszystkie komendy uruchamiasz z katalogu głównego repozytorium. Komendy Supabase wymagają działającego Dockera.
 
-| Cel | Komenda |
-|---|---|
-| Instalacja zależności (przez Bun) | `vp install` |
-| Dodanie / usunięcie zależności | `vp add <pakiet>` / `vp remove <pakiet>` (`-D` dla dev) |
-| Jednorazowe uruchomienie narzędzia | `vp dlx <pakiet>` |
-| Serwer deweloperski | `vp dev` |
-| Formatowanie, lint, typy | `vp check` (poprawki: `vp check --fix`) |
-| Testy jednostkowe | `vp test` |
-| Build produkcyjny | `vp build` |
-| Lokalny Supabase | `supabase start` |
-| Nowa migracja | `supabase migration new <nazwa>` |
-| Odtworzenie bazy z migracji i seed | `supabase db reset` |
-| Testy bazy (pgTAP) | `supabase test db` |
-| Generowanie typów | `supabase gen types typescript --local` |
-| Testy E2E | do ustalenia |
+| Cel                                                              | Komenda                                                                                         |
+| ---------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| Instalacja zależności (przez Bun)                                | `vp install`                                                                                    |
+| Dodanie / usunięcie zależności aplikacji                         | `vp -C apps/web add <pakiet>` / `vp -C apps/web remove <pakiet>` (`-D` dla dev)                 |
+| Dodanie zależności narzędziowej do katalogu głównego             | `vp add -D <pakiet>`                                                                            |
+| Jednorazowe uruchomienie narzędzia                               | `vp dlx <pakiet>`                                                                               |
+| Dodanie komponentu shadcn/ui                                     | `vp -C apps/web dlx shadcn@latest add <komponent>`                                              |
+| Serwer deweloperski                                              | `vp dev` (z dodatkowymi flagami: `vp -C apps/web dev --port <port>`)                            |
+| Formatowanie, lint, typy                                         | `vp check` (poprawki: `vp check --fix`)                                                         |
+| Testy jednostkowe                                                | `vp test`                                                                                       |
+| Kontrola katalogu `.ai/` (nazwy, statusy, indeks wniosków)       | `vp run check:ai`                                                                               |
+| Hook pre-commit (`vp staged`: `vp check --fix`, kontrola `.ai/`) | instalowany przez `vp install` (skrypt `prepare` → `vp config`); wyłączenie: `vp hooks disable` |
+| Build produkcyjny                                                | `vp build`                                                                                      |
+| Lokalny Supabase (start / stop / adresy i klucze)                | `vp exec supabase start` / `vp exec supabase stop` / `vp exec supabase status`                  |
+| Nowa migracja                                                    | `vp exec supabase migration new <nazwa>`                                                        |
+| Odtworzenie bazy z migracji i seed                               | `vp exec supabase db reset`                                                                     |
+| Testy bazy (pgTAP)                                               | `vp exec supabase test db`                                                                      |
+| Generowanie typów                                                | `vp exec supabase gen types typescript --local > apps/web/src/lib/database.types.ts`            |
+| Testy E2E                                                        | do ustalenia                                                                                    |
 
 ## Testy
 
@@ -189,17 +196,21 @@ Zadanie jest skończone, gdy:
 - Praca na gałęziach (`feat/...`, `fix/...`, `chore/...`, `docs/...`), małe i spójne zmiany.
 - Nie commituj plików `.env`. Wymagane zmienne opisuj w `.env.example`.
 
+## Rozstrzygnięte decyzje
+
+Ustalone w [docs/prd.md](docs/prd.md). Zmiana którejkolwiek wymaga aktualizacji PRD (a dla decyzji architektonicznych także ADR):
+
+- niewykorzystane środki: saldo koperty w całości przechodzi na kolejny miesiąc (zwrot reszty do puli jako opcja per koperta – etap 2),
+- saldo koperty i pula „do rozdysponowania” mogą być ujemne; interfejs wyraźnie to oznacza,
+- jedna osoba może należeć do wielu budżetów,
+- role: `owner` (zarządza budżetem, członkami i zaproszeniami; może być kilku) i `member` (pełne operacje na kopertach, przychodach, przydziałach i wydatkach),
+- logowanie: e-mail z magic linkiem lub kodem OTP, bez haseł; dodanie dostawców OAuth (np. Google) wymaga także Sign in with Apple ze względu na aplikację iOS,
+- zaproszenia: jednorazowy link z tokenem ważnym 7 dni, z możliwością unieważnienia,
+- hosting frontendu: Cloudflare Pages.
+
 ## Otwarte decyzje
 
-Nie rozstrzygaj ich samodzielnie. Zostaną ustalone w PRD lub ADR:
-
-- co dzieje się z niewykorzystanymi środkami w kopercie na koniec okresu,
-- czy saldo koperty może być ujemne,
-- czy jedna osoba może należeć do kilku budżetów,
-- role członków budżetu i ich uprawnienia,
-- metody logowania (przy logowaniu przez Google lub innych dostawców wymagany będzie także Sign in with Apple ze względu na aplikację iOS),
-- mechanizm zaproszeń (link, kod lub oba),
-- dostawca hostingu frontendu.
+Brak. Nowe decyzje produktowe lub architektoniczne, które wyjdą w trakcie pracy, dopisz tutaj i nie rozstrzygaj ich samodzielnie; ustalenia trafiają do PRD lub ADR.
 
 ## Czego nie robić
 

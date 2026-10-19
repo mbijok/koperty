@@ -2,7 +2,7 @@
 
 Aplikacja webowa do zarządzania domowym budżetem metodą kopertową. Obsługuje wiele niezależnych budżetów domowych, a każdy budżet może być prowadzony wspólnie przez kilka osób (np. przez małżeństwo).
 
-> **Status:** faza 0, przygotowanie fundamentów projektu. Projekt realizowany w ramach kursu AI SDLC: aplikacja jest budowana z intensywnym wykorzystaniem agentów AI na każdym etapie cyklu wytwarzania oprogramowania.
+> **Status:** faza 1, realizacja MVP według [backlogu](docs/backlog.md) (fundamenty z fazy 0 gotowe). Projekt realizowany w ramach kursu AI SDLC: aplikacja jest budowana z intensywnym wykorzystaniem agentów AI na każdym etapie cyklu wytwarzania oprogramowania.
 
 ## Problem i cel
 
@@ -19,28 +19,28 @@ Cele aplikacji:
 
 Dokumentacja i interfejs są po polsku, kod po angielsku. Poniższe nazwy obowiązują w całym projekcie.
 
-| Pojęcie (PL) | Nazwa w kodzie (EN) | Znaczenie |
-|---|---|---|
-| Budżet | `budget` | Wspólna przestrzeń danych jednego gospodarstwa domowego. |
-| Członek budżetu | `budget_member` | Użytkownik z dostępem do budżetu i przypisaną rolą. |
-| Zaproszenie | `invitation` | Sposób dołączenia nowej osoby do istniejącego budżetu. |
-| Koperta | `envelope` | Cel wydatków, do którego przydziela się środki. |
-| Okres | `period` | Miesiąc rozliczeniowy. |
-| Przychód | `income` | Wpływ środków, który zwiększa pulę do rozdysponowania. |
-| Do rozdysponowania | `unallocated` | Środki, które nie zostały jeszcze przydzielone do kopert. |
-| Przydział | `allocation` | Przypisanie kwoty z puli do koperty w danym okresie. |
-| Wydatek | `expense` | Transakcja zmniejszająca saldo jednej lub kilku kopert. |
-| Podział wydatku | `expense_split` | Część wydatku przypisana do konkretnej koperty. |
-| Przesunięcie | `envelope_transfer` | Przeniesienie środków między kopertami. |
+| Pojęcie (PL)       | Nazwa w kodzie (EN) | Znaczenie                                                 |
+| ------------------ | ------------------- | --------------------------------------------------------- |
+| Budżet             | `budget`            | Wspólna przestrzeń danych jednego gospodarstwa domowego.  |
+| Członek budżetu    | `budget_member`     | Użytkownik z dostępem do budżetu i przypisaną rolą.       |
+| Zaproszenie        | `invitation`        | Sposób dołączenia nowej osoby do istniejącego budżetu.    |
+| Koperta            | `envelope`          | Cel wydatków, do którego przydziela się środki.           |
+| Okres              | `period`            | Miesiąc rozliczeniowy.                                    |
+| Przychód           | `income`            | Wpływ środków, który zwiększa pulę do rozdysponowania.    |
+| Do rozdysponowania | `unallocated`       | Środki, które nie zostały jeszcze przydzielone do kopert. |
+| Przydział          | `allocation`        | Przypisanie kwoty z puli do koperty w danym okresie.      |
+| Wydatek            | `expense`           | Transakcja zmniejszająca saldo jednej lub kilku kopert.   |
+| Podział wydatku    | `expense_split`     | Część wydatku przypisana do konkretnej koperty.           |
+| Przesunięcie       | `envelope_transfer` | Przeniesienie środków między kopertami.                   |
 
 ## Etapy rozwoju
 
 1. **MVP (web):** konta użytkowników, budżety i zaproszenia, koperty, przychody i ich rozdział, wydatki z podziałem na koperty, podsumowanie miesiąca, wdrożenie jako PWA.
-2. **Rozszerzenia:** przesunięcia między kopertami, przenoszenie reszty na kolejny okres, wydatki cykliczne, wykresy i historia.
+2. **Rozszerzenia:** przesunięcia między kopertami, zwrot niewykorzystanej reszty z koperty do puli na koniec miesiąca, wydatki cykliczne, wykresy i historia.
 3. **AI:** analiza zdjęć paragonów i faktur oraz propozycja koperty lub podziału, zatwierdzana przez użytkownika.
 4. **Mobile:** natywna aplikacja na iOS (Android jako opcja), korzystająca z tego samego backendu.
 
-Szczegółowy zakres MVP opisuje [docs/prd.md](docs/prd.md).
+Szczegółowy zakres MVP opisuje [docs/prd.md](docs/prd.md), a podział na zadania [docs/backlog.md](docs/backlog.md).
 
 ## Architektura
 
@@ -89,11 +89,11 @@ Szczegóły i uzasadnienia decyzji: [docs/architecture.md](docs/architecture.md)
 
 - Vitest (testy jednostkowe), Playwright (testy E2E)
 - GitHub Actions (CI)
-- Hosting: darmowy plan dla frontendu (Vercel, Netlify lub Cloudflare Pages, do decyzji) oraz Supabase Free
+- Hosting: Cloudflare Pages (frontend) oraz Supabase Free
 
 ## Struktura repozytorium
 
-Docelowa struktura (powstaje w fazie 0):
+Struktura (przygotowana w fazie 0):
 
 ```
 .
@@ -110,9 +110,12 @@ Docelowa struktura (powstaje w fazie 0):
 ├── docs/
 │   ├── prd.md            # wymagania produktowe
 │   ├── architecture.md   # architektura i model danych
+│   ├── backlog.md        # plan prac MVP (vertical slices)
 │   ├── adr/              # Architecture Decision Records
 │   └── prompts/          # prompty wykorzystywane w pracy z agentem
+├── scripts/              # skrypty projektu (np. kontrola .ai/)
 ├── .github/              # CI, szablon PR
+├── .vite-hooks/          # hook pre-commit (vp staged)
 ├── AGENTS.md             # instrukcje dla agentów kodujących
 ├── CLAUDE.md             # importuje AGENTS.md (dla Claude Code)
 └── README.md
@@ -122,14 +125,32 @@ W przyszłości dojdzie `apps/ios/` albo osobne repozytorium aplikacji mobilnej.
 
 ## Uruchomienie lokalne
 
-> Sekcja zostanie uzupełniona po przygotowaniu szkieletu projektu.
-
 Wymagania wstępne:
 
-- [Vite+](https://viteplus.dev) (komenda `vp`)
-- [Bun](https://bun.sh) (menedżer pakietów)
-- [Supabase CLI](https://supabase.com/docs/guides/local-development)
-- Docker (wymagany przez lokalne środowisko Supabase)
+- [Vite+](https://viteplus.dev) (globalna komenda `vp`); Node.js i Bun w wersjach z `package.json` Vite+ pobiera automatycznie,
+- Docker (np. [OrbStack](https://orbstack.dev) lub Docker Desktop), wymagany przez lokalne środowisko Supabase.
+
+Supabase CLI jest zależnością deweloperską projektu, więc nie trzeba go instalować osobno.
+
+```bash
+vp install                         # zależności (Bun)
+vp exec supabase start             # lokalny Supabase w Dockerze
+cp apps/web/.env.example apps/web/.env.local
+vp exec supabase status            # wpisz API_URL i PUBLISHABLE_KEY do apps/web/.env.local
+vp dev                             # aplikacja na http://localhost:5173
+```
+
+Weryfikacja zmian:
+
+```bash
+vp check                           # formatowanie, lint, typy
+vp test                            # testy jednostkowe (Vitest)
+vp run check:ai                    # spójność katalogu .ai/
+vp build                           # build produkcyjny
+vp exec supabase test db           # testy bazy (pgTAP)
+```
+
+Pełna lista komend: [AGENTS.md](AGENTS.md#komendy).
 
 ## Proces wytwórczy (AI-assisted SDLC)
 

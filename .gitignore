@@ -124,3 +124,9 @@ xcuserdata/
 DerivedData/
 *.xcuserstate
 .build/
+
+# =============================================================================
+# Local overrides and agent worktrees
+# =============================================================================
+*.local
+.claude/worktrees/

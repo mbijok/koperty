@@ -1,0 +1,1 @@
+-- Local test data loaded by `supabase db reset`. Fake data only: no real personal or financial data.
