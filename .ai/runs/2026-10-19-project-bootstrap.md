@@ -79,7 +79,12 @@ Po każdym etapie punkt kontrolny i akceptacja użytkownika; commit po każdym e
 
 ### Etap 4. Architektura i decyzje
 
-- **Co zrobiono:** rozpoczęto `docs/architecture.md` i ADR 0000–0007.
+- **Co zrobiono:**
+  - `docs/architecture.md`: diagram komponentów, diagram ER (profiles, budgets, budget_members, invitations, envelopes, incomes, allocations, expenses, expense_splits), strategia RLS, lista RPC z odwołaniami do US, Edge Function `delete-account`, zasady wersjonowania API,
+  - `docs/adr/0000-template.md` i ADR 0001–0007 (status: zaakceptowany),
+  - `AGENTS.md`: dopisana reguła „zapis wyłącznie przez RPC” (z ADR 0003).
+- **Decyzje (do akceptacji w przeglądzie):** zapis wyłącznie przez RPC `security definer`, odczyt przez RLS `select`; spójność budżetu przez złożone klucze obce; suma części wydatku pilnowana odroczonym triggerem; tokeny zaproszeń przechowywane jako hash; `profiles.display_name` do pokazywania autora.
+- **Otwarte:** źródło nazwy wyświetlanej autora; propozycje nowych ADR (hosting Cloudflare Pages, logowanie bez haseł).
 
 ## Decyzje i założenia
 

@@ -96,6 +96,7 @@ Katalog `.ai/` to wspólna, wersjonowana pamięć projektu dla wszystkich agent�
 
 - Reguły domenowe (przydziały, salda, przesunięcia, walidacje kwot) realizuj w Postgresie: funkcje wywoływane przez RPC, ograniczenia (`CHECK`, klucze obce), triggery tam, gdzie to uzasadnione. Operacje wieloetapowe muszą być atomowe (jedna funkcja, jedna transakcja).
 - Klient (web, w przyszłości iOS) tylko wywołuje te funkcje i prezentuje wyniki. Nie powielaj reguł domenowych w komponentach React. Walidacja w UI służy wyłącznie wygodzie użytkownika.
+- Zapis danych budżetu odbywa się wyłącznie przez funkcje RPC (`security definer`, `set search_path = ''`, z jawnym sprawdzeniem `auth.uid()` i roli w budżecie). Tabele nie mają polityk zapisu, a odczyt idzie przez polityki RLS `select` ([ADR 0003](docs/adr/0003-business-logic-in-database.md)).
 - Logika wymagająca sekretów lub zewnętrznych API (np. model AI w etapie 3) trafia do Edge Functions.
 - Salda kopert wyliczaj z historii operacji (widoki lub funkcje), zamiast przechowywać je jako ręcznie edytowalne pola. Odstępstwo wymaga ADR.
 
