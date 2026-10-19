@@ -27,7 +27,7 @@
 - [ ] Specyfikacja ma status `implemented`, uzupełnione podsumowanie realizacji i leży w `.ai/specs/implemented/`
 - [ ] Log przebiegu w `.ai/runs/` jest kompletny i ma status końcowy
 - [ ] Wnioski (naprawione błędy, korekty podejścia, nieoczywiste zachowania narzędzi) zapisane w `.ai/lessons/` i podlinkowane w `.ai/lessons.md`
-- [ ] `vp node scripts/check-ai.ts` przechodzi
+- [ ] `vp run check:ai` przechodzi
 
 **Dokumentacja i bezpieczeństwo**
 

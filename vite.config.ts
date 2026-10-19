@@ -52,6 +52,12 @@ export default defineConfig({
   test: {
     projects: ["apps/*", { test: { name: "scripts", include: ["scripts/**/*.test.ts"] } }],
   },
+  // Pre-commit checks (.vite-hooks/pre-commit runs `vp staged`); full test suites run in CI.
+  staged: {
+    "*": "vp check --fix",
+    // The checker validates the whole directory, so it must not receive staged file paths.
+    ".ai/**": () => "vp run check:ai",
+  },
   run: {
     cache: true,
   },

@@ -142,7 +142,7 @@ Weryfikacja zmian:
 ```bash
 vp check                           # formatowanie, lint, typy
 vp test                            # testy jednostkowe (Vitest)
-vp node scripts/check-ai.ts        # spójność katalogu .ai/
+vp run check:ai                    # spójność katalogu .ai/
 vp build                           # build produkcyjny
 vp exec supabase test db           # testy bazy (pgTAP)
 ```

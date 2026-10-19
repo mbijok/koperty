@@ -151,6 +151,12 @@ Po każdym etapie punkt kontrolny i akceptacja użytkownika; commit po każdym e
 - **Problem:** `run-install` w setup-vp przyjmuje tekst YAML (`run-install: |`), a nie mapę – poprawione przed walidacją.
 - **Do decyzji użytkownika:** testy bazy w CI (rekomendacja: tak, osobne zadanie z `supabase db start`), kontrola przed commitem (`staged`).
 
+- Commit `3b3e647`. Użytkownik zaakceptował obie rekomendacje (testy bazy w CI, kontrola przed commitem).
+- **Testy bazy w CI:** zadanie `db` w `ci.yml` (setup-vp + `vp install --frozen-lockfile`, `vp exec supabase db start`, `vp exec supabase test db`). Lokalnie zweryfikowano świeży start (`supabase stop --no-backup`, `db start` stosuje migracje i seed, `test db` PASS, 32 s).
+- **Pre-commit:** blok `staged` w głównym `vite.config.ts` (`"*": "vp check --fix"`, `".ai/**": () => "vp run check:ai"`), `.vite-hooks/pre-commit` (`vp staged`), skrypty `prepare` (`vp config --no-agent`) i `check:ai` w `package.json`; `vp config --no-agent` zainstalował dispatcher (`core.hooksPath = .vite-hooks/_`).
+- **Problem:** w hooku `vp node` → `Command 'node' not found` (lokalne CLI nie ma `vp node`). Rozwiązanie: skrypt `check:ai` i `vp run check:ai` w hooku, CI, README, AGENTS.md i szablonie PR. Test negatywny: commit z `.ai/runs/bad-name.md` zablokowany komunikatem o nazwie pliku. Wniosek: `.ai/lessons/2026-10-19-vite-plus-hooks-local-cli.md`.
+- Walidacja workflow (`@action-validator/cli`) – exit 0; `vp check` pass.
+
 ## Decyzje i założenia
 
 - `docs/prompts/00-bootstrap.md` pełni rolę zatwierdzonej specyfikacji całej fazy 0; osobne specyfikacje dla etapów 5–6 nie powstają (decyzja użytkownika).

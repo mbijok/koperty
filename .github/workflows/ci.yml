@@ -29,7 +29,7 @@ jobs:
             - args: ['--frozen-lockfile']
 
       - name: Check .ai/ project memory
-        run: vp node scripts/check-ai.ts
+        run: vp run check:ai
 
       - name: Format, lint, types
         run: vp check
@@ -39,3 +39,24 @@ jobs:
 
       - name: Build
         run: vp build
+
+  db:
+    name: Database tests (pgTAP)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      # Supabase CLI is a dev dependency, so `vp install` provides it.
+      - uses: voidzero-dev/setup-vp@68f39c78aaf39be468cabd2afb09c162574c84af # v1.21.2
+        with:
+          cache: true
+          run-install: |
+            - args: ['--frozen-lockfile']
+
+      # Only Postgres is needed for pgTAP; a fresh start applies migrations and seed.sql.
+      - name: Start local database
+        run: vp exec supabase db start
+
+      - name: pgTAP tests
+        run: vp exec supabase test db

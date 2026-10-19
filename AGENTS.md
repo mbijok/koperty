@@ -146,24 +146,25 @@ Katalog `.ai/` to wspólna, wersjonowana pamięć projektu dla wszystkich agent�
 
 Wszystkie komendy uruchamiasz z katalogu głównego repozytorium. Komendy Supabase wymagają działającego Dockera.
 
-| Cel                                                        | Komenda                                                                              |
-| ---------------------------------------------------------- | ------------------------------------------------------------------------------------ |
-| Instalacja zależności (przez Bun)                          | `vp install`                                                                         |
-| Dodanie / usunięcie zależności aplikacji                   | `vp -C apps/web add <pakiet>` / `vp -C apps/web remove <pakiet>` (`-D` dla dev)      |
-| Dodanie zależności narzędziowej do katalogu głównego       | `vp add -D <pakiet>`                                                                 |
-| Jednorazowe uruchomienie narzędzia                         | `vp dlx <pakiet>`                                                                    |
-| Dodanie komponentu shadcn/ui                               | `vp -C apps/web dlx shadcn@latest add <komponent>`                                   |
-| Serwer deweloperski                                        | `vp dev` (z dodatkowymi flagami: `vp -C apps/web dev --port <port>`)                 |
-| Formatowanie, lint, typy                                   | `vp check` (poprawki: `vp check --fix`)                                              |
-| Testy jednostkowe                                          | `vp test`                                                                            |
-| Kontrola katalogu `.ai/` (nazwy, statusy, indeks wniosków) | `vp node scripts/check-ai.ts`                                                        |
-| Build produkcyjny                                          | `vp build`                                                                           |
-| Lokalny Supabase (start / stop / adresy i klucze)          | `vp exec supabase start` / `vp exec supabase stop` / `vp exec supabase status`       |
-| Nowa migracja                                              | `vp exec supabase migration new <nazwa>`                                             |
-| Odtworzenie bazy z migracji i seed                         | `vp exec supabase db reset`                                                          |
-| Testy bazy (pgTAP)                                         | `vp exec supabase test db`                                                           |
-| Generowanie typów                                          | `vp exec supabase gen types typescript --local > apps/web/src/lib/database.types.ts` |
-| Testy E2E                                                  | do ustalenia                                                                         |
+| Cel                                                              | Komenda                                                                                         |
+| ---------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| Instalacja zależności (przez Bun)                                | `vp install`                                                                                    |
+| Dodanie / usunięcie zależności aplikacji                         | `vp -C apps/web add <pakiet>` / `vp -C apps/web remove <pakiet>` (`-D` dla dev)                 |
+| Dodanie zależności narzędziowej do katalogu głównego             | `vp add -D <pakiet>`                                                                            |
+| Jednorazowe uruchomienie narzędzia                               | `vp dlx <pakiet>`                                                                               |
+| Dodanie komponentu shadcn/ui                                     | `vp -C apps/web dlx shadcn@latest add <komponent>`                                              |
+| Serwer deweloperski                                              | `vp dev` (z dodatkowymi flagami: `vp -C apps/web dev --port <port>`)                            |
+| Formatowanie, lint, typy                                         | `vp check` (poprawki: `vp check --fix`)                                                         |
+| Testy jednostkowe                                                | `vp test`                                                                                       |
+| Kontrola katalogu `.ai/` (nazwy, statusy, indeks wniosków)       | `vp run check:ai`                                                                               |
+| Hook pre-commit (`vp staged`: `vp check --fix`, kontrola `.ai/`) | instalowany przez `vp install` (skrypt `prepare` → `vp config`); wyłączenie: `vp hooks disable` |
+| Build produkcyjny                                                | `vp build`                                                                                      |
+| Lokalny Supabase (start / stop / adresy i klucze)                | `vp exec supabase start` / `vp exec supabase stop` / `vp exec supabase status`                  |
+| Nowa migracja                                                    | `vp exec supabase migration new <nazwa>`                                                        |
+| Odtworzenie bazy z migracji i seed                               | `vp exec supabase db reset`                                                                     |
+| Testy bazy (pgTAP)                                               | `vp exec supabase test db`                                                                      |
+| Generowanie typów                                                | `vp exec supabase gen types typescript --local > apps/web/src/lib/database.types.ts`            |
+| Testy E2E                                                        | do ustalenia                                                                                    |
 
 ## Testy
 

@@ -1,5 +1,5 @@
 // Validates the .ai/ project memory against the rules in AGENTS.md ("Katalog .ai/").
-// Usage: vp node scripts/check-ai.ts [aiDir]   (exit code 1 when problems are found)
+// Usage: vp run check:ai  (or: node scripts/check-ai.ts [aiDir])   (exit code 1 when problems are found)
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
 

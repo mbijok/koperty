@@ -21,6 +21,7 @@ Przed dodaniem sprawdź, czy podobny wniosek już istnieje; jeśli tak, zaktuali
 ## Vite+
 
 - W monorepo trzymaj w głównym `vite.config.ts` `test.projects` i `defaultPackage`; komendy z flagami kieruj przez `vp -C apps/web`; nie używaj `-w` z Bun. ([szczegóły](lessons/2026-10-19-vite-plus-monorepo-root-commands.md))
+- W hookach, skryptach i CI wywołuj komendy przez `vp run <skrypt>`; `vp node` i `vp env` istnieją tylko w globalnym CLI. ([szczegóły](lessons/2026-10-19-vite-plus-hooks-local-cli.md))
 - Po `vp create` popraw import `defineConfig` (z `vite-plus`), usuń blok `lint` z pakietu i włącz `strict`. ([szczegóły](lessons/2026-10-19-vite-plus-app-template-fixes.md))
 
 ## Testy
