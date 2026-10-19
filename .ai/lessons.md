@@ -28,6 +28,8 @@ Przed dodaniem sprawdź, czy podobny wniosek już istnieje; jeśli tak, zaktuali
 
 ## Testy
 
+- Instaluj `@vitest/coverage-v8` w wersji Vitest wbudowanego w Vite+, wyłączaj pluginy aplikacji pod Vitest (fałszywe gałęzie HMR) i przed ponownym importem modułu wywołuj `vi.resetModules()`. ([szczegóły](lessons/2026-10-19-vitest-coverage-vite-plus.md))
+
 ## Proces
 
 - Pracując w worktree, na starcie powiedz, gdzie trafiają zmiany i jak dotrą do `master`; sprawdzaj wartości wyprowadzane z nazwy katalogu. ([szczegóły](lessons/2026-10-19-worktree-session-location.md))

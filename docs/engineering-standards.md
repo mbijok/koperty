@@ -1,6 +1,6 @@
 # Standardy inżynieryjne
 
-> **Status:** propozycja do przeglądu (2026-10-19). Wdrożone po akceptacji: P-01 (konfiguracja; migracja w S-01), P-02, P-04 (doradcy; kontrola typów w S-01), P-05, P-06, P-12 (`sfw`), a S-01 zaktualizowana o P-01, P-02, P-03 i P-07. Sekcje 3–4 oraz pozostałe propozycje czekają na przegląd. Dokument rozwija zasady z [AGENTS.md](../AGENTS.md), które pozostają nadrzędne. Źródła researchu: sekcja 6.
+> **Status:** sekcje 3–4 zatwierdzone (2026-10-19) i obowiązujące dla wszystkich agentów i ludzi; sekcja 5 to propozycje, wdrażane dopiero po akceptacji. Wdrożone po akceptacji: P-01 (konfiguracja; migracja w S-01), P-02, P-04 (doradcy; kontrola typów w S-01), P-05, P-06, P-12 (`sfw`, ochrona `master`, kontrola tytułu PR), a S-01 zaktualizowana o P-01, P-02, P-03 i P-07. Dokument rozwija zasady z [AGENTS.md](../AGENTS.md), które pozostają nadrzędne. Źródła researchu: sekcja 6.
 
 ## 1. Cel
 
@@ -33,7 +33,7 @@ Ustalić, jak budujemy aplikację w obecnym stacku, żeby kod pisany przez róż
 - Każde zadanie z [backlogu](backlog.md) to osobna gałąź `feat/<slug>` od `master` i osobny PR; jeden PR realizuje jedną specyfikację.
 - PR-y są małe: orientacyjnie do 400 zmienionych linii bez plików generowanych (`routeTree.gen.ts`, `database.types.ts`, `bun.lock`). Większe zadanie dzielimy na kroki ze specyfikacji.
 - Scalanie przez **squash merge**; tytuł PR w formacie Conventional Commits, bo staje się wiadomością commita na `master`.
-- `master` jest chroniony: wymagane zielone zadania CI (`Check, test, build`, `Database tests (pgTAP)`), brak bezpośrednich pushy.
+- `master` jest chroniony: wymagane zielone zadania CI (`Check, test, build`, `Database tests (pgTAP)`, `PR title`), brak bezpośrednich pushy.
 - Specyfikacja, log przebiegu i wnioski są częścią PR (szablon `.github/pull_request_template.md`).
 
 ### 3.2. Bramki jakości
@@ -41,7 +41,7 @@ Ustalić, jak budujemy aplikację w obecnym stacku, żeby kod pisany przez róż
 | Gdzie                    | Co                                                                                                                                                |
 | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------- |
 | pre-commit (`vp staged`) | `vp check --fix` na zmienionych plikach, `vp run check:ai` przy zmianach w `.ai/`                                                                 |
-| CI – web                 | `vp run check:ai`, `vp check`, `vp test`, `vp build`                                                                                              |
+| CI – web                 | `vp run check:ai`, `vp check`, `vp test --coverage` (100% pokrycia na plik), `vp build`                                                           |
 | CI – baza                | `supabase db start`, `supabase test db`; po [P-04](#5-propozycje-zmian) także doradcy bezpieczeństwa i wydajności oraz kontrola aktualności typów |
 | Przegląd PR              | checklista Definition of Done z szablonu PR                                                                                                       |
 
@@ -62,6 +62,7 @@ Ustalić, jak budujemy aplikację w obecnym stacku, żeby kod pisany przez róż
 - Typy danych z bazy tylko z wygenerowanego `Database` (`Tables<"envelopes">`, `Functions<"create_expense">["Args"]`); nie przepisujemy ich ręcznie.
 - Importy przez alias `@/`; bez głębokich ścieżek względnych (`../../`). Eksporty nazwane; pliki tras eksportują `Route`.
 - Nazwy plików `kebab-case`, komponenty `PascalCase`, hooki `useX`, fabryki zapytań `xQueryOptions`.
+- Lint egzekwuje: `typescript/no-explicit-any`, `typescript/no-non-null-assertion`, `import/no-relative-parent-imports` (importy z katalogów nadrzędnych tylko przez `@/`), `import/no-default-export` (wyjątek: pliki konfiguracji narzędzi, np. `vite.config.ts`) i `unicorn/filename-case` (`kebab-case`). Pozostałe konwencje z tej sekcji sprawdza przegląd PR.
 
 ### 4.2. Struktura frontendu
 
@@ -127,7 +128,7 @@ apps/web/src/
 
 - **pgTAP:** plik na tabelę lub funkcję (`supabase/tests/<obszar>.test.sql`), struktura `begin; plan(n); … finish(); rollback;`. Dane przygotowujemy helperami jako właściciel bazy, działania wykonujemy jako `authenticated` przez `tests.authenticate_as(...)`. Asercje: `results_eq`, `is_empty`, `throws_ok(sql, 'PT409', 'ENVELOPE_ARCHIVED')`, `lives_ok`.
 - **Testy niezmienników** (jeden plik, uruchamiany zawsze): każda tabela w `public` ma RLS; żadna funkcja w `public` nie jest wykonywalna przez `anon`; każda funkcja `security definer` ma ustawione `search_path`.
-- **Vitest:** testy obok kodu (`money.test.ts`), funkcje czyste, przypadki tablicowe `it.each`; bez mockowania Supabase w testach logiki.
+- **Vitest:** testy obok kodu (`money.test.ts`), funkcje czyste, przypadki tablicowe `it.each`; bez mockowania Supabase w testach logiki. Wyjątek: test modułu infrastruktury, który tylko tworzy klienta (np. `lib/supabase.ts`), może zastąpić konstruktor SDK mockiem.
 - **Komponenty i E2E:** po T-01 – tryb przeglądarkowy Vitest dla komponentów z logiką interakcji, Playwright dla ścieżek użytkownika; tylko fikcyjne dane; kod OTP z API Mailpit.
 
 ### 4.9. Lint i formatowanie
@@ -159,6 +160,8 @@ Priorytety: **teraz** – przed rozpoczęciem S-01 (małe zmiany, zweryfikowane 
 | P-16 | Idempotentne funkcje tworzące (`p_id uuid` generowany przez klienta), żeby ponowienie żądania z telefonu nie zdublowało wydatku                                                                                                                                                                                                                                       | S-06                                                     | nie (wzorzec w architekturze)                   | ważne przy słabym zasięgu i w przyszłej aplikacji iOS                                                                                                                                                 |
 
 **Wdrożone 2026-10-19 (PR #1):** P-01 (config), P-02 (architektura, ADR 0003, AGENTS.md), P-04 (advisors w CI), P-05, P-06, P-12 (`sfw`) oraz aktualizacja specyfikacji S-01 o P-01, P-02, P-03 i P-07. Ochrona `master` (P-12) wymaga GitHub Pro albo repozytorium publicznego – w planie Free dla repozytoriów prywatnych reguły nie są dostępne.
+
+**Wdrożone 2026-10-19 (PR #2):** próg 100% pokrycia testami jednostkowymi w CI, reguły lintu z sekcji 4.1, kontrola tytułu PR w formacie Conventional Commits (workflow `pr-title.yml`, P-12). `master` chroni ruleset „Master branch lock”: PR, squash merge, wymagane zadania `Check, test, build`, `Database tests (pgTAP)` i `PR title`.
 
 ## 6. Źródła
 

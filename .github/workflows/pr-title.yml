@@ -1,0 +1,27 @@
+name: PR title
+
+# Separate from ci.yml: it must also run when only the title is edited.
+on:
+  pull_request:
+    types: [opened, edited, reopened, synchronize]
+
+permissions: {}
+
+jobs:
+  title:
+    name: PR title
+    runs-on: ubuntu-latest
+    timeout-minutes: 1
+    steps:
+      # The title becomes the squash commit message on master (docs/engineering-standards.md, 3.1).
+      # It is passed through env, never interpolated into the script, to prevent script injection.
+      - name: Check Conventional Commits format
+        env:
+          TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          pattern='^(feat|fix|chore|docs|refactor|test|ci|build|perf|style|revert)(\([a-z0-9-]+\))?!?: .+'
+          if [[ ! "$TITLE" =~ $pattern ]]; then
+            echo "::error::PR title must follow Conventional Commits, e.g. 'feat(envelopes): add allocation rpc'. Got: $TITLE"
+            exit 1
+          fi
+          echo "PR title OK: $TITLE"

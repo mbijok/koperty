@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Instrukcje dla agentów kodujących pracujących w tym repozytorium. Opis produktu i kontekst znajdziesz w [README.md](README.md), wymagania w [docs/prd.md](docs/prd.md), architekturę w [docs/architecture.md](docs/architecture.md), uzasadnienia decyzji w [docs/adr/](docs/adr/), a plan prac w [docs/backlog.md](docs/backlog.md). Specyfikacje, logi przebiegów i wnioski z pracy agentów znajdują się w katalogu `.ai/` (zasady w sekcji „Katalog `.ai/`” poniżej).
+Instrukcje dla agentów kodujących pracujących w tym repozytorium. Opis produktu i kontekst znajdziesz w [README.md](README.md), wymagania w [docs/prd.md](docs/prd.md), architekturę w [docs/architecture.md](docs/architecture.md), uzasadnienia decyzji w [docs/adr/](docs/adr/), plan prac w [docs/backlog.md](docs/backlog.md), a obowiązujące standardy kodu i wzorce w [docs/engineering-standards.md](docs/engineering-standards.md). Specyfikacje, logi przebiegów i wnioski z pracy agentów znajdują się w katalogu `.ai/` (zasady w sekcji „Katalog `.ai/`” poniżej).
 
 Ten plik jest jedynym źródłem zasad projektu dla wszystkich agentów (Claude Code, Codex, Cursor i innych). Pliki specyficzne dla narzędzi, takie jak `CLAUDE.md`, tylko go importują i dodają mechanikę danego narzędzia. Nowe zasady projektu dopisuj wyłącznie tutaj.
 
@@ -20,6 +20,7 @@ Aplikacja webowa do budżetu domowego metodą kopertową. Wiele niezależnych bu
 ## Sposób pracy
 
 - Na początku każdej sesji przeczytaj `.ai/lessons.md` i stosuj zapisane tam wnioski.
+- Stosuj sekcje 3–4 [docs/engineering-standards.md](docs/engineering-standards.md) (przepływ pracy, bramki jakości, bezpieczeństwo, coding standards i wzorce); są obowiązujące. Sekcja 5 zawiera propozycje, które wdrażasz dopiero po mojej akceptacji. Przy sprzeczności z tym plikiem obowiązuje ten plik, a sprzeczność zgłoś.
 - Przed zmianą przeczytaj dokumenty powiązane z zadaniem. Nie zgaduj wymagań: jeśli czegoś brakuje albo coś jest niejasne, zapytaj.
 - Funkcjonalności i zmiany nietrywialne realizujesz wyłącznie na podstawie zatwierdzonej specyfikacji w `.ai/specs/`. Pozostałe zadania wieloetapowe zaczynasz od przedstawienia planu (zakres zmian, pliki, testy, ryzyka) i czekasz na akceptację.
 - Pracuj małymi krokami. Każdy krok kończy się działającym kodem i zielonymi testami.
@@ -158,6 +159,7 @@ Wszystkie komendy uruchamiasz z katalogu głównego repozytorium. Komendy Supaba
 | Serwer deweloperski                                              | `vp dev` (z dodatkowymi flagami: `vp -C apps/web dev --port <port>`)                            |
 | Formatowanie, lint, typy                                         | `vp check` (poprawki: `vp check --fix`)                                                         |
 | Testy jednostkowe                                                | `vp test`                                                                                       |
+| Testy jednostkowe z progiem pokrycia 100% (jak w CI)             | `vp test --coverage`                                                                            |
 | Kontrola katalogu `.ai/` (nazwy, statusy, indeks wniosków)       | `vp run check:ai`                                                                               |
 | Hook pre-commit (`vp staged`: `vp check --fix`, kontrola `.ai/`) | instalowany przez `vp install` (skrypt `prepare` → `vp config`); wyłączenie: `vp hooks disable` |
 | Build produkcyjny                                                | `vp build`                                                                                      |
@@ -173,6 +175,7 @@ Wszystkie komendy uruchamiasz z katalogu głównego repozytorium. Komendy Supaba
 - Każda reguła domenowa ma testy na poziomie bazy (pgTAP), łącznie z przypadkami brzegowymi: zera, kwoty ujemne, przekroczenie puli, zaokrąglenia przy podziale.
 - Każda tabela z danymi budżetu ma testy RLS potwierdzające, że członek budżetu A nie widzi ani nie modyfikuje danych budżetu B, a osoba niezalogowana nie ma dostępu do niczego.
 - Logikę po stronie frontendu (formatowanie, mapowanie danych, hooki) testuj w Vitest.
+- Każda nowa funkcja i każdy zmieniony kod TypeScript (moduły, funkcje, hooki, komponenty, skrypty) muszą mieć 100% pokrycia testami jednostkowymi we wszystkich metrykach: linie, gałęzie, funkcje i instrukcje. Próg jest liczony dla każdego pliku osobno i egzekwowany w CI przez `vp test --coverage`; zadanie z pokryciem poniżej 100% nie jest skończone. Wykluczenia z pomiaru (wyłącznie pliki generowane, komponenty shadcn/ui i punkt wejścia `main.tsx`) są w `test.coverage.exclude` w głównym `vite.config.ts`. Nowe wykluczenie lub komentarz wyłączający pomiar (`v8 ignore`) wymaga uzasadnienia i mojej zgody.
 - Kluczowe ścieżki użytkownika obejmij testami E2E (Playwright), gdy powstaną.
 - Testy piszesz na podstawie kryteriów akceptacji z PRD. Jeśli kryteria nie pozwalają jednoznacznie ustalić oczekiwanego wyniku, zapytaj.
 
@@ -180,7 +183,7 @@ Wszystkie komendy uruchamiasz z katalogu głównego repozytorium. Komendy Supaba
 
 Zadanie jest skończone, gdy:
 
-- `vp check`, `vp test` i `vp build` przechodzą bez błędów,
+- `vp check`, `vp test --coverage` (100% pokrycia) i `vp build` przechodzą bez błędów,
 - przy zmianach w bazie: `supabase db reset` i `supabase test db` przechodzą, a typy są wygenerowane na nowo,
 - nowa logika ma testy, w tym przypadki brzegowe i testy dostępu,
 - dokumentacja (PRD, architektura, ADR, ten plik) odzwierciedla wprowadzone zmiany,
@@ -193,6 +196,7 @@ Zadanie jest skończone, gdy:
 ## Git
 
 - Commity w formacie Conventional Commits, po angielsku (np. `feat(envelopes): add allocation rpc`).
+- Tytuł PR też w formacie Conventional Commits (przy squash merge staje się wiadomością commita na `master`); sprawdza go CI (`pr-title.yml`).
 - Praca na gałęziach (`feat/...`, `fix/...`, `chore/...`, `docs/...`), małe i spójne zmiany.
 - Nie commituj plików `.env`. Wymagane zmienne opisuj w `.env.example`.
 

@@ -43,11 +43,11 @@ Dla każdego kroku planu ze specyfikacji:
    - kwoty w groszach, daty jako `date`,
    - po zmianie schematu: `vp exec supabase db reset` i wygenerowanie typów (bez ręcznej edycji),
    - frontend tylko wywołuje RPC i prezentuje wyniki; dane przez TanStack Query z kluczami z jednego miejsca; teksty po polsku, mobile first.
-3. Weryfikacja kroku: `vp check`, `vp test`, `vp exec supabase test db`. Krok kończy się zielonymi testami.
+3. Weryfikacja kroku: `vp check`, `vp test --coverage` (100% pokrycia), `vp exec supabase test db`. Krok kończy się zielonymi testami.
 
 Jeśli okaże się, że trzeba odejść od specyfikacji: zatrzymaj się, zaktualizuj specyfikację, przywróć status `draft` i poproś o ponowną akceptację.
 
-Na koniec: `vp check`, `vp test`, `vp build`, `vp exec supabase db reset`, `vp exec supabase test db`, `vp run check:ai`.
+Na koniec: `vp check`, `vp test --coverage`, `vp build`, `vp exec supabase db reset`, `vp exec supabase test db`, `vp run check:ai`.
 
 **Punkt kontrolny:** czekam na podsumowanie i wyniki weryfikacji.
 
