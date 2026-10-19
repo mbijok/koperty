@@ -52,7 +52,29 @@ Po każdym etapie punkt kontrolny i akceptacja użytkownika; commit po każdym e
   mkdir -p .ai/specs/implemented .ai/specs/archive .ai/runs .ai/lessons
   git check-ignore -v .ai .ai/lessons.md   # brak dopasowań – .ai/ nie jest ignorowany
   ```
-- **Wynik:** struktura gotowa, `.ai/` nie jest ignorowany przez `.gitignore`.
+- **Wynik:** struktura gotowa, `.ai/` nie jest ignorowany przez `.gitignore`. Commit `9b0b75e`. Etap zaakceptowany przez użytkownika.
+
+### Etap 3. PRD na podstawie wywiadu
+
+- **Co zrobiono:** rozpoczęto wywiad; partia 1 pytań dotyczy „Otwartych decyzji” z `AGENTS.md` (koniec okresu, ujemne saldo, wiele budżetów, role, logowanie).
+- **Wynik partii 1 (decyzje użytkownika):**
+  - koniec okresu: saldo koperty zawsze przechodzi na kolejny miesiąc (saldo = suma historii),
+  - saldo koperty może być ujemne, z wyraźnym oznaczeniem w UI,
+  - jedna osoba może należeć do wielu budżetów (przełącznik budżetu),
+  - role: `owner` i `member`, możliwych kilku właścicieli,
+  - logowanie: e-mail z magic linkiem / OTP, bez haseł i bez OAuth w MVP.
+- Partia 2: zaproszenia, hosting, podział wydatku i zaokrąglenia, definicja okresu, doprecyzowania z partii 1.
+- **Wynik partii 2 (decyzje użytkownika):**
+  - zaproszenia: link z jednorazowym tokenem ważnym 7 dni, z możliwością unieważnienia,
+  - hosting frontendu: Cloudflare Pages,
+  - podział wydatku: kwoty części w groszach, suma musi równać się kwocie wydatku (wymusza baza); podpowiedzi procentowe/po równo tylko w UI; wydatek ma datę, opcjonalny opis, autora (automatycznie), edycję i usuwanie dla każdego członka,
+  - okres: miesiąc kalendarzowy; przydziały na przyszłe miesiące dozwolone,
+  - pula „do rozdysponowania” może być ujemna, z wyraźnym oznaczeniem w UI (zatem przydział nie jest ograniczony pulą),
+  - „przenoszenie reszty” (etap 2): opcjonalny zwrot niewykorzystanej reszty z koperty do puli na koniec miesiąca, konfigurowany per koperta.
+- **Wynik partii 3 (decyzje użytkownika):** otwarta rejestracja; koperta (nazwa, kolejność, archiwizacja) i przychód (kwota, data, opis, autor) w wersji minimalnej; podsumowanie miesiąca jako tabela per koperta + sumy i pula; wymagania niefunkcjonalne potwierdzone (WCAG 2.1 AA, mobile first od 360 px, PWA bez offline, < 2 s / < 500 ms, usunięcie konta z anonimizacją, tylko PLN); brak metryk produktowych.
+- Utworzono `docs/prd.md` (23 user stories US-01–US-23, reguły domenowe, NFR, ryzyka). Założenia, których wywiad nie rozstrzygnął, oznaczono w PRD jako [Z1]–[Z5] do potwierdzenia w przeglądzie.
+- Zaktualizowano `AGENTS.md`: sekcja „Otwarte decyzje” zamieniona na „Rozstrzygnięte decyzje” + odesłanie do założeń [Z1]–[Z5].
+- Zaktualizowano `README.md`: hosting (Cloudflare Pages) i opis „przenoszenia reszty” w etapie 2.
 
 ## Decyzje i założenia
 

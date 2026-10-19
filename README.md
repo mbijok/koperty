@@ -36,7 +36,7 @@ Dokumentacja i interfejs są po polsku, kod po angielsku. Poniższe nazwy obowi�
 ## Etapy rozwoju
 
 1. **MVP (web):** konta użytkowników, budżety i zaproszenia, koperty, przychody i ich rozdział, wydatki z podziałem na koperty, podsumowanie miesiąca, wdrożenie jako PWA.
-2. **Rozszerzenia:** przesunięcia między kopertami, przenoszenie reszty na kolejny okres, wydatki cykliczne, wykresy i historia.
+2. **Rozszerzenia:** przesunięcia między kopertami, zwrot niewykorzystanej reszty z koperty do puli na koniec miesiąca, wydatki cykliczne, wykresy i historia.
 3. **AI:** analiza zdjęć paragonów i faktur oraz propozycja koperty lub podziału, zatwierdzana przez użytkownika.
 4. **Mobile:** natywna aplikacja na iOS (Android jako opcja), korzystająca z tego samego backendu.
 
@@ -89,7 +89,7 @@ Szczegóły i uzasadnienia decyzji: [docs/architecture.md](docs/architecture.md)
 
 - Vitest (testy jednostkowe), Playwright (testy E2E)
 - GitHub Actions (CI)
-- Hosting: darmowy plan dla frontendu (Vercel, Netlify lub Cloudflare Pages, do decyzji) oraz Supabase Free
+- Hosting: Cloudflare Pages (frontend) oraz Supabase Free
 
 ## Struktura repozytorium
 

@@ -189,17 +189,21 @@ Zadanie jest skończone, gdy:
 - Praca na gałęziach (`feat/...`, `fix/...`, `chore/...`, `docs/...`), małe i spójne zmiany.
 - Nie commituj plików `.env`. Wymagane zmienne opisuj w `.env.example`.
 
+## Rozstrzygnięte decyzje
+
+Ustalone w [docs/prd.md](docs/prd.md). Zmiana którejkolwiek wymaga aktualizacji PRD (a dla decyzji architektonicznych także ADR):
+
+- niewykorzystane środki: saldo koperty w całości przechodzi na kolejny miesiąc (zwrot reszty do puli jako opcja per koperta – etap 2),
+- saldo koperty i pula „do rozdysponowania” mogą być ujemne; interfejs wyraźnie to oznacza,
+- jedna osoba może należeć do wielu budżetów,
+- role: `owner` (zarządza budżetem, członkami i zaproszeniami; może być kilku) i `member` (pełne operacje na kopertach, przychodach, przydziałach i wydatkach),
+- logowanie: e-mail z magic linkiem lub kodem OTP, bez haseł; dodanie dostawców OAuth (np. Google) wymaga także Sign in with Apple ze względu na aplikację iOS,
+- zaproszenia: jednorazowy link z tokenem ważnym 7 dni, z możliwością unieważnienia,
+- hosting frontendu: Cloudflare Pages.
+
 ## Otwarte decyzje
 
-Nie rozstrzygaj ich samodzielnie. Zostaną ustalone w PRD lub ADR:
-
-- co dzieje się z niewykorzystanymi środkami w kopercie na koniec okresu,
-- czy saldo koperty może być ujemne,
-- czy jedna osoba może należeć do kilku budżetów,
-- role członków budżetu i ich uprawnienia,
-- metody logowania (przy logowaniu przez Google lub innych dostawców wymagany będzie także Sign in with Apple ze względu na aplikację iOS),
-- mechanizm zaproszeń (link, kod lub oba),
-- dostawca hostingu frontendu.
+Nie rozstrzygaj ich samodzielnie. Założenia do potwierdzenia są oznaczone w [docs/prd.md](docs/prd.md) jako **[Z1]**–**[Z5]**.
 
 ## Czego nie robić
 
