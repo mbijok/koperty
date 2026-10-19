@@ -87,6 +87,39 @@ Po każdym etapie punkt kontrolny i akceptacja użytkownika; commit po każdym e
 - **Otwarte:** źródło nazwy wyświetlanej autora; propozycje nowych ADR (hosting Cloudflare Pages, logowanie bez haseł).
 - Commit `17942c3`. Przegląd użytkownika: nazwa wyświetlana = część e-maila przed `@`, zmienialna (dopisano US-24 w PRD i regułę w 4.11; `update_profile` → US-24); dodano ADR 0008 (Cloudflare Pages) i ADR 0009 (logowanie bez haseł). Architektura oznaczona jako zaakceptowana. Etap zaakceptowany.
 
+### Etap 5. Szkielet repozytorium
+
+- **Co zrobiono:** rozpoznanie przed implementacją (wymagane przez bootstrap): przeczytano dokumentację Vite+ (`llms-full.txt`: create, package management, monorepo, env) i wykonano próbne `vp create` w katalogu tymczasowym (poza repozytorium).
+- **Komendy:**
+  ```bash
+  curl -sSfL https://viteplus.dev/llms-full.txt -o vp.txt
+  vp create vite:monorepo --directory mono --package-manager bun --no-interactive --no-git --no-agent --no-editor --no-hooks
+  vp create vite:application --directory apps/web --no-interactive --no-agent --no-editor -- --template react-ts
+  ```
+- **Wynik:** szablon monorepo zapisuje `devEngines.packageManager` (bun 1.4.3), `catalog` z wersjami `vite-plus` i aliasem `vite` → `@voidzero-dev/vite-plus-core`, workspaces `apps/*`, `packages/*`, `tools/*` i przykładowe pakiety `apps/website`, `packages/utils`. Szablon aplikacji React tworzy `apps/web/vite.config.ts` z `defineConfig` z `vite` (nie `vite-plus`), własnym blokiem `lint` i bez `strict` w `tsconfig.app.json`. Przedstawiono plan użytkownikowi, czekam na akceptację.
+- **Akceptacja użytkownika:** plan, lista zależności, routing oparty na plikach, `VITE_SUPABASE_URL` / `VITE_SUPABASE_PUBLISHABLE_KEY`; użytkownik zainstalował OrbStack (`brew install --cask orbstack`).
+- **Co zrobiono (implementacja):**
+  - monorepo: `package.json` (workspaces `apps/*`, `packages/*`, `devEngines.packageManager` bun 1.4.3, `catalog`, `overrides` dla `vite` i `vitest@5.0.5`), główny `vite.config.ts` (lint + overrides React, fmt, `test.projects`, `defaultPackage`), `tsconfig.json`, wpisy `*.local` i `.claude/worktrees/` w `.gitignore`,
+  - `apps/web`: szablon `react-ts`, usunięte demo, `strict: true`, alias `@/`, `lang="pl"`, `vite.config.ts` z `vite-plus` (TanStack Router plugin, React, Tailwind, `test`),
+  - zależności: `@tanstack/react-router`, `@tanstack/router-plugin` (dev), `@tanstack/react-query`, `tailwindcss`, `@tailwindcss/vite`, `@supabase/supabase-js`; shadcn dodał `cn`, `radix-ui`, `shadcn`, `class-variance-authority`, `lucide-react`, `tw-animate-css`, `@fontsource-variable/geist` (odstępstwo od listy przedstawionej w planie: `cn` zamiast `clsx` + `tailwind-merge`, zweryfikowany – repozytorium shadcn-ui, brak skryptów instalacyjnych),
+  - routing plikowy: `src/routes/__root.tsx`, `src/routes/index.tsx` (przykładowa trasa z komponentem `Button`), `routeTree.gen.ts` commitowany, wykluczony z lint/fmt; `QueryClient` w `src/lib/query-client.ts`,
+  - `apps/web/.env.example`, `src/lib/supabase-config.ts` (walidacja zmiennych), `src/lib/supabase.ts` (klient), test Vitest `supabase-config.test.ts`,
+  - Supabase: `vp add -D supabase` (2.121.0), `supabase init` (`project_id = "koperty"`, `site_url` → 5173), `seed.sql`, test pgTAP `supabase/tests/000-infrastructure.test.sql`,
+  - README „Uruchomienie lokalne”, AGENTS.md: tabela komend i zasada konfiguracji Vite+ w monorepo,
+  - 5 wniosków w `.ai/lessons/` i indeks w `.ai/lessons.md`.
+- **Komendy weryfikacji:**
+  ```bash
+  vp check                      # pass: formatowanie, lint, typy (0 błędów, 0 ostrzeżeń)
+  vp test                       # 1 plik, 3 testy – pass
+  vp build                      # pass (defaultPackage → apps/web)
+  vp exec supabase start        # pass (OrbStack)
+  vp exec supabase db reset     # pass
+  vp exec supabase test db      # Files=1, Tests=3, Result: PASS
+  vp exec supabase gen types typescript --local   # działa (brak tabel)
+  vp dev                        # serwer na 5173, /src/main.tsx → 200
+  ```
+- **Problemy i rozwiązania:** `vp test` z katalogu głównego nie widział aliasu (→ `test.projects`); `vp build` z katalogu głównego wymagał celu (→ `defaultPackage`); `vp dev --port` ignoruje `defaultPackage` (→ `vp -C apps/web dev --port`); `vp add -w` nieobsługiwane przez Bun; shadcn wymagał presetu; fałszywe ostrzeżenia `react/only-export-components` dla tras i `components/ui` (wyłączone override'em). Szczegóły w wnioskach.
+
 ## Decyzje i założenia
 
 - `docs/prompts/00-bootstrap.md` pełni rolę zatwierdzonej specyfikacji całej fazy 0; osobne specyfikacje dla etapów 5–6 nie powstają (decyzja użytkownika).

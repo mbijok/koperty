@@ -126,7 +126,7 @@ Katalog `.ai/` to wspólna, wersjonowana pamięć projektu dla wszystkich agent�
 **Vite+**
 
 - Projekt używa Vite+, a nie samodzielnego Vite. Komendy uruchamiaj przez `vp`.
-- Konfiguracja jest w jednym pliku `vite.config.ts` z `defineConfig` importowanym z `vite-plus`. Nie twórz osobnych konfiguracji dla Oxlint, Oxfmt ani Vitest i nie dodawaj ESLint ani Prettier.
+- Repozytorium jest monorepo Vite+ (workspaces `apps/*`, `packages/*`). Konfiguracja jest w plikach `vite.config.ts` z `defineConfig` importowanym z `vite-plus`: główny `vite.config.ts` zawiera lint, formatowanie, `test.projects` i `defaultPackage`, a `vite.config.ts` pakietu (np. `apps/web`) tylko pluginy, aliasy i blok `test`. Ustawienia lintu i formatowania dla pakietów dodawaj przez `lint.overrides` / `fmt.overrides` w pliku głównym. Nie twórz osobnych konfiguracji dla Oxlint, Oxfmt ani Vitest i nie dodawaj ESLint ani Prettier.
 - Vite+ jest nowym narzędziem i Twoja wiedza o nim może być niepełna. W razie wątpliwości sprawdź dokumentację: https://viteplus.dev/llms-full.txt, zamiast zakładać konfigurację znaną z klasycznego Vite.
 
 **Menedżer pakietów: Bun**
@@ -144,23 +144,25 @@ Katalog `.ai/` to wspólna, wersjonowana pamięć projektu dla wszystkich agent�
 
 ## Komendy
 
-> Do zweryfikowania i uzupełnienia po przygotowaniu szkieletu projektu.
+Wszystkie komendy uruchamiasz z katalogu głównego repozytorium. Komendy Supabase wymagają działającego Dockera.
 
-| Cel | Komenda |
-|---|---|
-| Instalacja zależności (przez Bun) | `vp install` |
-| Dodanie / usunięcie zależności | `vp add <pakiet>` / `vp remove <pakiet>` (`-D` dla dev) |
-| Jednorazowe uruchomienie narzędzia | `vp dlx <pakiet>` |
-| Serwer deweloperski | `vp dev` |
-| Formatowanie, lint, typy | `vp check` (poprawki: `vp check --fix`) |
-| Testy jednostkowe | `vp test` |
-| Build produkcyjny | `vp build` |
-| Lokalny Supabase | `supabase start` |
-| Nowa migracja | `supabase migration new <nazwa>` |
-| Odtworzenie bazy z migracji i seed | `supabase db reset` |
-| Testy bazy (pgTAP) | `supabase test db` |
-| Generowanie typów | `supabase gen types typescript --local` |
-| Testy E2E | do ustalenia |
+| Cel                                                  | Komenda                                                                              |
+| ---------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| Instalacja zależności (przez Bun)                    | `vp install`                                                                         |
+| Dodanie / usunięcie zależności aplikacji             | `vp -C apps/web add <pakiet>` / `vp -C apps/web remove <pakiet>` (`-D` dla dev)      |
+| Dodanie zależności narzędziowej do katalogu głównego | `vp add -D <pakiet>`                                                                 |
+| Jednorazowe uruchomienie narzędzia                   | `vp dlx <pakiet>`                                                                    |
+| Dodanie komponentu shadcn/ui                         | `vp -C apps/web dlx shadcn@latest add <komponent>`                                   |
+| Serwer deweloperski                                  | `vp dev` (z dodatkowymi flagami: `vp -C apps/web dev --port <port>`)                 |
+| Formatowanie, lint, typy                             | `vp check` (poprawki: `vp check --fix`)                                              |
+| Testy jednostkowe                                    | `vp test`                                                                            |
+| Build produkcyjny                                    | `vp build`                                                                           |
+| Lokalny Supabase (start / stop / adresy i klucze)    | `vp exec supabase start` / `vp exec supabase stop` / `vp exec supabase status`       |
+| Nowa migracja                                        | `vp exec supabase migration new <nazwa>`                                             |
+| Odtworzenie bazy z migracji i seed                   | `vp exec supabase db reset`                                                          |
+| Testy bazy (pgTAP)                                   | `vp exec supabase test db`                                                           |
+| Generowanie typów                                    | `vp exec supabase gen types typescript --local > apps/web/src/lib/database.types.ts` |
+| Testy E2E                                            | do ustalenia                                                                         |
 
 ## Testy
 

@@ -35,13 +35,13 @@ flowchart LR
     ST -.-> DB
 ```
 
-| Komponent | Odpowiedzialność |
-|---|---|
-| Aplikacja webowa | Prezentacja, nawigacja, formularze z walidacją dla wygody, wywołania RPC i zapytań przez TanStack Query. Brak reguł domenowych. |
-| Supabase Auth | Konta i sesje (magic link / kod OTP, [ADR 0009](adr/0009-passwordless-email-auth.md)), JWT z `auth.uid()` używanym przez RLS. |
-| PostgREST | Odczyt tabel chronionych RLS i wywołania funkcji RPC. |
-| Postgres | Jedyne miejsce reguł domenowych: ograniczenia, funkcje RPC, triggery, RLS. |
-| Edge Functions | Operacje wymagające sekretów: w MVP tylko `delete-account` (usunięcie użytkownika z `auth.users` wymaga klucza `service_role`). |
+| Komponent        | Odpowiedzialność                                                                                                                          |
+| ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| Aplikacja webowa | Prezentacja, nawigacja, formularze z walidacją dla wygody, wywołania RPC i zapytań przez TanStack Query. Brak reguł domenowych.           |
+| Supabase Auth    | Konta i sesje (magic link / kod OTP, [ADR 0009](adr/0009-passwordless-email-auth.md)), JWT z `auth.uid()` używanym przez RLS.             |
+| PostgREST        | Odczyt tabel chronionych RLS i wywołania funkcji RPC.                                                                                     |
+| Postgres         | Jedyne miejsce reguł domenowych: ograniczenia, funkcje RPC, triggery, RLS.                                                                |
+| Edge Functions   | Operacje wymagające sekretów: w MVP tylko `delete-account` (usunięcie użytkownika z `auth.users` wymaga klucza `service_role`).           |
 | Cloudflare Pages | Hosting zbudowanej SPA (z przekierowaniem wszystkich ścieżek do `index.html`, [ADR 0008](adr/0008-frontend-hosting-cloudflare-pages.md)). |
 
 ## 2. Model danych
@@ -165,13 +165,13 @@ Obie porównują `budget_members.user_id` z `(select auth.uid())` (wywołanie w 
 
 ### Polityki per tabela
 
-| Tabela | `select` | Zapis |
-|---|---|---|
-| `profiles` | własny profil oraz profile osób, z którymi użytkownik dzieli budżet | RPC `update_profile` |
-| `budgets` | `is_budget_member(id)` | RPC (`create_budget`, `rename_budget`, `delete_budget`) |
-| `budget_members` | `is_budget_member(budget_id)` | RPC (zaproszenia, role, usuwanie, opuszczanie) |
-| `invitations` | `is_budget_owner(budget_id)` (kolumna `token_hash` niedostępna dla klientów) | RPC (`create_invitation`, `revoke_invitation`, `accept_invitation`) |
-| `envelopes`, `incomes`, `allocations`, `expenses`, `expense_splits` | `is_budget_member(budget_id)` | RPC (sekcja 4) |
+| Tabela                                                              | `select`                                                                     | Zapis                                                               |
+| ------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| `profiles`                                                          | własny profil oraz profile osób, z którymi użytkownik dzieli budżet          | RPC `update_profile`                                                |
+| `budgets`                                                           | `is_budget_member(id)`                                                       | RPC (`create_budget`, `rename_budget`, `delete_budget`)             |
+| `budget_members`                                                    | `is_budget_member(budget_id)`                                                | RPC (zaproszenia, role, usuwanie, opuszczanie)                      |
+| `invitations`                                                       | `is_budget_owner(budget_id)` (kolumna `token_hash` niedostępna dla klientów) | RPC (`create_invitation`, `revoke_invitation`, `accept_invitation`) |
+| `envelopes`, `incomes`, `allocations`, `expenses`, `expense_splits` | `is_budget_member(budget_id)`                                                | RPC (sekcja 4)                                                      |
 
 Osoba niezalogowana (`anon`) nie ma dostępu do żadnej tabeli ani funkcji RPC.
 
@@ -185,56 +185,56 @@ Konwencje: funkcje w schemacie `public`, nazwy `snake_case` w formie czasownik_r
 
 ### Budżety i członkostwo
 
-| Funkcja | Wejście | Wynik | Reguły | US |
-|---|---|---|---|---|
-| `create_budget` | `p_name text` | `uuid` | niepusta nazwa; wywołujący zostaje `owner` | US-04 |
-| `rename_budget` | `p_budget_id`, `p_name` | `void` | tylko `owner` | US-06 |
-| `delete_budget` | `p_budget_id` | `void` | tylko `owner`; kaskadowo usuwa dane | US-06 |
-| `create_invitation` | `p_budget_id` | `(invitation_id uuid, token text, expires_at timestamptz)` | tylko `owner`; losowy token (`gen_random_bytes`), w bazie tylko jego hash; ważny 7 dni; token zwracany jednorazowo | US-07 |
-| `revoke_invitation` | `p_invitation_id` | `void` | tylko `owner` budżetu zaproszenia | US-07 |
-| `accept_invitation` | `p_token text` | `uuid` (budget_id) | token ważny, niezużyty, nieunieważniony; dołącza jako `member` i zużywa token; jeśli już członek – zwraca budżet bez zużycia | US-08 |
-| `set_member_role` | `p_budget_id`, `p_user_id`, `p_role budget_role` | `void` | tylko `owner`; nie można odebrać roli ostatniemu właścicielowi | US-09 |
-| `remove_member` | `p_budget_id`, `p_user_id` | `void` | tylko `owner`; nie można usunąć ostatniego właściciela | US-09 |
-| `leave_budget` | `p_budget_id` | `void` | ostatni właściciel nie może opuścić budżetu | US-10 |
-| `update_profile` | `p_display_name text` | `void` | niepusta nazwa | US-24 |
+| Funkcja             | Wejście                                          | Wynik                                                      | Reguły                                                                                                                       | US    |
+| ------------------- | ------------------------------------------------ | ---------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- | ----- |
+| `create_budget`     | `p_name text`                                    | `uuid`                                                     | niepusta nazwa; wywołujący zostaje `owner`                                                                                   | US-04 |
+| `rename_budget`     | `p_budget_id`, `p_name`                          | `void`                                                     | tylko `owner`                                                                                                                | US-06 |
+| `delete_budget`     | `p_budget_id`                                    | `void`                                                     | tylko `owner`; kaskadowo usuwa dane                                                                                          | US-06 |
+| `create_invitation` | `p_budget_id`                                    | `(invitation_id uuid, token text, expires_at timestamptz)` | tylko `owner`; losowy token (`gen_random_bytes`), w bazie tylko jego hash; ważny 7 dni; token zwracany jednorazowo           | US-07 |
+| `revoke_invitation` | `p_invitation_id`                                | `void`                                                     | tylko `owner` budżetu zaproszenia                                                                                            | US-07 |
+| `accept_invitation` | `p_token text`                                   | `uuid` (budget_id)                                         | token ważny, niezużyty, nieunieważniony; dołącza jako `member` i zużywa token; jeśli już członek – zwraca budżet bez zużycia | US-08 |
+| `set_member_role`   | `p_budget_id`, `p_user_id`, `p_role budget_role` | `void`                                                     | tylko `owner`; nie można odebrać roli ostatniemu właścicielowi                                                               | US-09 |
+| `remove_member`     | `p_budget_id`, `p_user_id`                       | `void`                                                     | tylko `owner`; nie można usunąć ostatniego właściciela                                                                       | US-09 |
+| `leave_budget`      | `p_budget_id`                                    | `void`                                                     | ostatni właściciel nie może opuścić budżetu                                                                                  | US-10 |
+| `update_profile`    | `p_display_name text`                            | `void`                                                     | niepusta nazwa                                                                                                               | US-24 |
 
 ### Koperty
 
-| Funkcja | Wejście | Wynik | Reguły | US |
-|---|---|---|---|---|
-| `create_envelope` | `p_budget_id`, `p_name` | `uuid` | członek; nazwa niepusta i unikalna wśród aktywnych; na końcu listy | US-11 |
-| `rename_envelope` | `p_envelope_id`, `p_name` | `void` | członek; unikalność nazwy | US-12 |
-| `reorder_envelopes` | `p_budget_id`, `p_envelope_ids uuid[]` | `void` | członek; lista musi zawierać dokładnie aktywne koperty budżetu | US-12 |
-| `archive_envelope` | `p_envelope_id` | `void` | członek; saldo bieżące = 0 [Z4] | US-13 |
-| `restore_envelope` | `p_envelope_id` | `void` | członek; unikalność nazwy wśród aktywnych | US-13 |
+| Funkcja             | Wejście                                | Wynik  | Reguły                                                             | US    |
+| ------------------- | -------------------------------------- | ------ | ------------------------------------------------------------------ | ----- |
+| `create_envelope`   | `p_budget_id`, `p_name`                | `uuid` | członek; nazwa niepusta i unikalna wśród aktywnych; na końcu listy | US-11 |
+| `rename_envelope`   | `p_envelope_id`, `p_name`              | `void` | członek; unikalność nazwy                                          | US-12 |
+| `reorder_envelopes` | `p_budget_id`, `p_envelope_ids uuid[]` | `void` | członek; lista musi zawierać dokładnie aktywne koperty budżetu     | US-12 |
+| `archive_envelope`  | `p_envelope_id`                        | `void` | członek; saldo bieżące = 0 [Z4]                                    | US-13 |
+| `restore_envelope`  | `p_envelope_id`                        | `void` | członek; unikalność nazwy wśród aktywnych                          | US-13 |
 
 ### Przychody, przydziały, wydatki
 
-| Funkcja | Wejście | Wynik | Reguły | US |
-|---|---|---|---|---|
-| `create_income` | `p_budget_id`, `p_amount`, `p_occurred_on`, `p_description` | `uuid` | członek; kwota > 0; autor = wywołujący | US-14 |
-| `update_income` | `p_income_id`, `p_amount`, `p_occurred_on`, `p_description` | `void` | członek; kwota > 0 | US-15 |
-| `delete_income` | `p_income_id` | `void` | członek | US-15 |
-| `set_allocation` | `p_envelope_id`, `p_period date`, `p_amount` | `void` | członek; kwota ≥ 0; koperta aktywna; `upsert` dla (koperta, miesiąc); brak limitu puli | US-16 |
+| Funkcja          | Wejście                                                                                                   | Wynik  | Reguły                                                                                                                   | US           |
+| ---------------- | --------------------------------------------------------------------------------------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------ | ------------ |
+| `create_income`  | `p_budget_id`, `p_amount`, `p_occurred_on`, `p_description`                                               | `uuid` | członek; kwota > 0; autor = wywołujący                                                                                   | US-14        |
+| `update_income`  | `p_income_id`, `p_amount`, `p_occurred_on`, `p_description`                                               | `void` | członek; kwota > 0                                                                                                       | US-15        |
+| `delete_income`  | `p_income_id`                                                                                             | `void` | członek                                                                                                                  | US-15        |
+| `set_allocation` | `p_envelope_id`, `p_period date`, `p_amount`                                                              | `void` | członek; kwota ≥ 0; koperta aktywna; `upsert` dla (koperta, miesiąc); brak limitu puli                                   | US-16        |
 | `create_expense` | `p_budget_id`, `p_amount`, `p_occurred_on`, `p_description`, `p_splits jsonb` (`[{envelope_id, amount}]`) | `uuid` | członek; kwota > 0; ≥ 1 część; części > 0; koperty aktywne i z tego budżetu, bez powtórzeń; suma części = kwota; atomowo | US-17, US-18 |
-| `update_expense` | `p_expense_id`, jak wyżej bez `p_budget_id` | `void` | jak `create_expense`; części zastępowane w całości; do nowych części tylko aktywne koperty | US-19 |
-| `delete_expense` | `p_expense_id` | `void` | członek; kaskadowo usuwa części | US-19 |
+| `update_expense` | `p_expense_id`, jak wyżej bez `p_budget_id`                                                               | `void` | jak `create_expense`; części zastępowane w całości; do nowych części tylko aktywne koperty                               | US-19        |
+| `delete_expense` | `p_expense_id`                                                                                            | `void` | członek; kaskadowo usuwa części                                                                                          | US-19        |
 
 ### Odczyty wyliczane (`security invoker`, `stable`)
 
-| Funkcja | Wejście | Wynik | US |
-|---|---|---|---|
-| `get_unallocated` | `p_budget_id` | `bigint` | US-16, US-21 |
-| `get_envelope_balances` | `p_budget_id`, `p_month date` | `table (envelope_id, name, sort_order, archived, balance bigint)` – saldo na koniec `p_month` | US-21 |
-| `get_month_summary` | `p_budget_id`, `p_month date` | `table (envelope_id, name, opening_balance, allocated, spent, closing_balance)` dla kopert aktywnych lub używanych w miesiącu | US-22 |
-| `get_month_totals` | `p_budget_id`, `p_month date` | `(income_total, allocated_total, unallocated)` | US-22 |
+| Funkcja                 | Wejście                       | Wynik                                                                                                                         | US           |
+| ----------------------- | ----------------------------- | ----------------------------------------------------------------------------------------------------------------------------- | ------------ |
+| `get_unallocated`       | `p_budget_id`                 | `bigint`                                                                                                                      | US-16, US-21 |
+| `get_envelope_balances` | `p_budget_id`, `p_month date` | `table (envelope_id, name, sort_order, archived, balance bigint)` – saldo na koniec `p_month`                                 | US-21        |
+| `get_month_summary`     | `p_budget_id`, `p_month date` | `table (envelope_id, name, opening_balance, allocated, spent, closing_balance)` dla kopert aktywnych lub używanych w miesiącu | US-22        |
+| `get_month_totals`      | `p_budget_id`, `p_month date` | `(income_total, allocated_total, unallocated)`                                                                                | US-22        |
 
 Lista operacji miesiąca (US-20) to zwykłe zapytania do `incomes` i `expenses` (z `expense_splits`, `envelopes`, `profiles`) przez PostgREST.
 
 ### Edge Functions
 
-| Funkcja | Wejście | Reguły | US |
-|---|---|---|---|
+| Funkcja          | Wejście         | Reguły                                                                                                                                                                                                                                                              | US    |
+| ---------------- | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----- |
 | `delete-account` | JWT użytkownika | [Z5]: odrzuca, jeśli użytkownik jest jedynym właścicielem budżetu z innymi członkami; usuwa budżety, w których jest jedynym członkiem; usuwa użytkownika z `auth.users` kluczem `service_role` (autorstwo wpisów zostaje zanonimizowane przez `on delete set null`) | US-03 |
 
 ## 5. Wersjonowanie i wsteczna zgodność API

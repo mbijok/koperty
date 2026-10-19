@@ -12,11 +12,11 @@ Cel MVP: aplikacja webowa (instalowalna jako PWA), w której gospodarstwo domowe
 
 Rejestracja jest otwarta: każda osoba z adresem e-mail może założyć konto. Docelowo użytkownikami są gospodarstwa domowe (para, rodzina); pierwszym użytkownikiem jest gospodarstwo autora projektu.
 
-| Persona | Potrzeby |
-|---|---|
-| **Właściciel budżetu** (`owner`) – zakłada budżet i nim zarządza | szybko utworzyć budżet i koperty, zaprosić partnera/partnerkę, zarządzać członkami, kontrolować przydziały i stan puli |
-| **Członek budżetu** (`member`) – współprowadzi budżet | szybko zapisać wydatek na telefonie (także w sklepie), sprawdzić, ile zostało w kopercie, zobaczyć podsumowanie miesiąca |
-| **Osoba w kilku budżetach** | przełączać się między budżetami (np. budżet domowy i budżet wspólnego mieszkania) bez mieszania danych |
+| Persona                                                          | Potrzeby                                                                                                                 |
+| ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| **Właściciel budżetu** (`owner`) – zakłada budżet i nim zarządza | szybko utworzyć budżet i koperty, zaprosić partnera/partnerkę, zarządzać członkami, kontrolować przydziały i stan puli   |
+| **Członek budżetu** (`member`) – współprowadzi budżet            | szybko zapisać wydatek na telefonie (także w sklepie), sprawdzić, ile zostało w kopercie, zobaczyć podsumowanie miesiąca |
+| **Osoba w kilku budżetach**                                      | przełączać się między budżetami (np. budżet domowy i budżet wspólnego mieszkania) bez mieszania danych                   |
 
 ## 3. Zakres MVP
 

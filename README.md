@@ -19,19 +19,19 @@ Cele aplikacji:
 
 Dokumentacja i interfejs są po polsku, kod po angielsku. Poniższe nazwy obowiązują w całym projekcie.
 
-| Pojęcie (PL) | Nazwa w kodzie (EN) | Znaczenie |
-|---|---|---|
-| Budżet | `budget` | Wspólna przestrzeń danych jednego gospodarstwa domowego. |
-| Członek budżetu | `budget_member` | Użytkownik z dostępem do budżetu i przypisaną rolą. |
-| Zaproszenie | `invitation` | Sposób dołączenia nowej osoby do istniejącego budżetu. |
-| Koperta | `envelope` | Cel wydatków, do którego przydziela się środki. |
-| Okres | `period` | Miesiąc rozliczeniowy. |
-| Przychód | `income` | Wpływ środków, który zwiększa pulę do rozdysponowania. |
-| Do rozdysponowania | `unallocated` | Środki, które nie zostały jeszcze przydzielone do kopert. |
-| Przydział | `allocation` | Przypisanie kwoty z puli do koperty w danym okresie. |
-| Wydatek | `expense` | Transakcja zmniejszająca saldo jednej lub kilku kopert. |
-| Podział wydatku | `expense_split` | Część wydatku przypisana do konkretnej koperty. |
-| Przesunięcie | `envelope_transfer` | Przeniesienie środków między kopertami. |
+| Pojęcie (PL)       | Nazwa w kodzie (EN) | Znaczenie                                                 |
+| ------------------ | ------------------- | --------------------------------------------------------- |
+| Budżet             | `budget`            | Wspólna przestrzeń danych jednego gospodarstwa domowego.  |
+| Członek budżetu    | `budget_member`     | Użytkownik z dostępem do budżetu i przypisaną rolą.       |
+| Zaproszenie        | `invitation`        | Sposób dołączenia nowej osoby do istniejącego budżetu.    |
+| Koperta            | `envelope`          | Cel wydatków, do którego przydziela się środki.           |
+| Okres              | `period`            | Miesiąc rozliczeniowy.                                    |
+| Przychód           | `income`            | Wpływ środków, który zwiększa pulę do rozdysponowania.    |
+| Do rozdysponowania | `unallocated`       | Środki, które nie zostały jeszcze przydzielone do kopert. |
+| Przydział          | `allocation`        | Przypisanie kwoty z puli do koperty w danym okresie.      |
+| Wydatek            | `expense`           | Transakcja zmniejszająca saldo jednej lub kilku kopert.   |
+| Podział wydatku    | `expense_split`     | Część wydatku przypisana do konkretnej koperty.           |
+| Przesunięcie       | `envelope_transfer` | Przeniesienie środków między kopertami.                   |
 
 ## Etapy rozwoju
 
@@ -122,14 +122,31 @@ W przyszłości dojdzie `apps/ios/` albo osobne repozytorium aplikacji mobilnej.
 
 ## Uruchomienie lokalne
 
-> Sekcja zostanie uzupełniona po przygotowaniu szkieletu projektu.
-
 Wymagania wstępne:
 
-- [Vite+](https://viteplus.dev) (komenda `vp`)
-- [Bun](https://bun.sh) (menedżer pakietów)
-- [Supabase CLI](https://supabase.com/docs/guides/local-development)
-- Docker (wymagany przez lokalne środowisko Supabase)
+- [Vite+](https://viteplus.dev) (globalna komenda `vp`); Node.js i Bun w wersjach z `package.json` Vite+ pobiera automatycznie,
+- Docker (np. [OrbStack](https://orbstack.dev) lub Docker Desktop), wymagany przez lokalne środowisko Supabase.
+
+Supabase CLI jest zależnością deweloperską projektu, więc nie trzeba go instalować osobno.
+
+```bash
+vp install                         # zależności (Bun)
+vp exec supabase start             # lokalny Supabase w Dockerze
+cp apps/web/.env.example apps/web/.env.local
+vp exec supabase status            # wpisz API_URL i PUBLISHABLE_KEY do apps/web/.env.local
+vp dev                             # aplikacja na http://localhost:5173
+```
+
+Weryfikacja zmian:
+
+```bash
+vp check                           # formatowanie, lint, typy
+vp test                            # testy jednostkowe (Vitest)
+vp build                           # build produkcyjny
+vp exec supabase test db           # testy bazy (pgTAP)
+```
+
+Pełna lista komend: [AGENTS.md](AGENTS.md#komendy).
 
 ## Proces wytwórczy (AI-assisted SDLC)
 
