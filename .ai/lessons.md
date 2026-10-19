@@ -12,6 +12,7 @@ Przed dodaniem sprawdź, czy podobny wniosek już istnieje; jeśli tak, zaktuali
 
 ## Baza i Supabase
 
+- Nie polegaj na domyślnych uprawnieniach Supabase: nadawaj jawne `grant`, odbieraj `execute` od `public`/`anon` i testuj to w pgTAP. ([szczegóły](lessons/2026-10-19-supabase-local-api-exposure.md))
 - Uruchamiaj Supabase CLI przez `vp exec supabase`; nie twórz `.gitkeep` w `supabase/migrations` i nie instaluj pgTAP w testach. ([szczegóły](lessons/2026-10-19-supabase-cli-local-setup.md))
 
 ## Frontend
@@ -20,6 +21,7 @@ Przed dodaniem sprawdź, czy podobny wniosek już istnieje; jeśli tak, zaktuali
 
 ## Vite+
 
+- Włączając kategorie Oxlint, wyłącz `react/react-in-jsx-scope` i dopuść importy CSS w `import/no-unassigned-import`. ([szczegóły](lessons/2026-10-19-oxlint-categories-react-rules.md))
 - W monorepo trzymaj w głównym `vite.config.ts` `test.projects` i `defaultPackage`; komendy z flagami kieruj przez `vp -C apps/web`; nie używaj `-w` z Bun. ([szczegóły](lessons/2026-10-19-vite-plus-monorepo-root-commands.md))
 - W hookach, skryptach i CI wywołuj komendy przez `vp run <skrypt>`; `vp node` i `vp env` istnieją tylko w globalnym CLI. ([szczegóły](lessons/2026-10-19-vite-plus-hooks-local-cli.md))
 - Po `vp create` popraw import `defineConfig` (z `vite-plus`), usuń blok `lint` z pakietu i włącz `strict`. ([szczegóły](lessons/2026-10-19-vite-plus-app-template-fixes.md))
