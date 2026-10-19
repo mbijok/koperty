@@ -69,3 +69,16 @@ completed: standardy obowiązują w `AGENTS.md`, cztery konwencje egzekwuje lint
 ## Następne kroki
 
 - Dodać zadanie `PR title` do wymaganych kontroli w rulesecie „Master branch lock” (zmiana ustawień repozytorium – decyzja użytkownika).
+
+## Uzupełnienie po zakończeniu
+
+### Krok 5. Wymagana kontrola tytułu PR
+
+- **Co zrobiono:** na prośbę użytkownika dodano kontrolę `PR title` (GitHub Actions, `integration_id` 15368) do wymaganych w rulesecie „Master branch lock”; pozostałe reguły i `bypass_actors` (pusta lista) bez zmian. Zaktualizowano `docs/engineering-standards.md` (3.1 i notatka „Wdrożone (PR #2)”).
+- **Komendy:**
+  ```bash
+  gh api repos/mbijok/koperty/rulesets/<id> > ruleset.json
+  gh api -X PUT repos/mbijok/koperty/rulesets/<id> --input ruleset-new.json
+  gh pr checks 2
+  ```
+- **Wynik:** wymagane kontrole: `Check, test, build`, `Database tests (pgTAP)`, `PR title`. W PR #2 wszystkie trzy przechodzą. Następny krok z sekcji „Następne kroki” zrealizowany.
