@@ -2,7 +2,7 @@
 title: Faza 0 – fundamenty projektu
 started: 2026-10-19
 spec: docs/prompts/00-bootstrap.md (traktowany jako zatwierdzona specyfikacja fazy 0 – decyzja użytkownika)
-status: in-progress
+status: completed
 ---
 
 # Faza 0 – fundamenty projektu
@@ -157,6 +157,18 @@ Po każdym etapie punkt kontrolny i akceptacja użytkownika; commit po każdym e
 - **Problem:** w hooku `vp node` → `Command 'node' not found` (lokalne CLI nie ma `vp node`). Rozwiązanie: skrypt `check:ai` i `vp run check:ai` w hooku, CI, README, AGENTS.md i szablonie PR. Test negatywny: commit z `.ai/runs/bad-name.md` zablokowany komunikatem o nazwie pliku. Wniosek: `.ai/lessons/2026-10-19-vite-plus-hooks-local-cli.md`.
 - Walidacja workflow (`@action-validator/cli`) – exit 0; `vp check` pass.
 
+- Commit `12c9280`. Etap 6 zaakceptowany.
+
+### Etap 7. Proces i plan pracy
+
+- **Co zrobiono:**
+  - `docs/prompts/feature-workflow.md`: prompt z 5 etapami i punktami kontrolnymi (lessons → specyfikacja i akceptacja → log i `in-progress` → testy, implementacja, weryfikacja → domknięcie),
+  - `docs/backlog.md`: 17 pozycji w kolejności realizacji (15 vertical slices S-01–S-15 pokrywających US-01–US-24 oraz zadania techniczne T-01 E2E i T-02 wdrożenie), z user stories, zakresem, kryteriami ukończenia i zależnościami,
+  - pierwsze zadanie: S-01 „Logowanie i profil” – uzasadnienie: wszystkie dalsze funkcje wymagają `auth.uid()`, a zadanie ustala wzorce (migracja, RLS, RPC, pgTAP, typowany klient, klucze zapytań, mapowanie błędów, ochrona tras) przy najmniejszym zakresie domenowym; specyfikacja `.ai/specs/2026-10-19-email-login-profile.md` (status `draft`),
+  - `AGENTS.md` i `README.md`: faza 1 (MVP) zamiast fazy 0, odesłania do backlogu, struktura repozytorium (`scripts/`, `.vite-hooks/`, `docs/backlog.md`),
+  - wniosek procesowy o pracy w worktree.
+- **Komendy:** `vp check --fix`, `vp run check:ai`, `vp test`.
+
 ## Decyzje i założenia
 
 - `docs/prompts/00-bootstrap.md` pełni rolę zatwierdzonej specyfikacji całej fazy 0; osobne specyfikacje dla etapów 5–6 nie powstają (decyzja użytkownika).
@@ -174,8 +186,12 @@ Po każdym etapie punkt kontrolny i akceptacja użytkownika; commit po każdym e
 
 ## Status końcowy
 
-<uzupełniany po etapie 7>
+`completed` – wszystkie 7 etapów fazy 0 wykonane i zaakceptowane (etap 7 czeka na końcowe podsumowanie). Wyniki weryfikacji: `vp check`, `vp test` (7 testów), `vp build`, `vp exec supabase db reset`, `vp exec supabase test db` (3 testy pgTAP), `vp run check:ai` – pass; hook pre-commit sprawdzony negatywnie i pozytywnie. Workflow CI zwalidowany lokalnie, ale jeszcze nieuruchomiony na GitHubie (gałąź niewypchnięta).
 
 ## Następne kroki
 
 - Etap 3: wywiad do PRD, zaczynając od „Otwartych decyzji” z `AGENTS.md`.
+- Po fazie 0:
+  - przegląd i zatwierdzenie specyfikacji S-01 (`.ai/specs/2026-10-19-email-login-profile.md`), w tym odpowiedzi na jej otwarte pytania,
+  - scalenie gałęzi `chore/project-bootstrap` do `master` lub PR (decyzja użytkownika) i pierwszy przebieg CI na GitHubie,
+  - realizacja S-01 według `docs/prompts/feature-workflow.md`.

@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Instrukcje dla agentów kodujących pracujących w tym repozytorium. Opis produktu i kontekst znajdziesz w [README.md](README.md), wymagania w [docs/prd.md](docs/prd.md), architekturę w [docs/architecture.md](docs/architecture.md), a uzasadnienia decyzji w [docs/adr/](docs/adr/). Specyfikacje, logi przebiegów i wnioski z pracy agentów znajdują się w katalogu `.ai/` (zasady w sekcji „Katalog `.ai/`” poniżej).
+Instrukcje dla agentów kodujących pracujących w tym repozytorium. Opis produktu i kontekst znajdziesz w [README.md](README.md), wymagania w [docs/prd.md](docs/prd.md), architekturę w [docs/architecture.md](docs/architecture.md), uzasadnienia decyzji w [docs/adr/](docs/adr/), a plan prac w [docs/backlog.md](docs/backlog.md). Specyfikacje, logi przebiegów i wnioski z pracy agentów znajdują się w katalogu `.ai/` (zasady w sekcji „Katalog `.ai/`” poniżej).
 
 Ten plik jest jedynym źródłem zasad projektu dla wszystkich agentów (Claude Code, Codex, Cursor i innych). Pliki specyficzne dla narzędzi, takie jak `CLAUDE.md`, tylko go importują i dodają mechanikę danego narzędzia. Nowe zasady projektu dopisuj wyłącznie tutaj.
 
@@ -8,7 +8,7 @@ Ten plik jest jedynym źródłem zasad projektu dla wszystkich agentów (Claude 
 
 Aplikacja webowa do budżetu domowego metodą kopertową. Wiele niezależnych budżetów, każdy z jednym lub kilkoma członkami. Backend (Supabase) jest niezależny od klienta: aplikacja webowa jest pierwszym klientem, natywna aplikacja na iOS powstanie później i będzie korzystać z tych samych danych i reguł.
 
-**Aktualna faza:** 0, czyli fundamenty projektu. Nie implementuj funkcjonalności domenowych, dopóki nie zostaną opisane w PRD i zaplanowane.
+**Aktualna faza:** 1, czyli MVP aplikacji webowej (faza 0 – fundamenty – zakończona). Zadania realizuj w kolejności z [docs/backlog.md](docs/backlog.md) według [docs/prompts/feature-workflow.md](docs/prompts/feature-workflow.md), każde na podstawie zatwierdzonej specyfikacji. Nie implementuj funkcjonalności spoza PRD i backlogu.
 
 ## Język
 

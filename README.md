@@ -2,7 +2,7 @@
 
 Aplikacja webowa do zarządzania domowym budżetem metodą kopertową. Obsługuje wiele niezależnych budżetów domowych, a każdy budżet może być prowadzony wspólnie przez kilka osób (np. przez małżeństwo).
 
-> **Status:** faza 0, przygotowanie fundamentów projektu. Projekt realizowany w ramach kursu AI SDLC: aplikacja jest budowana z intensywnym wykorzystaniem agentów AI na każdym etapie cyklu wytwarzania oprogramowania.
+> **Status:** faza 1, realizacja MVP według [backlogu](docs/backlog.md) (fundamenty z fazy 0 gotowe). Projekt realizowany w ramach kursu AI SDLC: aplikacja jest budowana z intensywnym wykorzystaniem agentów AI na każdym etapie cyklu wytwarzania oprogramowania.
 
 ## Problem i cel
 
@@ -40,7 +40,7 @@ Dokumentacja i interfejs są po polsku, kod po angielsku. Poniższe nazwy obowi�
 3. **AI:** analiza zdjęć paragonów i faktur oraz propozycja koperty lub podziału, zatwierdzana przez użytkownika.
 4. **Mobile:** natywna aplikacja na iOS (Android jako opcja), korzystająca z tego samego backendu.
 
-Szczegółowy zakres MVP opisuje [docs/prd.md](docs/prd.md).
+Szczegółowy zakres MVP opisuje [docs/prd.md](docs/prd.md), a podział na zadania [docs/backlog.md](docs/backlog.md).
 
 ## Architektura
 
@@ -93,7 +93,7 @@ Szczegóły i uzasadnienia decyzji: [docs/architecture.md](docs/architecture.md)
 
 ## Struktura repozytorium
 
-Docelowa struktura (powstaje w fazie 0):
+Struktura (przygotowana w fazie 0):
 
 ```
 .
@@ -110,9 +110,12 @@ Docelowa struktura (powstaje w fazie 0):
 ├── docs/
 │   ├── prd.md            # wymagania produktowe
 │   ├── architecture.md   # architektura i model danych
+│   ├── backlog.md        # plan prac MVP (vertical slices)
 │   ├── adr/              # Architecture Decision Records
 │   └── prompts/          # prompty wykorzystywane w pracy z agentem
+├── scripts/              # skrypty projektu (np. kontrola .ai/)
 ├── .github/              # CI, szablon PR
+├── .vite-hooks/          # hook pre-commit (vp staged)
 ├── AGENTS.md             # instrukcje dla agentów kodujących
 ├── CLAUDE.md             # importuje AGENTS.md (dla Claude Code)
 └── README.md

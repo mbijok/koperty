@@ -28,4 +28,5 @@ Przed dodaniem sprawdź, czy podobny wniosek już istnieje; jeśli tak, zaktuali
 
 ## Proces
 
+- Pracując w worktree, na starcie powiedz, gdzie trafiają zmiany i jak dotrą do `master`; sprawdzaj wartości wyprowadzane z nazwy katalogu. ([szczegóły](lessons/2026-10-19-worktree-session-location.md))
 - Logi w `.ai/runs/` zmieniaj tylko przez dopisywanie; wykluczaj je z masowych zamian tekstu. ([szczegóły](lessons/2026-10-19-run-log-append-only-edits.md))
