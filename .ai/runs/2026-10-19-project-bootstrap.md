@@ -85,6 +85,7 @@ Po każdym etapie punkt kontrolny i akceptacja użytkownika; commit po każdym e
   - `AGENTS.md`: dopisana reguła „zapis wyłącznie przez RPC” (z ADR 0003).
 - **Decyzje (do akceptacji w przeglądzie):** zapis wyłącznie przez RPC `security definer`, odczyt przez RLS `select`; spójność budżetu przez złożone klucze obce; suma części wydatku pilnowana odroczonym triggerem; tokeny zaproszeń przechowywane jako hash; `profiles.display_name` do pokazywania autora.
 - **Otwarte:** źródło nazwy wyświetlanej autora; propozycje nowych ADR (hosting Cloudflare Pages, logowanie bez haseł).
+- Commit `17942c3`. Przegląd użytkownika: nazwa wyświetlana = część e-maila przed `@`, zmienialna (dopisano US-24 w PRD i regułę w 4.11; `update_profile` → US-24); dodano ADR 0008 (Cloudflare Pages) i ADR 0009 (logowanie bez haseł). Architektura oznaczona jako zaakceptowana. Etap zaakceptowany.
 
 ## Decyzje i założenia
 

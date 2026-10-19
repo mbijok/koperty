@@ -120,6 +120,7 @@ Wszystkie reguły są wymuszane przez bazę danych (ograniczenia, funkcje RPC, R
 ### 4.11. Konto
 
 - Pierwsze logowanie nowym adresem e-mail zakłada konto.
+- Nazwa wyświetlana użytkownika (pokazywana innym członkom jako autor operacji) to domyślnie część adresu e-mail przed `@`; użytkownik może ją zmienić.
 - Użytkownik może usunąć konto. Jego wpisy we wspólnych budżetach pozostają, a autor jest anonimizowany. Szczegóły dla budżetów, w których jest jedynym właścicielem: **[Z5]**.
 
 ## 5. User stories
@@ -144,6 +145,13 @@ Jako użytkownik chcę usunąć konto, żeby moje dane osobowe nie były dalej p
 - **Given** użytkownik będący członkiem wspólnego budżetu, **When** usunie konto, **Then** traci dostęp, jego wpisy pozostają w budżecie, a jako autor wyświetla się „Usunięty użytkownik”.
 - **Given** użytkownik, **When** rozpocznie usuwanie konta, **Then** musi je potwierdzić, a operacji nie da się cofnąć.
 - Przypadek jedynego właściciela budżetu: zależny od **[Z5]**.
+
+**US-24. Nazwa wyświetlana**
+Jako użytkownik chcę ustawić nazwę, pod którą widzą mnie inni członkowie budżetu.
+
+- **Given** nowe konto z adresem `ala@example.com`, **When** użytkownik zaloguje się pierwszy raz, **Then** jego nazwa wyświetlana to „ala”.
+- **Given** zalogowany użytkownik, **When** zmieni nazwę wyświetlaną, **Then** inni członkowie widzą nową nazwę jako autora jego operacji.
+- **Given** pusta nazwa, **When** użytkownik zatwierdzi, **Then** zmiana nie zostaje zapisana.
 
 ### Budżety i członkostwo
 

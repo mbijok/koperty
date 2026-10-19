@@ -1,6 +1,6 @@
 # Architektura
 
-> **Status:** wersja do przeglądu (faza 0). Wymagania: [prd.md](prd.md). Uzasadnienia decyzji: [adr/](adr/). Model danych jest wstępny; ostateczny kształt każdej tabeli ustala specyfikacja w `.ai/specs/` przed jej migracją.
+> **Status:** zaakceptowana (faza 0, 2026-10-19). Wymagania: [prd.md](prd.md). Uzasadnienia decyzji: [adr/](adr/). Model danych jest wstępny; ostateczny kształt każdej tabeli ustala specyfikacja w `.ai/specs/` przed jej migracją.
 
 ## 1. Komponenty
 
@@ -38,11 +38,11 @@ flowchart LR
 | Komponent | Odpowiedzialność |
 |---|---|
 | Aplikacja webowa | Prezentacja, nawigacja, formularze z walidacją dla wygody, wywołania RPC i zapytań przez TanStack Query. Brak reguł domenowych. |
-| Supabase Auth | Konta i sesje (magic link / kod OTP), JWT z `auth.uid()` używanym przez RLS. |
+| Supabase Auth | Konta i sesje (magic link / kod OTP, [ADR 0009](adr/0009-passwordless-email-auth.md)), JWT z `auth.uid()` używanym przez RLS. |
 | PostgREST | Odczyt tabel chronionych RLS i wywołania funkcji RPC. |
 | Postgres | Jedyne miejsce reguł domenowych: ograniczenia, funkcje RPC, triggery, RLS. |
 | Edge Functions | Operacje wymagające sekretów: w MVP tylko `delete-account` (usunięcie użytkownika z `auth.users` wymaga klucza `service_role`). |
-| Cloudflare Pages | Hosting zbudowanej SPA (z przekierowaniem wszystkich ścieżek do `index.html`). |
+| Cloudflare Pages | Hosting zbudowanej SPA (z przekierowaniem wszystkich ścieżek do `index.html`, [ADR 0008](adr/0008-frontend-hosting-cloudflare-pages.md)). |
 
 ## 2. Model danych
 
@@ -136,7 +136,7 @@ Kluczowe ograniczenia:
 - `envelopes`: indeks unikalny `(budget_id, lower(name)) where archived_at is null` [Z3].
 - `budget_members`: każdy budżet ma co najmniej jednego właściciela – pilnują tego funkcje RPC zmieniające role i członkostwo (`set_member_role`, `remove_member`, `leave_budget`).
 - Autor (`created_by`) wskazuje `auth.users` z `on delete set null`; usunięcie konta anonimizuje autorstwo, a interfejs pokazuje wtedy „Usunięty użytkownik”.
-- `profiles.display_name` służy do pokazywania autora innym członkom (inni nie mają dostępu do `auth.users`). Domyślnie ustawiany przy pierwszym logowaniu (trigger na `auth.users`) na część adresu e-mail przed `@` – **do potwierdzenia**, patrz sekcja 6.
+- `profiles.display_name` służy do pokazywania autora innym członkom (inni nie mają dostępu do `auth.users`). Ustawiany przy pierwszym logowaniu (trigger na `auth.users`) na część adresu e-mail przed `@`; użytkownik może go zmienić (`update_profile`).
 
 ### Salda i pula (wyliczane, nieprzechowywane)
 
@@ -196,7 +196,7 @@ Konwencje: funkcje w schemacie `public`, nazwy `snake_case` w formie czasownik_r
 | `set_member_role` | `p_budget_id`, `p_user_id`, `p_role budget_role` | `void` | tylko `owner`; nie można odebrać roli ostatniemu właścicielowi | US-09 |
 | `remove_member` | `p_budget_id`, `p_user_id` | `void` | tylko `owner`; nie można usunąć ostatniego właściciela | US-09 |
 | `leave_budget` | `p_budget_id` | `void` | ostatni właściciel nie może opuścić budżetu | US-10 |
-| `update_profile` | `p_display_name text` | `void` | niepusta nazwa | US-20 (autor) |
+| `update_profile` | `p_display_name text` | `void` | niepusta nazwa | US-24 |
 
 ### Koperty
 
@@ -251,4 +251,4 @@ Kontraktem API są: tabele i kolumny czytane przez klientów, sygnatury funkcji 
 
 ## 6. Otwarte kwestie architektoniczne
 
-- **Nazwa wyświetlana autora:** PRD wymaga pokazywania autora operacji (US-20), ale nie określa, skąd pochodzi nazwa. Propozycja: domyślnie część adresu e-mail przed `@`, z możliwością zmiany (`update_profile`) – do decyzji, czy w MVP pytamy o nazwę przy pierwszym logowaniu.
+Brak.
