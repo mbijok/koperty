@@ -16,6 +16,12 @@ export default defineConfig({
     rules: {
       "vite-plus/prefer-vite-plus-imports": "error",
       "typescript/no-explicit-any": "error",
+      // Coding standards (docs/engineering-standards.md, 4.1).
+      "typescript/no-non-null-assertion": "error",
+      "import/no-default-export": "error",
+      // Imports from parent directories go through the `@/` alias.
+      "import/no-relative-parent-imports": "error",
+      "unicorn/filename-case": ["error", { case: "kebabCase" }],
       "import/no-cycle": "error",
       // Side-effect imports are only allowed for stylesheets.
       "import/no-unassigned-import": ["warn", { allow: ["**/*.css"] }],
@@ -24,6 +30,11 @@ export default defineConfig({
     plugins: ["typescript", "unicorn", "oxc", "import", "promise", "jsx-a11y", "vitest"],
     categories: { correctness: "error", suspicious: "warn", perf: "warn" },
     overrides: [
+      {
+        // Vite and its tools load the config through a default export.
+        files: ["**/vite.config.ts"],
+        rules: { "import/no-default-export": "off" },
+      },
       {
         files: ["apps/web/**"],
         plugins: ["react", "typescript", "oxc"],

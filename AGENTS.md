@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Instrukcje dla agentów kodujących pracujących w tym repozytorium. Opis produktu i kontekst znajdziesz w [README.md](README.md), wymagania w [docs/prd.md](docs/prd.md), architekturę w [docs/architecture.md](docs/architecture.md), uzasadnienia decyzji w [docs/adr/](docs/adr/), a plan prac w [docs/backlog.md](docs/backlog.md). Specyfikacje, logi przebiegów i wnioski z pracy agentów znajdują się w katalogu `.ai/` (zasady w sekcji „Katalog `.ai/`” poniżej).
+Instrukcje dla agentów kodujących pracujących w tym repozytorium. Opis produktu i kontekst znajdziesz w [README.md](README.md), wymagania w [docs/prd.md](docs/prd.md), architekturę w [docs/architecture.md](docs/architecture.md), uzasadnienia decyzji w [docs/adr/](docs/adr/), plan prac w [docs/backlog.md](docs/backlog.md), a obowiązujące standardy kodu i wzorce w [docs/engineering-standards.md](docs/engineering-standards.md). Specyfikacje, logi przebiegów i wnioski z pracy agentów znajdują się w katalogu `.ai/` (zasady w sekcji „Katalog `.ai/`” poniżej).
 
 Ten plik jest jedynym źródłem zasad projektu dla wszystkich agentów (Claude Code, Codex, Cursor i innych). Pliki specyficzne dla narzędzi, takie jak `CLAUDE.md`, tylko go importują i dodają mechanikę danego narzędzia. Nowe zasady projektu dopisuj wyłącznie tutaj.
 
@@ -20,6 +20,7 @@ Aplikacja webowa do budżetu domowego metodą kopertową. Wiele niezależnych bu
 ## Sposób pracy
 
 - Na początku każdej sesji przeczytaj `.ai/lessons.md` i stosuj zapisane tam wnioski.
+- Stosuj sekcje 3–4 [docs/engineering-standards.md](docs/engineering-standards.md) (przepływ pracy, bramki jakości, bezpieczeństwo, coding standards i wzorce); są obowiązujące. Sekcja 5 zawiera propozycje, które wdrażasz dopiero po mojej akceptacji. Przy sprzeczności z tym plikiem obowiązuje ten plik, a sprzeczność zgłoś.
 - Przed zmianą przeczytaj dokumenty powiązane z zadaniem. Nie zgaduj wymagań: jeśli czegoś brakuje albo coś jest niejasne, zapytaj.
 - Funkcjonalności i zmiany nietrywialne realizujesz wyłącznie na podstawie zatwierdzonej specyfikacji w `.ai/specs/`. Pozostałe zadania wieloetapowe zaczynasz od przedstawienia planu (zakres zmian, pliki, testy, ryzyka) i czekasz na akceptację.
 - Pracuj małymi krokami. Każdy krok kończy się działającym kodem i zielonymi testami.
@@ -195,6 +196,7 @@ Zadanie jest skończone, gdy:
 ## Git
 
 - Commity w formacie Conventional Commits, po angielsku (np. `feat(envelopes): add allocation rpc`).
+- Tytuł PR też w formacie Conventional Commits (przy squash merge staje się wiadomością commita na `master`); sprawdza go CI (`pr-title.yml`).
 - Praca na gałęziach (`feat/...`, `fix/...`, `chore/...`, `docs/...`), małe i spójne zmiany.
 - Nie commituj plików `.env`. Wymagane zmienne opisuj w `.env.example`.
 
