@@ -127,6 +127,30 @@ Po każdym etapie punkt kontrolny i akceptacja użytkownika; commit po każdym e
   - Zaktualizowano wniosek o shadcn i indeks `lessons.md`.
   - Weryfikacja: `vp check` pass, `vp test` 3/3, `vp build` pass.
 
+- Commit `8250869`. Etap 5 zaakceptowany.
+
+### Etap 6. Kontrola jakości i CI
+
+- **Co zrobiono:**
+  - dokumentacja Vite+ (CI) i README `voidzero-dev/setup-vp`: akcja instaluje Vite+ (wersja z `catalog`), Node i Bun z `devEngines`, uruchamia `vp install` z cache; tag `v1` jest zamrożony – użyto dokładnej wersji przypiętej po SHA (setup-vp v1.21.2 `68f39c7…`, actions/checkout v7.0.1 `3d3c42e…`),
+  - `vp env pin lts` → `devEngines.runtime` Node 24.22.0 (jedno źródło wersji Node dla lokalnie i CI),
+  - `.github/workflows/ci.yml`: PR i push na `master`, `permissions: contents: read`, `concurrency`, kroki: `vp install --frozen-lockfile` (przez setup-vp), `vp node scripts/check-ai.ts`, `vp check`, `vp test`, `vp build`,
+  - `scripts/check-ai.ts` (nazwy `YYYY-MM-DD-slug.md` z poprawną datą i slugiem 2–5 słów, status zgodny z katalogiem specyfikacji, status logów, nieznane podkatalogi `specs/`, podlinkowanie wniosków w `lessons.md`) + `scripts/check-ai.test.ts` (4 testy); projekt `scripts` dodany do `test.projects`,
+  - `.github/pull_request_template.md` z checklistą DoD (jakość, `.ai/`, dokumentacja i bezpieczeństwo),
+  - AGENTS.md (tabela komend) i README: komenda kontroli `.ai/`.
+- **Komendy:**
+  ```bash
+  vp node scripts/check-ai.ts                          # ✓ .ai/ is consistent
+  vp check                                             # pass
+  vp test                                              # 2 pliki, 7 testów – pass
+  vp build                                             # pass
+  vp install --frozen-lockfile                         # bez zmian w bun.lock
+  vp dlx -s @action-validator/cli .github/workflows/ci.yml   # exit 0
+  vp exec supabase stop && vp exec supabase db start && vp exec supabase test db   # sam Postgres: PASS w 12 s
+  ```
+- **Problem:** `run-install` w setup-vp przyjmuje tekst YAML (`run-install: |`), a nie mapę – poprawione przed walidacją.
+- **Do decyzji użytkownika:** testy bazy w CI (rekomendacja: tak, osobne zadanie z `supabase db start`), kontrola przed commitem (`staged`).
+
 ## Decyzje i założenia
 
 - `docs/prompts/00-bootstrap.md` pełni rolę zatwierdzonej specyfikacji całej fazy 0; osobne specyfikacje dla etapów 5–6 nie powstają (decyzja użytkownika).

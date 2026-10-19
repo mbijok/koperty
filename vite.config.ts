@@ -50,7 +50,7 @@ export default defineConfig({
   },
   // `vp test` at the root runs every workspace package with its own vite.config.ts.
   test: {
-    projects: ["apps/*"],
+    projects: ["apps/*", { test: { name: "scripts", include: ["scripts/**/*.test.ts"] } }],
   },
   run: {
     cache: true,

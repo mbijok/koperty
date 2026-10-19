@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [master]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  web:
+    name: Check, test, build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      # Installs Vite+ (version from the package.json catalog), Node.js and Bun from devEngines,
+      # then runs `vp install` with the Bun cache.
+      - uses: voidzero-dev/setup-vp@68f39c78aaf39be468cabd2afb09c162574c84af # v1.21.2
+        with:
+          cache: true
+          run-install: |
+            - args: ['--frozen-lockfile']
+
+      - name: Check .ai/ project memory
+        run: vp node scripts/check-ai.ts
+
+      - name: Format, lint, types
+        run: vp check
+
+      - name: Unit tests
+        run: vp test
+
+      - name: Build
+        run: vp build
