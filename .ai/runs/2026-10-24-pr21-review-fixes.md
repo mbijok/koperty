@@ -92,3 +92,9 @@ completed – poprawki zacommitowane lokalnie na `chore/pr21-review-fixes`, bez 
   gh pr create --base master --title "chore: address review findings from pr 21" --body-file <plik>
   ```
 - **Wynik:** sukces; https://github.com/mbijok/koperty/pull/23. Status końcowy bez zmian (completed); do sprawdzenia: krok CI „Reset local database”.
+
+## Uzupełnienie 2026-10-24: przegląd PR #23 (`om-auto-review-pr`)
+
+- **Co zrobiono:** przejęcie PR (przypisanie, `in-progress`, komentarz), pełna bramka walidacji na `c6535fe` — 8/8 PASS, w tym `db reset` za zgodą użytkownika w sesji. Werdykt: approve z jedną uwagą minor (`db reset` w bramce kasuje lokalne dane wspólnej bazy; dopisać to w `SDLC.md`). GitHub odrzucił samozatwierdzenie, więc recenzja ma typ komentarz. Etykiety: `merge-queue`, `documentation`, `skip-qa`, `priority-low`, `risk-low`; blokada zwolniona.
+- **CI:** 3/3 kontrole i 2/2 przebiegi workflow na `c6535fe` zielone, krok „Reset local database” wykonany w CI.
+- **Status końcowy:** completed; scalenie tylko na prośbę użytkownika.
