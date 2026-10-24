@@ -3,13 +3,10 @@
   "version": "0.0.0",
   "private": true,
   "workspaces": [
-    "apps/*",
-    "packages/*"
+    "apps/*"
   ],
   "type": "module",
   "scripts": {
-    "ready": "vp check && vp run -r test && vp run -r build",
-    "dev": "vp run web#dev",
     "prepare": "vp config --no-agent",
     "check:ai": "node scripts/check-ai.ts"
   },

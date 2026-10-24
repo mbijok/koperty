@@ -32,12 +32,13 @@ Po każdym `vp create` w tym repo przejrzyj wygenerowane pliki i dostosuj je do 
 ## Jak go stosować
 
 - `defineConfig` (i `lazyPlugins`) zawsze z `vite-plus`; reguły lintu tylko w głównym `vite.config.ts` przez `lint.overrides`.
-- Sprawdź `strict: true` we wszystkich `tsconfig*.json` pakietu.
+- Sprawdź `strict: true` we wszystkich `tsconfig*.json`, także w głównym `tsconfig.json` (obejmuje `scripts/` i główny `vite.config.ts`). Aktualizacja 2026-10-24: główny `tsconfig.json` nie miał `strict` i `scripts/check-ai.ts` zawierał błąd typów niewidoczny dla `vp check`.
+- Uruchom każdy skrypt z wygenerowanych `package.json`; nieużywane lub dublujące komendy z AGENTS.md usuń. Aktualizacja 2026-10-24: `ready` (`vp run -r test`) nie działał, bo żaden pakiet nie ma skryptu `test`, a `tsc -b` w `build` dublował kontrolę typów z `vp check`.
 - Usuń demo i pliki dublujące konfigurację katalogu głównego.
 - Po edycji dokumentacji uruchom `vp check --fix`, żeby formatowanie Markdown nie blokowało CI.
 
 ## Powiązania
 
 - Specyfikacja: docs/prompts/00-bootstrap.md (faza 0)
-- Log przebiegu: .ai/runs/2026-10-19-project-bootstrap.md
+- Log przebiegu: .ai/runs/2026-10-19-project-bootstrap.md, .ai/runs/2026-10-24-setup-consistency-fixes.md
 - Commit: etap 5 fazy 0

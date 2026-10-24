@@ -38,12 +38,12 @@ Ustalić, jak budujemy aplikację w obecnym stacku, żeby kod pisany przez róż
 
 ### 3.2. Bramki jakości
 
-| Gdzie                    | Co                                                                                                                                                |
-| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| pre-commit (`vp staged`) | `vp check --fix` na zmienionych plikach, `vp run check:ai` przy zmianach w `.ai/`                                                                 |
-| CI – web                 | `vp run check:ai`, `vp check`, `vp test --coverage` (100% pokrycia na plik), `vp build`                                                           |
-| CI – baza                | `supabase db start`, `supabase test db`; po [P-04](#5-propozycje-zmian) także doradcy bezpieczeństwa i wydajności oraz kontrola aktualności typów |
-| Przegląd PR              | checklista Definition of Done z szablonu PR                                                                                                       |
+| Gdzie                    | Co                                                                                                                                                                                  |
+| ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| pre-commit (`vp staged`) | `vp check --fix` na zmienionych plikach, `vp run check:ai` przy zmianach w `.ai/`                                                                                                   |
+| CI – web                 | `vp run check:ai`, `vp check`, `vp test --coverage` (100% pokrycia na plik), `vp build`                                                                                             |
+| CI – baza                | `supabase db start`, `supabase test db`, doradcy bezpieczeństwa i wydajności (`db advisors --fail-on warn`); od S-01 także kontrola aktualności typów ([P-04](#5-propozycje-zmian)) |
+| Przegląd PR              | checklista Definition of Done z szablonu PR                                                                                                                                         |
 
 ### 3.3. Bezpieczeństwo
 
@@ -159,7 +159,7 @@ Priorytety: **teraz** – przed rozpoczęciem S-01 (małe zmiany, zweryfikowane 
 | P-15 | Schematy deklaratywne (pg-delta)                                                                                                                                                                                                                                                                                                                                      | później                                                  | tak                                             | wrócić po wyjściu pg-delta z fazy alfa                                                                                                                                                                |
 | P-16 | Idempotentne funkcje tworzące (`p_id uuid` generowany przez klienta), żeby ponowienie żądania z telefonu nie zdublowało wydatku                                                                                                                                                                                                                                       | S-06                                                     | nie (wzorzec w architekturze)                   | ważne przy słabym zasięgu i w przyszłej aplikacji iOS                                                                                                                                                 |
 
-**Wdrożone 2026-10-19 (PR #1):** P-01 (config), P-02 (architektura, ADR 0003, AGENTS.md), P-04 (advisors w CI), P-05, P-06, P-12 (`sfw`) oraz aktualizacja specyfikacji S-01 o P-01, P-02, P-03 i P-07. Ochrona `master` (P-12) wymaga GitHub Pro albo repozytorium publicznego – w planie Free dla repozytoriów prywatnych reguły nie są dostępne.
+**Wdrożone 2026-10-19 (PR #1):** P-01 (config), P-02 (architektura, ADR 0003, AGENTS.md), P-04 (advisors w CI), P-05, P-06, P-12 (`sfw`) oraz aktualizacja specyfikacji S-01 o P-01, P-02, P-03 i P-07. Ochronę `master` (P-12) włączono w PR #2 (niżej).
 
 **Wdrożone 2026-10-19 (PR #2):** próg 100% pokrycia testami jednostkowymi w CI, reguły lintu z sekcji 4.1, kontrola tytułu PR w formacie Conventional Commits (workflow `pr-title.yml`, P-12). `master` chroni ruleset „Master branch lock”: PR, squash merge, wymagane zadania `Check, test, build`, `Database tests (pgTAP)` i `PR title`.
 

@@ -129,7 +129,7 @@ Katalog `.ai/` to wspólna, wersjonowana pamięć projektu dla wszystkich agent�
 **Vite+**
 
 - Projekt używa Vite+, a nie samodzielnego Vite. Komendy uruchamiaj przez `vp`.
-- Repozytorium jest monorepo Vite+ (workspaces `apps/*`, `packages/*`). Konfiguracja jest w plikach `vite.config.ts` z `defineConfig` importowanym z `vite-plus`: główny `vite.config.ts` zawiera lint, formatowanie, `test.projects` i `defaultPackage`, a `vite.config.ts` pakietu (np. `apps/web`) tylko pluginy, aliasy i blok `test`. Ustawienia lintu i formatowania dla pakietów dodawaj przez `lint.overrides` / `fmt.overrides` w pliku głównym. Nie twórz osobnych konfiguracji dla Oxlint, Oxfmt ani Vitest i nie dodawaj ESLint ani Prettier.
+- Repozytorium jest monorepo Vite+ (workspaces w `package.json`, obecnie tylko `apps/*`). Konfiguracja jest w plikach `vite.config.ts` z `defineConfig` importowanym z `vite-plus`: główny `vite.config.ts` zawiera lint, formatowanie, `test.projects` i `defaultPackage`, a `vite.config.ts` pakietu (np. `apps/web`) tylko pluginy, aliasy i blok `test`. Ustawienia lintu i formatowania dla pakietów dodawaj przez `lint.overrides` / `fmt.overrides` w pliku głównym. Nie twórz osobnych konfiguracji dla Oxlint, Oxfmt ani Vitest i nie dodawaj ESLint ani Prettier.
 - Vite+ jest nowym narzędziem i Twoja wiedza o nim może być niepełna. W razie wątpliwości sprawdź dokumentację: https://viteplus.dev/llms-full.txt, zamiast zakładać konfigurację znaną z klasycznego Vite.
 
 **Menedżer pakietów: Bun**

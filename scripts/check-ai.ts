@@ -4,7 +4,7 @@ import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
 
 // YYYY-MM-DD-slug.md, slug: 2–5 lowercase ASCII kebab-case words, optional -2, -3… duplicate suffix.
-const FILE_NAME = /^(\d{4}-\d{2}-\d{2})-([a-z0-9]+(?:-[a-z0-9]+){1,4})(?:-[2-9]|-[1-9]\d+)?\.md$/;
+const FILE_NAME = /^\d{4}-\d{2}-\d{2}-[a-z0-9]+(?:-[a-z0-9]+){1,4}(?:-[2-9]|-[1-9]\d+)?\.md$/;
 const EXEMPT = new Set(["_template.md", ".gitkeep"]);
 
 const SPEC_STATUSES: Record<string, string[]> = {
@@ -39,14 +39,15 @@ export function checkAiDir(aiDir: string): string[] {
       const path = join(dirPath, name);
       if (EXEMPT.has(name) || (dir === "specs" && statSync(path).isDirectory())) continue;
 
-      const match = FILE_NAME.exec(name);
-      if (!match) {
+      if (!FILE_NAME.test(name)) {
         problems.push(
           `${rel(path)}: file name must match YYYY-MM-DD-slug.md (2–5 word kebab-case slug)`,
         );
         continue;
       }
-      if (!isRealDate(match[1])) problems.push(`${rel(path)}: invalid date ${match[1]}`);
+      // FILE_NAME guarantees the name starts with a YYYY-MM-DD date.
+      const date = name.slice(0, "YYYY-MM-DD".length);
+      if (!isRealDate(date)) problems.push(`${rel(path)}: invalid date ${date}`);
 
       const allowed = SPEC_STATUSES[dir] ?? (dir === "runs" ? RUN_STATUSES : undefined);
       if (!allowed) continue;
