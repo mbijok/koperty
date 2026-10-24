@@ -126,8 +126,11 @@ Każdy PR przechodzi pełną bramkę walidacji przed akceptacją recenzji, w tej
 - `vp test --coverage`
 - `vp build`
 - `vp exec supabase db start`
+- `vp exec supabase db reset`
 - `vp exec supabase test db`
 - `vp exec supabase db advisors --local --type all --fail-on warn`
+
+`vp exec supabase db reset` celowo odtwarza lokalną bazę z migracji i seed, żeby bramka testowała aktualny schemat tak jak CI. Kasuje przy tym lokalne dane deweloperskie, a baza jest wspólna dla wszystkich worktree.
 
 Każdy niezerowy kod wyjścia oznacza niezaliczoną bramkę i blokuje PR. Skille implementujące uruchamiają bramkę przed otwarciem PR, a `om-check-and-commit` przed wypchnięciem gałęzi prowadzonej ręcznie. Lista komend jest w `.ai/agentic.config.json`; gdy się zmienia, aktualizuj ją tam i w tej sekcji jednocześnie.
 

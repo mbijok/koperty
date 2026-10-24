@@ -59,9 +59,14 @@ jobs:
           run-install: |
             - args: ['--frozen-lockfile']
 
-      # Only Postgres is needed for pgTAP; a fresh start applies migrations and seed.sql.
+      # Only Postgres is needed for pgTAP.
       - name: Start local database
         run: vp exec supabase db start
+
+      # Redundant on a fresh CI database, but keeps CI identical to the local validation gate
+      # (.ai/agentic.config.json), where `db start` is a no-op on an already running database.
+      - name: Reset local database
+        run: vp exec supabase db reset
 
       - name: pgTAP tests
         run: vp exec supabase test db

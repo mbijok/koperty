@@ -30,7 +30,7 @@ Ustalić, jak budujemy aplikację w obecnym stacku, żeby kod pisany przez róż
 
 ### 3.1. Przepływ pracy
 
-- Każde zadanie z [backlogu](backlog.md) to osobna gałąź `feat/<slug>` od `master` i osobny PR; jeden PR realizuje jedną specyfikację.
+- Każde zgłoszenie z backlogu w GitHub Issues ([zasady](backlog.md)) to osobna gałąź `feat/<slug>` od `master` i osobny PR; jeden PR realizuje jedną specyfikację.
 - PR-y są małe: orientacyjnie do 400 zmienionych linii bez plików generowanych (`routeTree.gen.ts`, `database.types.ts`, `bun.lock`). Większe zadanie dzielimy na kroki ze specyfikacji.
 - Scalanie przez **squash merge**; tytuł PR w formacie Conventional Commits, bo staje się wiadomością commita na `master`.
 - `master` jest chroniony: wymagane zielone zadania CI (`Check, test, build`, `Database tests (pgTAP)`, `PR title`), brak bezpośrednich pushy.
@@ -38,12 +38,12 @@ Ustalić, jak budujemy aplikację w obecnym stacku, żeby kod pisany przez róż
 
 ### 3.2. Bramki jakości
 
-| Gdzie                    | Co                                                                                                                                                                                  |
-| ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| pre-commit (`vp staged`) | `vp check --fix` na zmienionych plikach, `vp run check:ai` przy zmianach w `.ai/`                                                                                                   |
-| CI – web                 | `vp run check:ai`, `vp check`, `vp test --coverage` (100% pokrycia na plik), `vp build`                                                                                             |
-| CI – baza                | `supabase db start`, `supabase test db`, doradcy bezpieczeństwa i wydajności (`db advisors --fail-on warn`); od S-01 także kontrola aktualności typów ([P-04](#5-propozycje-zmian)) |
-| Przegląd PR              | checklista Definition of Done z szablonu PR                                                                                                                                         |
+| Gdzie                    | Co                                                                                                                                                                                                       |
+| ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| pre-commit (`vp staged`) | `vp check --fix` na zmienionych plikach, `vp run check:ai` przy zmianach w `.ai/`                                                                                                                        |
+| CI – web                 | `vp run check:ai`, `vp check`, `vp test --coverage` (100% pokrycia na plik), `vp build`                                                                                                                  |
+| CI – baza                | `supabase db start`, `supabase db reset`, `supabase test db`, doradcy bezpieczeństwa i wydajności (`db advisors --fail-on warn`); od S-01 także kontrola aktualności typów ([P-04](#5-propozycje-zmian)) |
+| Przegląd PR              | checklista Definition of Done z szablonu PR                                                                                                                                                              |
 
 ### 3.3. Bezpieczeństwo
 

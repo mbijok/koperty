@@ -2,7 +2,7 @@
 
 <!-- Krótki opis zmiany i jej celu. -->
 
-- Zgłoszenie: Zamyka #<!-- numer zgłoszenia albo „nie dotyczy” -->
+- Zgłoszenie: <!-- „Closes #<numer>” (angielskie słowo kluczowe GitHub zamyka zgłoszenie przy scaleniu) albo „nie dotyczy” -->
 - Specyfikacja: <!-- .ai/specs/implemented/YYYY-MM-DD-slug.md albo „nie dotyczy” (literówka, formatowanie, dokumentacja) -->
 - User stories: <!-- US-xx -->
 - Log przebiegu: <!-- .ai/runs/YYYY-MM-DD-slug.md albo „nie dotyczy” -->
