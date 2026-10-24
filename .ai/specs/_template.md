@@ -2,6 +2,7 @@
 title: <Krótki tytuł funkcjonalności lub zmiany>
 status: draft # draft | approved | in-progress | implemented | archived (approved nadaje wyłącznie człowiek)
 created: YYYY-MM-DD # data utworzenia z `date +%F`, nie zmienia się przy przenoszeniu pliku
+issue: # numer zgłoszenia w GitHub Issues, np. 12
 user_stories: [] # np. [US-01, US-02]
 adrs: [] # np. [docs/adr/0003-business-logic-in-database.md]
 runs: [] # np. [.ai/runs/YYYY-MM-DD-slug.md]
