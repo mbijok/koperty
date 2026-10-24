@@ -13,7 +13,7 @@ Przed dodaniem sprawdź, czy podobny wniosek już istnieje; jeśli tak, zaktuali
 ## Baza i Supabase
 
 - Nie polegaj na domyślnych uprawnieniach Supabase: nadawaj jawne `grant`, domyślne `EXECUTE` dla `PUBLIC` wyłączaj globalnym `alter default privileges` (nie `in schema`) i testuj to w pgTAP. ([szczegóły](lessons/2026-10-19-supabase-local-api-exposure.md))
-- Uruchamiaj Supabase CLI przez `vp exec supabase`; nie twórz `.gitkeep` w `supabase/migrations` i nie instaluj pgTAP w testach. ([szczegóły](lessons/2026-10-19-supabase-cli-local-setup.md))
+- Uruchamiaj Supabase CLI przez `vp exec supabase`; nie twórz `.gitkeep` w `supabase/migrations` i nie instaluj pgTAP w testach; przed `test db` wykonaj `db reset`, bo `db start` nie odświeża działającej bazy. ([szczegóły](lessons/2026-10-19-supabase-cli-local-setup.md))
 
 ## Frontend
 
@@ -35,4 +35,5 @@ Przed dodaniem sprawdź, czy podobny wniosek już istnieje; jeśli tak, zaktuali
 
 - Pracując w worktree, na starcie powiedz, gdzie trafiają zmiany i jak dotrą do `master`; sprawdzaj wartości wyprowadzane z nazwy katalogu i nieśledzone pliki w głównej kopii. ([szczegóły](lessons/2026-10-19-worktree-session-location.md))
 - Logi w `.ai/runs/` zmieniaj tylko przez dopisywanie; wykluczaj je z masowych zamian tekstu. ([szczegóły](lessons/2026-10-19-run-log-append-only-edits.md))
+- Zamykaj zgłoszenie w opisie PR przez angielskie `Closes #<numer>`; polskie „Zamyka #N” nie zamyka go przy scaleniu. ([szczegóły](lessons/2026-10-24-github-close-keywords-english.md))
 - Nie zostawiaj w repozytorium znaczników z wtyczek i trybów narzędzi (np. `ponytail:`); komentarze pisz według konwencji projektu. ([szczegóły](lessons/2026-10-24-no-tool-specific-markers.md))

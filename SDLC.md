@@ -126,6 +126,7 @@ Każdy PR przechodzi pełną bramkę walidacji przed akceptacją recenzji, w tej
 - `vp test --coverage`
 - `vp build`
 - `vp exec supabase db start`
+- `vp exec supabase db reset`
 - `vp exec supabase test db`
 - `vp exec supabase db advisors --local --type all --fail-on warn`
 

@@ -117,3 +117,10 @@ completed – konfiguracja zapisana, nic nie zostało zacommitowane bez zgody u�
   vp check --fix && vp check
   vp run check:ai
   ```
+
+## Uzupełnienie 2026-10-24: domknięcie (dopisane po przeglądzie PR #21)
+
+- **Wynik poprzedniego kroku (SDLC.md po polsku):** `vp check` i `vp run check:ai` przeszły (według opisu PR #21; hook pre-commit także).
+- **Commit i PR:** zmiany zacommitowano na gałęzi `chore/agent-pipeline` (`ec3695e`) i scalono przez squash merge jako `8036781` w PR #21.
+- **Weryfikacja po scaleniu:** przegląd `om-code-review` uruchomił pełną bramkę walidacji na `8036781`: 7/7 komend przeszło. Uwagi z przeglądu poprawia przebieg `.ai/runs/2026-10-24-pr21-review-fixes.md`.
+- **Status końcowy:** completed (bez zmian).

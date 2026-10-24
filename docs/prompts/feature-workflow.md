@@ -57,6 +57,6 @@ Na koniec: `vp check`, `vp test --coverage`, `vp build`, `vp exec supabase db re
 2. Zaktualizuj dokumentację, jeśli zmiana na nią wpływa: PRD, `docs/architecture.md`, ADR, `AGENTS.md`.
 3. W specyfikacji ustaw status `implemented`, uzupełnij „Podsumowanie realizacji” (z linkami do logów i commitów) i przenieś plik bez zmiany nazwy do `.ai/specs/implemented/`.
 4. Zamknij log przebiegu: status końcowy (`completed`, `partial`, `failed` lub `aborted`) i następne kroki.
-5. Uruchom `vp run check:ai`, zacommituj zmiany (Conventional Commits, po angielsku) razem z plikami `.ai/` i przygotuj opis PR według `.github/pull_request_template.md` (z „Zamyka #<numer>”, żeby scalenie zamknęło zgłoszenie).
+5. Uruchom `vp run check:ai`, zacommituj zmiany (Conventional Commits, po angielsku) razem z plikami `.ai/` i przygotuj opis PR według `.github/pull_request_template.md` (z „Closes #<numer>”: GitHub zamyka zgłoszenie przy scaleniu tylko po angielskim słowie kluczowym).
 
 **Punkt kontrolny:** krótkie podsumowanie: co zmieniono, jak to zweryfikowano, co zostało otwarte. Nie wykonuj `git push` ani scalenia bez mojej prośby.
