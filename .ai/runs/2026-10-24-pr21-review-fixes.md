@@ -82,3 +82,13 @@ completed – poprawki zacommitowane lokalnie na `chore/pr21-review-fixes`, bez 
 
 - Push i PR (użytkownik); sprawdzić w CI nowy krok „Reset local database”.
 - Decyzja użytkownika: czy dopisać w `AGENTS.md` zwolnienie ze specyfikacji dla zmian narzędzi i procesu z zaakceptowanym ADR.
+
+## Uzupełnienie 2026-10-24: push i PR
+
+- **Co zrobiono:** na prośbę użytkownika (`/om-open-pr`, potwierdzenie gałęzi w sesji) wypchnięto `chore/pr21-review-fixes` i otwarto gotowy PR #23 do `master`. Etykiety: `review`, `documentation`, `skip-qa`, `priority-low`, `risk-low`, z jednym komentarzem uzasadniającym.
+- **Komendy:**
+  ```bash
+  git push -u origin chore/pr21-review-fixes
+  gh pr create --base master --title "chore: address review findings from pr 21" --body-file <plik>
+  ```
+- **Wynik:** sukces; https://github.com/mbijok/koperty/pull/23. Status końcowy bez zmian (completed); do sprawdzenia: krok CI „Reset local database”.
