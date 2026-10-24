@@ -6,7 +6,7 @@ Backlog prowadzimy w GitHub Issues ([ADR 0010](adr/0010-agent-pipeline-under-pro
 
 - Zadania są typu „vertical slice”: każde dostarcza działający kawałek od bazy (migracja, RLS, RPC, testy pgTAP) po interfejs.
 - Każde zadanie realizujemy według [docs/prompts/feature-workflow.md](prompts/feature-workflow.md), zaczynając od specyfikacji w `.ai/specs/` z numerem zgłoszenia w polu `issue`. PR realizujący zadanie zamyka zgłoszenie („Zamyka #<numer>”).
-- Wspólne kryteria ukończenia: Definition of Done z [AGENTS.md](../AGENTS.md). Zgłoszenie zawiera tylko kryteria specyficzne dla zadania.
+- Wspólne kryteria ukończenia: Definition of Done z [AGENTS.md](../AGENTS.md#definition-of-done). Zgłoszenie zawiera tylko kryteria specyficzne dla zadania.
 - Nowe zadanie dodajemy tylko w zakresie PRD, jako zgłoszenie z identyfikatorem (`S-xx` funkcjonalność, `T-xx` zadanie techniczne) w tytule, i wpisujemy je na listę w zgłoszeniu zbiorczym.
 
 ## Zadania

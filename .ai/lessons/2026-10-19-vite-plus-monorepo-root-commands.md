@@ -27,7 +27,7 @@ W głównym `vite.config.ts` trzymaj `test: { projects: ["apps/*"] }` i `default
 
 ## Jak go stosować
 
-- Po dodaniu nowego pakietu w `packages/*` z testami dopisz go do `test.projects`.
+- Po dodaniu nowego pakietu workspace dopisz jego katalog do `workspaces` w `package.json`, a jeśli ma testy, także do `test.projects`.
 - Weryfikuj komendy z katalogu głównego w trybie nieinteraktywnym (tak jak w CI), np. `vp build | cat`.
 - Zależności aplikacji: `vp -C apps/web add <pakiet>`.
 
