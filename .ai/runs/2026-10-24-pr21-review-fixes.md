@@ -98,3 +98,13 @@ completed – poprawki zacommitowane lokalnie na `chore/pr21-review-fixes`, bez 
 - **Co zrobiono:** przejęcie PR (przypisanie, `in-progress`, komentarz), pełna bramka walidacji na `c6535fe` — 8/8 PASS, w tym `db reset` za zgodą użytkownika w sesji. Werdykt: approve z jedną uwagą minor (`db reset` w bramce kasuje lokalne dane wspólnej bazy; dopisać to w `SDLC.md`). GitHub odrzucił samozatwierdzenie, więc recenzja ma typ komentarz. Etykiety: `merge-queue`, `documentation`, `skip-qa`, `priority-low`, `risk-low`; blokada zwolniona.
 - **CI:** 3/3 kontrole i 2/2 przebiegi workflow na `c6535fe` zielone, krok „Reset local database” wykonany w CI.
 - **Status końcowy:** completed; scalenie tylko na prośbę użytkownika.
+
+## Uzupełnienie 2026-10-24: uwaga minor z przeglądu PR #23
+
+- **Co zrobiono:** na prośbę użytkownika dopisano w `SDLC.md` (sekcja „Bramka walidacji”), że `db reset` celowo odtwarza lokalną bazę i kasuje lokalne dane wspólnej bazy wszystkich worktree. Gałąź wypchnięta na prośbę użytkownika.
+- **Komendy:**
+  ```bash
+  vp run check:ai
+  vp check
+  git push
+  ```
