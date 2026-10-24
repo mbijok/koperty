@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Instrukcje dla agentów kodujących pracujących w tym repozytorium. Opis produktu i kontekst znajdziesz w [README.md](README.md), wymagania w [docs/prd.md](docs/prd.md), architekturę w [docs/architecture.md](docs/architecture.md), uzasadnienia decyzji w [docs/adr/](docs/adr/), plan prac w [docs/backlog.md](docs/backlog.md), a obowiązujące standardy kodu i wzorce w [docs/engineering-standards.md](docs/engineering-standards.md). Specyfikacje, logi przebiegów i wnioski z pracy agentów znajdują się w katalogu `.ai/` (zasady w sekcji „Katalog `.ai/`” poniżej).
+Instrukcje dla agentów kodujących pracujących w tym repozytorium. Opis produktu i kontekst znajdziesz w [README.md](README.md), wymagania w [docs/prd.md](docs/prd.md), architekturę w [docs/architecture.md](docs/architecture.md), uzasadnienia decyzji w [docs/adr/](docs/adr/), plan prac w GitHub Issues (zasady w [docs/backlog.md](docs/backlog.md)), a obowiązujące standardy kodu i wzorce w [docs/engineering-standards.md](docs/engineering-standards.md). Specyfikacje, logi przebiegów i wnioski z pracy agentów znajdują się w katalogu `.ai/` (zasady w sekcji „Katalog `.ai/`” poniżej).
 
 Ten plik jest jedynym źródłem zasad projektu dla wszystkich agentów (Claude Code, Codex, Cursor i innych). Pliki specyficzne dla narzędzi, takie jak `CLAUDE.md`, tylko go importują i dodają mechanikę danego narzędzia. Nowe zasady projektu dopisuj wyłącznie tutaj.
 
@@ -8,7 +8,7 @@ Ten plik jest jedynym źródłem zasad projektu dla wszystkich agentów (Claude 
 
 Aplikacja webowa do budżetu domowego metodą kopertową. Wiele niezależnych budżetów, każdy z jednym lub kilkoma członkami. Backend (Supabase) jest niezależny od klienta: aplikacja webowa jest pierwszym klientem, natywna aplikacja na iOS powstanie później i będzie korzystać z tych samych danych i reguł.
 
-**Aktualna faza:** 1, czyli MVP aplikacji webowej (faza 0 – fundamenty – zakończona). Zadania realizuj w kolejności z [docs/backlog.md](docs/backlog.md) według [docs/prompts/feature-workflow.md](docs/prompts/feature-workflow.md), każde na podstawie zatwierdzonej specyfikacji. Nie implementuj funkcjonalności spoza PRD i backlogu.
+**Aktualna faza:** 1, czyli MVP aplikacji webowej (faza 0 – fundamenty – zakończona). Zadania to zgłoszenia w GitHub Issues; realizuj je w kolejności ze zgłoszenia zbiorczego „Backlog MVP” (zasady w [docs/backlog.md](docs/backlog.md)) według [docs/prompts/feature-workflow.md](docs/prompts/feature-workflow.md), każde na podstawie zatwierdzonej specyfikacji. Nie implementuj funkcjonalności spoza PRD i backlogu.
 
 ## Język
 
@@ -28,7 +28,26 @@ Aplikacja webowa do budżetu domowego metodą kopertową. Wiele niezależnych bu
 - Decyzje architektoniczne (nowa biblioteka, zmiana wzorca, zmiana modelu danych) proponuj jako ADR w `docs/adr/` i nie wdrażaj ich bez akceptacji.
 - Prompty procesowe znajdują się w `docs/prompts/`. Gdy zadanie się do nich odwołuje, wykonuj je etapami i zatrzymuj się w punktach kontrolnych.
 - Jeśli instrukcja w tym pliku jest sprzeczna z dokumentacją narzędzia albo dobrą praktyką, zgłoś to, zamiast po cichu jej nie przestrzegać.
-- Nie wykonuj `git push`, nie scalaj gałęzi i nie usuwaj danych bez wyraźnej prośby.
+- Nie wykonuj `git push`, nie scalaj gałęzi i nie usuwaj danych bez wyraźnej prośby. Dotyczy to także skilli `om-*`.
+
+## Dokumenty procesu
+
+Kolejność ważności przy sprzeczności: ten plik → [docs/engineering-standards.md](docs/engineering-standards.md) → dokumenty poniżej → instrukcje skilli. Sprzeczność zgłoś.
+
+| Dokument                                               | Kiedy czytać                                                                      |
+| ------------------------------------------------------ | --------------------------------------------------------------------------------- |
+| [BACKWARD_COMPATIBILITY.md](BACKWARD_COMPATIBILITY.md) | przed każdą zmianą w `supabase/` i w trasach aplikacji; zmiana łamiąca wymaga ADR |
+| [CODE_REVIEW.md](CODE_REVIEW.md)                       | przy przeglądzie PR i jako samokontrola przed otwarciem PR                        |
+| [SDLC.md](SDLC.md)                                     | przy pracy ze zgłoszeniami, PR-ami, etykietami i bramką QA                        |
+| [.ai/agentic.config.json](.ai/agentic.config.json)     | konfiguracja pipeline'u `om-*` (bramka walidacji, etykiety, ścieżki)              |
+
+## Skille `om-*`
+
+Kolekcja skilli `om-*` jest w repozytorium: `.agents/skills/` (źródło), `.claude/skills/` (dowiązania dla Claude Code), wersje w `skills-lock.json`. Skille wspierają proces z tego pliku, a nie go zastępują ([ADR 0010](docs/adr/0010-agent-pipeline-under-project-rules.md)):
+
+- Każdy skill ma lokalne rozszerzenie `.ai/skills/<skill>/SKILL.md`, które importuje wspólne zasady [.ai/skills/project-rules.md](.ai/skills/project-rules.md): implementacja tylko od specyfikacji `approved`, push i utworzenie PR po potwierdzeniu, scalanie tylko na wyraźną prośbę, log w `.ai/runs/`, komunikacja po polsku.
+- Po dodaniu skilla do kolekcji utwórz dla niego rozszerzenie w `.ai/skills/` według istniejących.
+- Plany przebiegów pipeline'u leżą w `.ai/pipeline-runs/`; nie zastępują logu w `.ai/runs/`.
 
 ## Katalog `.ai/` (obowiązkowe)
 
@@ -43,8 +62,13 @@ Katalog `.ai/` to wspólna, wersjonowana pamięć projektu dla wszystkich agent�
 ├── runs/                 # logi autonomicznych przebiegów AI
 │   └── _template.md
 ├── lessons.md            # indeks wniosków, czytany na początku każdej sesji
-└── lessons/              # szczegółowe opisy wniosków
-    └── _template.md
+├── lessons/              # szczegółowe opisy wniosków
+│   └── _template.md
+├── agentic.config.json   # konfiguracja pipeline'u om-* (ADR 0010)
+├── skills/               # lokalne rozszerzenia skilli om-* i wspólne project-rules.md
+├── trackers/, browsers/  # deskryptory GitHub i Playwright dla skilli
+├── pipeline-runs/        # plany przebiegów pipeline'u (uzupełniają logi z runs/)
+└── analysis/, qa/, scripts/  # raporty, stan i artefakty QA, skrypty środowiska testowego
 ```
 
 **Nazewnictwo plików**

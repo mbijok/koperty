@@ -24,6 +24,7 @@ Przed dodaniem sprawdź, czy podobny wniosek już istnieje; jeśli tak, zaktuali
 - Włączając kategorie Oxlint, wyłącz `react/react-in-jsx-scope` i dopuść importy CSS w `import/no-unassigned-import`. ([szczegóły](lessons/2026-10-19-oxlint-categories-react-rules.md))
 - W monorepo trzymaj w głównym `vite.config.ts` `test.projects` i `defaultPackage`; komendy z flagami kieruj przez `vp -C apps/web`; nie używaj `-w` z Bun. ([szczegóły](lessons/2026-10-19-vite-plus-monorepo-root-commands.md))
 - W hookach, skryptach i CI wywołuj komendy przez `vp run <skrypt>`; `vp node` i `vp env` istnieją tylko w globalnym CLI. ([szczegóły](lessons/2026-10-19-vite-plus-hooks-local-cli.md))
+- Po dodaniu lub aktualizacji skilli `om-*` uruchom `vp check --fix`, potem `vp check`, i popraw uwagi lintu bez zmiany zachowania. ([szczegóły](lessons/2026-10-24-vendored-skills-vp-check.md))
 - Po `vp create` popraw import `defineConfig` (z `vite-plus`), usuń blok `lint` z pakietu, włącz `strict` we wszystkich `tsconfig` (także głównym) i uruchom każdy wygenerowany skrypt. ([szczegóły](lessons/2026-10-19-vite-plus-app-template-fixes.md))
 
 ## Testy
@@ -32,6 +33,6 @@ Przed dodaniem sprawdź, czy podobny wniosek już istnieje; jeśli tak, zaktuali
 
 ## Proces
 
-- Pracując w worktree, na starcie powiedz, gdzie trafiają zmiany i jak dotrą do `master`; sprawdzaj wartości wyprowadzane z nazwy katalogu. ([szczegóły](lessons/2026-10-19-worktree-session-location.md))
+- Pracując w worktree, na starcie powiedz, gdzie trafiają zmiany i jak dotrą do `master`; sprawdzaj wartości wyprowadzane z nazwy katalogu i nieśledzone pliki w głównej kopii. ([szczegóły](lessons/2026-10-19-worktree-session-location.md))
 - Logi w `.ai/runs/` zmieniaj tylko przez dopisywanie; wykluczaj je z masowych zamian tekstu. ([szczegóły](lessons/2026-10-19-run-log-append-only-edits.md))
 - Nie zostawiaj w repozytorium znaczników z wtyczek i trybów narzędzi (np. `ponytail:`); komentarze pisz według konwencji projektu. ([szczegóły](lessons/2026-10-24-no-tool-specific-markers.md))

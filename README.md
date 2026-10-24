@@ -2,7 +2,7 @@
 
 Aplikacja webowa do zarządzania domowym budżetem metodą kopertową. Obsługuje wiele niezależnych budżetów domowych, a każdy budżet może być prowadzony wspólnie przez kilka osób (np. przez małżeństwo).
 
-> **Status:** faza 1, realizacja MVP według [backlogu](docs/backlog.md) (fundamenty z fazy 0 gotowe). Projekt realizowany w ramach kursu AI SDLC: aplikacja jest budowana z intensywnym wykorzystaniem agentów AI na każdym etapie cyklu wytwarzania oprogramowania.
+> **Status:** faza 1, realizacja MVP według [backlogu w GitHub Issues](https://github.com/mbijok/koperty/issues/20) (fundamenty z fazy 0 gotowe). Projekt realizowany w ramach kursu AI SDLC: aplikacja jest budowana z intensywnym wykorzystaniem agentów AI na każdym etapie cyklu wytwarzania oprogramowania.
 
 ## Problem i cel
 
@@ -40,7 +40,7 @@ Dokumentacja i interfejs są po polsku, kod po angielsku. Poniższe nazwy obowi�
 3. **AI:** analiza zdjęć paragonów i faktur oraz propozycja koperty lub podziału, zatwierdzana przez użytkownika.
 4. **Mobile:** natywna aplikacja na iOS (Android jako opcja), korzystająca z tego samego backendu.
 
-Szczegółowy zakres MVP opisuje [docs/prd.md](docs/prd.md), a podział na zadania [docs/backlog.md](docs/backlog.md).
+Szczegółowy zakres MVP opisuje [docs/prd.md](docs/prd.md), a podział na zadania zgłoszenia w GitHub Issues (zasady w [docs/backlog.md](docs/backlog.md)).
 
 ## Architektura
 
@@ -103,20 +103,26 @@ Struktura (przygotowana w fazie 0):
 │   │   └── archive/      # specyfikacje porzucone lub zastąpione
 │   ├── runs/             # logi autonomicznych przebiegów AI
 │   ├── lessons.md        # indeks wniosków, czytany na początku każdej sesji
-│   └── lessons/          # szczegółowe opisy wniosków
+│   ├── lessons/          # szczegółowe opisy wniosków
+│   ├── agentic.config.json # konfiguracja pipeline'u skilli om-* (ADR 0010)
+│   └── skills/           # lokalne rozszerzenia skilli om-* (zasady projektu)
+├── .agents/skills/       # skille om-* (dowiązania w .claude/skills/, wersje w skills-lock.json)
 ├── apps/
 │   └── web/              # aplikacja webowa (React + Vite+)
 ├── supabase/             # migracje, funkcje SQL, Edge Functions, testy bazy, seed
 ├── docs/
 │   ├── prd.md            # wymagania produktowe
 │   ├── architecture.md   # architektura i model danych
-│   ├── backlog.md        # plan prac MVP (vertical slices)
+│   ├── backlog.md        # zasady backlogu (zadania w GitHub Issues)
 │   ├── adr/              # Architecture Decision Records
 │   └── prompts/          # prompty wykorzystywane w pracy z agentem
 ├── scripts/              # skrypty projektu (np. kontrola .ai/)
 ├── .github/              # CI, szablon PR
 ├── .vite-hooks/          # hook pre-commit (vp staged)
 ├── AGENTS.md             # instrukcje dla agentów kodujących
+├── SDLC.md               # przepływ zgłoszeń i PR, etykiety, bramka QA
+├── CODE_REVIEW.md        # zasady przeglądu kodu
+├── BACKWARD_COMPATIBILITY.md # chronione kontrakty i ścieżka ich zmiany
 ├── CLAUDE.md             # importuje AGENTS.md (dla Claude Code)
 └── README.md
 ```

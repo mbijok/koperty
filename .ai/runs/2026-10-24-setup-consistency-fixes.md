@@ -75,3 +75,8 @@ completed – wszystkie poprawki z przeglądu wdrożone i zweryfikowane lokalnie
 
 - Przegląd i scalenie PR.
 - S-14: włączyć `edge_runtime`; etap 3: `storage`.
+
+## Uzupełnienie: scalenie `master` (2026-10-24)
+
+- **Co zrobiono:** PR #22 miał konflikty z `master` po scaleniu PR #21 (pipeline agentów). Scalono `origin/master` (`8036781`). Konflikty: `.ai/lessons.md` – zachowano oba wpisy (nowy wniosek o skillach `om-*` i rozszerzony wniosek o `vp create`); `docs/backlog.md` – wersja z `master` (backlog w GitHub Issues), z linkiem do sekcji Definition of Done w AGENTS.md. Sprawdzono, że nowe pliki z `master` (`.ai/agentic.config.json`, `.ai/browsers/playwright.md`, `SDLC.md` i inne) nie korzystają z usuniętych skryptów, workspace `packages/*`, wpisów `.gitignore` ani wyłączonych usług Supabase.
+- **Komendy:** `git fetch origin master`, `git merge origin/master`, `vp check`, `node scripts/check-ai.ts`, `vp test --coverage`, `vp build`.
