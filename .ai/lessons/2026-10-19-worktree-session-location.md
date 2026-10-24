@@ -27,6 +27,7 @@ Gdy sesja działa w worktree, w pierwszym podsumowaniu podaj ścieżkę, gałą�
 - Pierwsze podsumowanie sesji: „pracuję w `<ścieżka>` na gałęzi `<gałąź>`; zmiany trafią do `master` po scaleniu lub PR”.
 - Po komendach generujących konfigurację przejrzyj wartości zależne od nazwy katalogu.
 - Pliki wejściowe z głównej kopii (np. prompty) przenoś do repozytorium w worktree, zanim zaczniesz pracę.
+- Na starcie sprawdź nieśledzone pliki w głównej kopii (`git -C <główna-kopia> status --short`). 2026-10-24 skille `om-*` zainstalowane na `master` (`.agents/`, `.claude/skills`, `skills-lock.json`) nie były widoczne w worktree, więc kontrole i plany opierały się na niepełnym obrazie (log: .ai/runs/2026-10-24-agent-pipeline-setup.md).
 
 ## Powiązania
 

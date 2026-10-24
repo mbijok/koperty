@@ -2,6 +2,7 @@
 
 <!-- Krótki opis zmiany i jej celu. -->
 
+- Zgłoszenie: Zamyka #<!-- numer zgłoszenia albo „nie dotyczy” -->
 - Specyfikacja: <!-- .ai/specs/implemented/YYYY-MM-DD-slug.md albo „nie dotyczy” (literówka, formatowanie, dokumentacja) -->
 - User stories: <!-- US-xx -->
 - Log przebiegu: <!-- .ai/runs/YYYY-MM-DD-slug.md albo „nie dotyczy” -->
@@ -20,7 +21,8 @@
 - [ ] Nowa logika ma testy, w tym przypadki brzegowe (zera, kwoty ujemne, przekroczenie puli, zaokrąglenia) i testy dostępu (członek budżetu A vs B, `member` vs `owner`, osoba niezalogowana)
 - [ ] Reguły domenowe są w bazie (RPC, ograniczenia), nie w komponentach React; zapis tylko przez RPC
 - [ ] Kwoty w groszach (`bigint` / `number`), bez liczb zmiennoprzecinkowych; daty jako `date`
-- [ ] Zmiana schematu jest wstecznie zgodna albo ma ADR i plan migracji; zastosowane migracje i wygenerowane typy nie były edytowane
+- [ ] Zmiana jest zgodna z `BACKWARD_COMPATIBILITY.md` albo ma ADR i plan migracji; zastosowane migracje i wygenerowane typy nie były edytowane
+- [ ] Samokontrola według `CODE_REVIEW.md`
 
 **Proces (`.ai/`)**
 
@@ -28,6 +30,7 @@
 - [ ] Log przebiegu w `.ai/runs/` jest kompletny i ma status końcowy
 - [ ] Wnioski (naprawione błędy, korekty podejścia, nieoczywiste zachowania narzędzi) zapisane w `.ai/lessons/` i podlinkowane w `.ai/lessons.md`
 - [ ] `vp run check:ai` przechodzi
+- [ ] Etykiety według `SDLC.md`: kategoria, priorytet, ryzyko i `needs-qa` albo `skip-qa`
 
 **Dokumentacja i bezpieczeństwo**
 

@@ -2,6 +2,7 @@
 title: S-01 Logowanie e-mailem i profil użytkownika
 status: draft
 created: 2026-10-19
+issue: 3
 user_stories: [US-01, US-02, US-24]
 adrs:
   [
