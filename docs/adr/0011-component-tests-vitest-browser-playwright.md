@@ -17,7 +17,7 @@ Standardy inżynieryjne (4.8, propozycja P-11) zakładały testy komponentów w 
 
 - Testy komponentów i tras uruchamiamy w trybie przeglądarkowym Vitest z dostawcą Playwright (`vite-plus/test/browser-playwright`, przeglądarka Chromium). Pliki takich testów mają sufiks `*.browser.test.tsx`; pozostałe testy działają w Node.
 - Zależności deweloperskie aplikacji: `playwright`, `@vitest/browser-playwright` (w wersji Vitest wbudowanego w Vite+) i `vitest-browser-react`, dodawane przez `vp -C apps/web add -D`.
-- Zadanie CI `web` instaluje Chromium komendą `vp exec playwright install --with-deps chromium` przed `vp test --coverage`.
+- Zadanie CI `web` instaluje Chromium komendą `vp -C apps/web exec playwright install --with-deps chromium` (Playwright jest zależnością `apps/web`, a Bun instaluje pakiety w izolowanym magazynie, więc z katalogu głównego binarka może nie być widoczna) przed `vp test --coverage`.
 - Wprowadzamy to w S-01 (krok 0), zamiast w T-01. T-01 dokłada tylko testy E2E na tym samym Playwrighcie.
 
 ## Konsekwencje

@@ -89,3 +89,10 @@ Edge Functions, zastosowane migracje i format danych: bez zmian. Format `.ai/`: 
 - Przeszukano `apps/web/src`, `supabase/` (config, tests), `.github/workflows/ci.yml`, główny i aplikacyjny `vite.config.ts`, `package.json`, `docs/prd.md` (4.11, US-01, US-02, US-24), `docs/architecture.md` (sekcje 2–5), `docs/engineering-standards.md` (sekcje 3–5), ADR 0009, `BACKWARD_COMPATIBILITY.md` i wniosek o lokalnym wystawianiu API. Stan: gałąź `claude/plan-next-tasks-72dc76` = `master` (`cddb17c`).
 - Brak `product-brief.md` i kontraktu `.uxproof/`. Kontrola zgodności UI opiera się tylko na standardach 4.5.
 - Nie uruchamiano bazy. Zachowanie `anon` wynika z wniosku `2026-10-19-supabase-local-api-exposure` (sprawdzone lokalnie przy researchu), a nie z nowego testu.
+
+## Uzupełnienie 2026-10-25 (po przeglądzie decyzji)
+
+Raport opisuje stan z chwili audytu. Późniejsze decyzje zmieniły dwie rzeczy:
+
+- Link z wiadomości wraca na `/login`, a nie na `/` (tryb PKCE, obsługa wygasłego linku). Wiersz 5 tabeli wstecznej zgodności dotyczy więc teraz `/login`: trasa staje się celem linków zewnętrznych, co specyfikacja deklaruje w sekcji „Wsteczna zgodność”.
+- Specyfikacja ma status `approved` (zatwierdzenie właściciela), a ADR 0011 status zaakceptowany.
