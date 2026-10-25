@@ -27,6 +27,7 @@ Nie polegaj na domyślnych uprawnieniach: w każdej migracji nadawaj jawne `gran
 - `auto_expose_new_tables = false` w `supabase/config.toml` (wdrożone) – sprawdzone lokalnie: nowa tabela nie ma `select` dla `anon` ani `authenticated`.
 - Domyślne `EXECUTE` dla `PUBLIC` wyłączaj globalnie: `alter default privileges revoke execute on functions from public`. Wariant `alter default privileges in schema public revoke ...` **nie działa** na to uprawnienie (sprawdzone lokalnie: `anon` dalej mógł wykonać nową funkcję). Potem `grant execute ... to authenticated` dla każdej funkcji RPC.
 - Test niezmiennika: żadna funkcja w `public` nie jest wykonywalna przez `anon`, każda tabela ma RLS.
+- Bez `grant select` dla `anon` zapytanie jako `anon` kończy się błędem `42501` (permission denied), a nie pustym wynikiem: w pgTAP sprawdzaj to przez `throws_ok(..., '42501')`, nie `is_empty`.
 
 ## Powiązania
 
