@@ -5,7 +5,7 @@ import * as Stories from "./expenses-screens.stories";
 
 # Ekrany: Wydatki
 
-Nowy wydatek, lista operacji miesiąca i szczegóły wydatku (US-17–US-20).
+Nowy wydatek, lista operacji miesiąca, szczegóły i edycja wydatku (US-17–US-20).
 
 ## Nowy wydatek (`/expenses/new`)
 
@@ -41,7 +41,24 @@ Usunięcie: wzorzec „Potwierdzenie usunięcia”.
 
 <Canvas of={Stories.Szczegoly} />
 
+## Edycja wydatku (`/expenses/<id>/edit`)
+
+| Stan                           | Story                                    | Co widać                                                            | Źródło            |
+| ------------------------------ | ---------------------------------------- | ------------------------------------------------------------------- | ----------------- |
+| Ładowanie                      | `Edycja: ładowanie`                      | szkielety pól w kształcie formularza, bez przycisków                | E2-P12            |
+| Jedna koperta                  | `Edycja wydatku`                         | zapisane wartości, wybrana koperta, „Zapisz zmiany”, „Anuluj”       | US-19             |
+| Podział                        | `Edycja: podział`                        | włączony podział, dwie części, „Podzielono całą kwotę.”             | US-19, US-18      |
+| Nie istnieje albo brak dostępu | `Edycja: nie istnieje albo brak dostępu` | jeden komunikat, „Wróć do operacji”, bez formularza                 | PT404             |
+| Zapisywanie                    | `Edycja: zapisywanie`                    | „Zapisywanie…”, drugie wysłanie nic nie robi                        | wzorzec Formularz |
+| Błąd serwera                   | `Edycja: błąd serwera`                   | komunikat nad przyciskami, wpisane dane zostają                     | wzorzec Formularz |
+| Sukces                         | `Edycja: sukces`                         | po odpowiedzi serwera szczegóły wydatku z nowymi danymi, bez toastu | US-19, E2-P13     |
+
+Błędy pól, suma części i odpowiedzi API (`ENVELOPE_ARCHIVED`, `SPLITS_INVALID`): wzorzec „Podział wydatku”. „Anuluj” wraca do szczegółów bez zapisu.
+
+<Canvas of={Stories.EdycjaPodzialu} />
+
 ## Użyte elementy
 
 - Widoki: `ExpenseForm`, `OperationsPanel`, `ExpenseDetails`.
-- Wzorce: podział wydatku, lista z filtrem miesiąca, widok szczegółów, potwierdzenie usunięcia.
+- Wzorce: podział wydatku, formularz, lista z filtrem miesiąca, widok szczegółów, potwierdzenie usunięcia.
+- Komponenty: szkielet ładowania.

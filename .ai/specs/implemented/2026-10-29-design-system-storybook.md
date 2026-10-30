@@ -1,6 +1,6 @@
 ---
 title: T-03 Design system z dokumentacją w Storybooku
-status: in-progress
+status: implemented
 created: 2026-10-29
 issue:
 user_stories:
@@ -207,7 +207,13 @@ Każdy etap kończy się zatrzymaniem i raportem; kolejny zaczyna się po „dal
 
 ## Podsumowanie realizacji
 
-<Wypełniane po zakończeniu.>
+Zrealizowane 2026-10-30 w etapach 0–5 z akceptacją właściciela po każdym etapie i partii; przebieg: [log](../../runs/2026-10-29-design-system-storybook.md), postęp i decyzje: `packages/ui/POSTEP.md`.
+
+- Pakiet `packages/ui` (`@koperty/ui`): tokeny w trzech warstwach z dwoma motywami, 19 komponentów bazowych, 17 komponentów produktu, 7 widoków, 3 wzorce w kodzie, 5 modułów `lib`; `check:tokens`; `Button` i `cn` przeniesione z `apps/web`.
+- Storybook 10.6: 79 stron dokumentacji (Design system, Fundamenty, komponenty z 13 sekcjami, wzorce, mapy stanów ekranów), 341 stories (w tym 52 ekrany na pełny ekran), axe w obu motywach; `docs/design-system.md` z odwołaniem w AGENTS.md.
+- AC-1–AC-12 spełnione: `vp check`, `vp test --coverage` (800 testów, 100% w każdym pliku), `vp build`, build Storybooka, `check:tokens`; axe bez naruszeń poza 8 opisanymi wyjątkami `aria-hidden-focus` (AC-2); kontrola w przeglądarce przy 320, 768 i 1440 px w obu motywach, klawiatura i nakładki.
+- Test agentem (świeży kontekst) zbudował ekran „Edycja wydatku” z dokumentacji; 10 miejsc zgadywania uzupełnionych w dokumentacji albo wpisanych na stronę „Czego brakuje” (E5-P1–E5-P5).
+- Otwarte poza zakresem: zgłoszenie T-03 w GitHub Issues, aktualizacja specyfikacji S-01 (komponenty z pakietu), wariant E5-P4 przy S-08, sprawdzenie w Safari na iPhonie.
 
 ## Powód archiwizacji
 

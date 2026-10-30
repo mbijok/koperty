@@ -960,7 +960,7 @@ export const CATALOG: CatalogEntry[] = [
     exports: "ExpenseForm",
     description:
       "Zapisuje wydatek szybko na telefonie: kwota, koperta, data i opcjonalny opis. Jeden paragon można podzielić na kilka kopert.",
-    when: "Nowy wydatek (osobna strona)",
+    when: "Nowy wydatek i edycja wydatku (osobne strony)",
     whenNot: "Przychód – zamiast tego: formularz przychodu",
     preview: "static",
     node: <ExpenseForm envelopes={ENVELOPE_OPTIONS} submit={saved} onSuccess={noop} />,

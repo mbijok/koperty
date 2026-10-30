@@ -30,7 +30,7 @@ Przed dodaniem sprawdź, czy podobny wniosek już istnieje; jeśli tak, zaktuali
 ## Testy
 
 - Instaluj `@vitest/coverage-v8` w wersji Vitest wbudowanego w Vite+, wyłączaj pluginy aplikacji pod Vitest (fałszywe gałęzie HMR) i przed ponownym importem modułu wywołuj `vi.resetModules()`. ([szczegóły](lessons/2026-10-19-vitest-coverage-vite-plus.md))
-- W Storybooku importuj z React tylko typy (fałszywe gałęzie w pokryciu), motyw ustawiaj także z kanału globali (MDX nie uruchamia dekoratorów), a story we własnej ramce niech przejmie motyw strony dokumentacji; przewijanie przy 320 px sprawdzaj na każdej story; bloki w MDX oznaczaj `sb-unstyled`; nazwę produktu podmieniaj w `manager.ts`, a kontenery z `sr-only` oznaczaj `relative`. ([szczegóły](lessons/2026-10-29-storybook-vite-plus-setup.md))
+- W Storybooku nie używaj `import * as React` – importuj typy i nazwane funkcje (`useState`), bo przestrzeń nazw CJS daje fałszywe gałęzie w pokryciu, motyw ustawiaj także z kanału globali (MDX nie uruchamia dekoratorów), a story we własnej ramce niech przejmie motyw strony dokumentacji; przewijanie przy 320 px sprawdzaj na każdej story; bloki w MDX oznaczaj `sb-unstyled`; nazwę produktu podmieniaj w `manager.ts`, a kontenery z `sr-only` oznaczaj `relative`. ([szczegóły](lessons/2026-10-29-storybook-vite-plus-setup.md))
 
 ## Proces
 

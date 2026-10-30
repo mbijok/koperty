@@ -7,14 +7,14 @@ Plik prowadzi agent budujący design system. Nowa sesja zaczyna od przeczytania 
 
 ## Etapy
 
-| Etap                                   | Status                                          | Data       |
-| -------------------------------------- | ----------------------------------------------- | ---------- |
-| 0. Inwentaryzacja i plan               | zakończony                                      | 2026-10-29 |
-| 1. Fundamenty                          | zakończony                                      | 2026-10-29 |
-| 2. Komponenty bazowe                   | zakończony                                      | 2026-10-30 |
-| 3. Komponenty produktu, wzorce, ekrany | zakończony                                      | 2026-10-30 |
-| 4. Strony, które uczą                  | nie rozpoczęty                                  | –          |
-| 5. Sprawdzenie i raport                | gotowy; test agentem przygotowany, nie wykonany | 2026-10-30 |
+| Etap                                   | Status                                           | Data       |
+| -------------------------------------- | ------------------------------------------------ | ---------- |
+| 0. Inwentaryzacja i plan               | zakończony                                       | 2026-10-29 |
+| 1. Fundamenty                          | zakończony                                       | 2026-10-29 |
+| 2. Komponenty bazowe                   | zakończony                                       | 2026-10-30 |
+| 3. Komponenty produktu, wzorce, ekrany | zakończony                                       | 2026-10-30 |
+| 4. Strony, które uczą                  | nie rozpoczęty                                   | –          |
+| 5. Sprawdzenie i raport                | gotowy; test agentem wykonany, braki uzupełnione | 2026-10-30 |
 
 ## Materiały źródłowe
 
@@ -650,7 +650,7 @@ Komponenty produktu są prezentacyjne: dostają dane i funkcje przez propsy, nie
 
 **Co agent ma zbudować:** stories ekranu „Edycja wydatku” w `packages/ui/docs/ekrany/expenses-screens.stories.tsx` i wiersze na mapie stanów `packages/ui/docs/ekrany/wydatki.mdx`, ze stanami: ładowanie wydatku, edycja wydatku z jedną kopertą, edycja wydatku z podziałem, wydatek nie istnieje albo brak dostępu, zapisywanie, błąd serwera, sukces (powrót do szczegółów). Bez zmian w komponentach pakietu; jeśli czegoś brakuje – wpis na stronę „Czego brakuje” zamiast nowego komponentu.
 
-**Czego agent nie czyta:** `packages/ui/POSTEP.md`, `.ai/runs/`, `.ai/specs/2026-10-29-design-system-storybook.md` i historia tej rozmowy (tam są odpowiedzi, których nie ma w dokumentacji).
+**Czego agent nie czyta:** `packages/ui/POSTEP.md`, `.ai/runs/`, `.ai/specs/implemented/2026-10-29-design-system-storybook.md` i historia tej rozmowy (tam są odpowiedzi, których nie ma w dokumentacji).
 
 **Prompt do wklejenia w nowej sesji:**
 
@@ -658,7 +658,7 @@ Komponenty produktu są prezentacyjne: dostają dane i funkcje przez propsy, nie
 Zbuduj w Storybooku ekran „Edycja wydatku” (S-08, US-19) na podstawie wyłącznie
 docs/design-system.md, AGENTS.md, docs/prd.md, docs/architecture.md i Storybooka
 (vp -C packages/ui run storybook). Nie czytaj packages/ui/POSTEP.md, .ai/runs/ ani
-.ai/specs/2026-10-29-design-system-storybook.md.
+.ai/specs/implemented/2026-10-29-design-system-storybook.md.
 Dodaj stories na pełny ekran w packages/ui/docs/ekrany/expenses-screens.stories.tsx
 i wiersze mapy stanów w packages/ui/docs/ekrany/wydatki.mdx: ładowanie, jedna koperta,
 podział, nie istnieje albo brak dostępu, zapisywanie, błąd serwera, sukces.
@@ -722,6 +722,35 @@ Niczego nie commituj.
 
 **Lista braków:** strona „Czego brakuje” (pokrycie backlogu i 14 pozycji, w tym wyjątek axe i test agentem).
 
+## Etap 5 – test agentem: wynik (2026-10-30)
+
+**Przebieg:** na prośbę właściciela test wykonał osobny agent ze świeżym kontekstem (bez tej rozmowy), z promptem z sekcji wyżej. Zbudował ekran „Edycja wydatku”: 7 stories na pełny ekran w `docs/ekrany/expenses-screens.stories.tsx` (ładowanie, jedna koperta, podział, nie istnieje albo brak dostępu, zapisywanie, błąd serwera, sukces) i sekcję mapy stanów w `docs/ekrany/wydatki.mdx`. Bez zmian w pakiecie i bez zależności. Sprawdziłem: `vp check`, `check:tokens`, `vp test --coverage` (800 testów, 100%), build Storybooka, zmienione strony × 3 szerokości.
+
+**Ocena:** ekran powstał z gotowych komponentów, tokenów i wzorców bez błędów – komponenty, stany formularza, tokeny i treść komunikatów agent wziął z dokumentacji. Zgadywał w 10 miejscach, głównie o przepływie ekranów (trasy, dokąd wraca ekran), których dokumentacja nie opisywała.
+
+| #   | Miejsce zgadywania                        | Co uzupełniłem                                                                                                                                                                                                          |
+| --- | ----------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Adres ekranu edycji                       | tabela „Ekrany: trasy, tytuły, nawigacja” w `docs/design-system.md` i na stronie „Zacznij tutaj” (E5-P1)                                                                                                                |
+| 2   | Tytuł `h1` i pozycja w nawigacji          | ta sama tabela (E5-P1)                                                                                                                                                                                                  |
+| 3   | Stan ładowania formularza edycji          | wzorzec Formularz: „Edycja: wczytywanie, powrót i anulowanie” – formularz dopiero z danymi (`initial` czytany raz), szkielet pól (E5-P2)                                                                                |
+| 4   | Czy `w-1/3` jest dozwolone                | Fundamenty → Odstępy i układ oraz `docs/design-system.md`: proporcje dozwolone, stałe szerokości tylko z tokenów (E5-P5)                                                                                                |
+| 5   | Brak wydatku na ekranie edycji            | widok szczegółów i wzorzec Formularz: ten sam komunikat (`ExpenseDetails` bez `expense`) (E5-P3)                                                                                                                        |
+| 6   | Co po udanym zapisie edycji               | wzorzec Formularz i Toast: powrót do szczegółów bez toastu (zmiana widoczna, E2-P13); toast „Zapisano wydatek” tylko po nowym wydatku. Story „Edycja: sukces” poprawiona – agent dodał toast sprzeczny z E2-P13 (E5-P2) |
+| 7   | Dokąd prowadzi „Anuluj”                   | wzorzec Formularz: przy edycji do szczegółów, przy nowym obiekcie tam, skąd go otwarto (E5-P2)                                                                                                                          |
+| 8   | Nazwa typu danych edycji                  | `docs/design-system.md`: tabela „Eksportowane typy” (`ExpenseFormProps["initial"]` i inne)                                                                                                                              |
+| 9   | Zamiana danych z API na `initial`         | wzorzec Podział wydatku: przykład kodu edycji (`formatAmountInput`, `update_expense`, powrót)                                                                                                                           |
+| 10  | Część wydatku na zarchiwizowanej kopercie | „Czego brakuje” i wzorzec Podział wydatku – **do Twojej decyzji**                                                                                                                                                       |
+
+**Pozostałe uwagi agenta i co z nimi zrobiłem:** strona epiku Wydatki dostała wiersz „Edycja”; „Czego brakuje” wymienia ekran edycji przy S-08; „Kiedy” dla formularza wydatku obejmuje edycję (katalog i `docs/design-system.md`); stan „Oczekiwanie” nazwany „Oczekiwanie (zapisywanie)”; wniosek o importach z React doprecyzowany (zakaz dotyczy `import * as React`, nie nazwanych importów). Nie zrobione: stany ładowania i błędu szczegółów na pełnym ekranie (są w widoku, nie ma ich jako ekranów) – drobne.
+
+**Propozycje do decyzji:**
+
+1. **E5-P1 Trasy, tytuły i nawigacja ekranów** (tabela w `docs/design-system.md`); poza `/login`, `/profile` i `/` to propozycje do potwierdzenia w specyfikacjach zadań.
+2. **E5-P2 Edycja:** formularz po wczytaniu danych, szkielet pól, po zapisie powrót do szczegółów bez toastu, „Anuluj” do szczegółów.
+3. **E5-P3 Brak obiektu na ekranie edycji:** ten sam komunikat i widok co w szczegółach.
+4. **E5-P4 Zarchiwizowana koperta w edytowanym wydatku:** do decyzji, np. pokazać ją w wyborze tylko dla tej części z dopiskiem „zarchiwizowana” (wymaga zmiany `ExpenseForm` i specyfikacji S-08) albo wymagać zmiany koperty przy edycji.
+5. **E5-P5 Szerokości:** proporcje (`w-full`, `w-1/3`) dozwolone, stałe szerokości tylko z tokenów.
+
 ## Zatwierdzone decyzje
 
 - 2026-10-29: Q1 – brak materiałów stylu; brief i tokeny powstają w warsztacie i wymagają zatwierdzenia.
@@ -745,6 +774,7 @@ Niczego nie commituj.
 - 2026-10-30: propozycje 1–5 z partii D2 zaakceptowane (E3-P9–E3-P12, nawigacja po miesiącach i zaproszenie jako złożenia).
 - 2026-10-30: właściciel zapytał o skalę zmian (ok. 21 tys. linii); wybrał wariant 1 – zostawić całość i przejść do etapu 4. Propozycje 1–5 z partii E przyjęte wraz z przejściem (etap 3 zakończony).
 - 2026-10-30: propozycje 1–5 z etapu 4 zaakceptowane (zakładki zostają w pakiecie, przykład alertu, podgląd statyczny w katalogu, jedno źródło listy komponentów z testem, priorytety według backlogu); etap 4 zakończony.
+- 2026-10-30: propozycje E5-P1–E5-P5 z testu agentem zaakceptowane (trasy i nawigacja, zachowanie edycji, brak obiektu na edycji, szerokości); E5-P4 (zarchiwizowana koperta w edytowanym wydatku) zostaje otwarte na stronie „Czego brakuje” – wariant do wyboru przy specyfikacji S-08.
 - 2026-10-30: partia D podzielona na D1 (formularz, lista z filtrem miesiąca, widok szczegółów, potwierdzenie usunięcia) i D2 (wzorce produktu).
 
 ## Uwagi i ryzyka
@@ -755,4 +785,4 @@ Niczego nie commituj.
 
 ## Następny krok
 
-Etapy 0–5 wykonane. Następny krok: test agentem w nowej sesji (prompt w sekcji „Etap 5 – test agentem”), potem uzupełnienie braków, status specyfikacji i commit – po decyzjach z raportu etapu 5.
+Design system gotowy: etapy 0–5 i test agentem wykonane, specyfikacja T-03 `implemented`. Otwarte (decyzje właściciela): PR, zgłoszenie T-03 w GitHub Issues, aktualizacja specyfikacji S-01, wariant E5-P4 przy S-08, sprawdzenie w Safari na iPhonie.

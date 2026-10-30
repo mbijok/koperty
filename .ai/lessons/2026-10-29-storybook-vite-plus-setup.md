@@ -28,11 +28,11 @@ T-03, etap 1: Storybook 10.6 (`@storybook/react-vite`, `@storybook/addon-vitest`
 
 ## Wniosek
 
-Importuj z React tylko typy (`import type { ComponentProps } from "react"`), motyw ustawiaj na `<html>` także z nasłuchu `SET_GLOBALS` / `GLOBALS_UPDATED`, nazwę produktu podmieniaj w `manager.ts`, przewijane kontenery z ukrytym tekstem oznaczaj `relative`, a testy Node pakietu uruchamiaj w osobnym projekcie Vitest.
+Nie importuj przestrzeni nazw React (`import * as React`); importuj typy (`import type { ComponentProps } from "react"`) i nazwane funkcje (`import { useState } from "react"` – to nie tworzy fałszywych gałęzi), motyw ustawiaj na `<html>` także z nasłuchu `SET_GLOBALS` / `GLOBALS_UPDATED`, nazwę produktu podmieniaj w `manager.ts`, przewijane kontenery z ukrytym tekstem oznaczaj `relative`, a testy Node pakietu uruchamiaj w osobnym projekcie Vitest.
 
 ## Jak go stosować
 
-- Po `shadcn add` zamień `import * as React from "react"` na import typów lub nazwanych funkcji.
+- Po `shadcn add` zamień `import * as React from "react"` na import typów lub nazwanych funkcji. Reguła dotyczy plików mierzonych w pokryciu; w stories nazwane importy (`useState`) są zwykłą praktyką (doprecyzowane po teście agentem, 2026-10-30).
 - Konfiguracja motywu: `packages/ui/.storybook/preview.tsx`; nazwa produktu: `packages/ui/.storybook/manager.ts` (MutationObserver).
 - Kontrolę stron robi skrypt Playwrighta albo `vp test --project ui --project ui-dark`; poziome przewijanie sprawdzaj przez `scrollWidth > clientWidth` przy 320 px.
 - Testy `*.test.ts` z `packages/*/{src,docs,scripts}` należą do projektu `scripts` w głównym `vite.config.ts`.
@@ -52,6 +52,6 @@ Importuj z React tylko typy (`import type { ComponentProps } from "react"`), mot
 
 ## Powiązania
 
-- Specyfikacja: [.ai/specs/2026-10-29-design-system-storybook.md](../specs/2026-10-29-design-system-storybook.md)
+- Specyfikacja: [.ai/specs/implemented/2026-10-29-design-system-storybook.md](../specs/implemented/2026-10-29-design-system-storybook.md)
 - Log: [.ai/runs/2026-10-29-design-system-storybook.md](../runs/2026-10-29-design-system-storybook.md)
 - ADR: [docs/adr/0012-design-system-package-storybook.md](../../docs/adr/0012-design-system-package-storybook.md)

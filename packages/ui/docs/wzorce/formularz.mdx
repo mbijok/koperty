@@ -49,7 +49,7 @@ Każdy stan to osobna story z testem.
 | Edycja                    | `Edycja`                | zapisane wartości, „Zapisz zmiany” i „Anuluj”                          | US-15                         |
 | Błąd po opuszczeniu pola  | `BladPoOpuszczeniuPola` | komunikat pod polem, `aria-invalid`; znika po poprawieniu              | polecenie budowy, WCAG 3.3.1  |
 | Błędy przy wysłaniu       | `BledyPrzyWyslaniu`     | wszystkie błędy naraz, fokus na pierwszym, nic nie jest wysyłane       | polecenie budowy, WCAG 3.3.1  |
-| Oczekiwanie               | `Oczekiwanie`           | „Zapisywanie…”, `aria-busy`, drugie wysłanie nic nie robi              | polecenie budowy              |
+| Oczekiwanie (zapisywanie) | `Oczekiwanie`           | „Zapisywanie…”, `aria-busy`, drugie wysłanie nic nie robi              | polecenie budowy              |
 | Sukces                    | `SukcesPoPotwierdzeniu` | `onSuccess` dopiero po odpowiedzi serwera                              | polecenie budowy              |
 | Błąd pola z serwera       | `BladPolaZSerwera`      | kod błędu (np. `AMOUNT_INVALID`) przy polu, fokus na nim, dane zostają | kontrakt błędów, WCAG 3.3.3   |
 | Błąd formularza z serwera | `BladUprawnien`         | komunikat nad przyciskami (np. `FORBIDDEN`)                            | kontrakt błędów               |
@@ -58,6 +58,17 @@ Każdy stan to osobna story z testem.
 
 <Canvas of={Stories.BledyPrzyWyslaniu} />
 <Canvas of={Stories.BladSerwera} />
+
+### Edycja: wczytywanie, powrót i anulowanie
+
+| Zasada                                                                                                                                                                                        | Źródło                     |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------- |
+| Formularz pokazuj dopiero z danymi: `initial` jest czytany raz, przy pierwszym wyświetleniu.                                                                                                  | kod widoków (`initial`)    |
+| Do tego czasu szkielet w kształcie pól: `Skeleton h-badge w-1/3` (etykieta) i `h-control w-full` (pole) na każde pole, kontener `aria-busy`, ukryte „Ładowanie…” (ekran „Edycja: ładowanie”). | E2-P12, propozycja (E5-P2) |
+| Obiekt nie istnieje albo brak dostępu: ten sam komunikat co w widoku szczegółów, zamiast formularza.                                                                                          | PT404, propozycja (E5-P3)  |
+| Po zapisie edycji ekran wraca do szczegółów obiektu, bez toastu (zmiana jest widoczna).                                                                                                       | E2-P13, propozycja (E5-P2) |
+| Po zapisie nowego obiektu ekran wraca tam, skąd go otwarto; toast tylko wtedy, gdy nowego obiektu nie widać (nowy wydatek → koperty, „Zapisano wydatek”).                                     | E2-P13, propozycja (E5-P2) |
+| „Anuluj” wraca bez zapisu: przy edycji do szczegółów, przy nowym obiekcie tam, skąd go otwarto.                                                                                               | propozycja (E5-P2)         |
 
 ## 7. Zachowanie i dostępność
 

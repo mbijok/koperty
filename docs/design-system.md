@@ -16,6 +16,29 @@ Koperty to narzędzie do pilnowania pieniędzy domu, a nie rozrywka: **precyzyjn
 
 Reguły domenowe zostają w bazie (RPC); komponenty tylko pokazują wynik. Kwoty w groszach (`parsePLN`, `formatPLN` z `@koperty/ui/lib/money`), daty `RRRR-MM-DD` (`todayInWarsaw`, `formatDate`, `formatMonth`, `addMonths` z `@koperty/ui/lib/dates`).
 
+## Ekrany: trasy, tytuły, nawigacja
+
+| Ekran                      | Trasa                                    | `h1`                                             | Aktywna pozycja nawigacji | Story                           | Źródło trasy         |
+| -------------------------- | ---------------------------------------- | ------------------------------------------------ | ------------------------- | ------------------------------- | -------------------- |
+| Logowanie                  | `/login?redirect=…`                      | „Zaloguj się”                                    | bez powłoki               | Ekrany → Konto                  | S-01                 |
+| Profil                     | `/profile`                               | „Profil”                                         | żadna                     | Ekrany → Konto                  | S-01                 |
+| Pierwszy budżet            | `/budgets/new`                           | „Utwórz pierwszy budżet”                         | bez powłoki               | Ekrany → Budżety                | propozycja (E5-P1)   |
+| Nowy budżet                | `/budgets/new`                           | „Nowy budżet”                                    | żadna                     | Ekrany → Budżety                | propozycja (E5-P1)   |
+| Ustawienia budżetu         | `/settings`                              | „Ustawienia budżetu”                             | żadna                     | Ekrany → Budżety                | propozycja (E5-P1)   |
+| Dołączenie                 | `/join/<token>`                          | z karty dołączenia albo „Zaproszenie do budżetu” | bez powłoki               | Ekrany → Budżety                | propozycja (E5-P1)   |
+| Widok kopert               | `/`                                      | „Koperty”                                        | Koperty                   | Ekrany → Koperty                | S-01 (strona główna) |
+| Nowa koperta, zmiana nazwy | `/envelopes/new`, `/envelopes/<id>/edit` | „Nowa koperta”, „Zmień nazwę koperty”            | Koperty                   | Ekrany → Koperty                | propozycja (E5-P1)   |
+| Kolejność kopert           | `/envelopes/order`                       | „Kolejność kopert”                               | Koperty                   | Ekrany → Koperty                | propozycja (E5-P1)   |
+| Przydział                  | `/envelopes/<id>/allocate?month=RRRR-MM` | „Przydziel środki”                               | Koperty                   | Ekrany → Przychody i przydziały | propozycja (E5-P1)   |
+| Nowy przychód, edycja      | `/incomes/new`, `/incomes/<id>/edit`     | „Nowy przychód”, „Edycja przychodu”              | Operacje                  | Ekrany → Przychody i przydziały | propozycja (E5-P1)   |
+| Nowy wydatek               | `/expenses/new`                          | „Nowy wydatek”                                   | żadna (akcja główna)      | Ekrany → Wydatki                | propozycja (E5-P1)   |
+| Operacje                   | `/operations?month=RRRR-MM`              | „Operacje”                                       | Operacje                  | Ekrany → Wydatki                | propozycja (E5-P1)   |
+| Szczegóły wydatku          | `/expenses/<id>`                         | opis wydatku (z widoku)                          | Operacje                  | Ekrany → Wydatki                | propozycja (E5-P1)   |
+| Edycja wydatku             | `/expenses/<id>/edit`                    | „Edycja wydatku”                                 | Operacje                  | Ekrany → Wydatki                | propozycja (E5-P1)   |
+| Podsumowanie miesiąca      | `/summary?month=RRRR-MM`                 | „Podsumowanie miesiąca”                          | Podsumowanie              | Ekrany → Przegląd budżetu       | propozycja (E5-P1)   |
+
+Trasy poza S-01 ustala specyfikacja zadania z backlogu; po wdrożeniu trasa jest kontraktem (`BACKWARD_COMPATIBILITY.md`).
+
 ## Komponenty
 
 Style: w aplikacji `@import "@koperty/ui/styles.css";` (jest w `apps/web/src/index.css`). Każda pozycja ma w Storybooku stronę z 13 sekcjami.
@@ -81,10 +104,27 @@ Style: w aplikacji `@import "@koperty/ui/styles.css";` (jest w `apps/web/src/ind
 | Logowanie kodem            | `import { SignInForm } from "@koperty/ui/views/account/sign-in-form"`              | Ekran `/login`                                                | Zmiana nazwy wyświetlanej – zamiast tego: formularz (wzorzec Formularz)                           |
 | Nawigacja po miesiącach    | `import { MonthSwitcher } from "@koperty/ui/product/funds/month-switcher"`         | Podsumowanie miesiąca                                         | Wybór daty wydatku – zamiast tego: pole daty                                                      |
 | Pierwsze uruchomienie      | `import { CreateBudgetForm } from "@koperty/ui/views/budgets/create-budget-form"`  | Po pierwszym zalogowaniu, bez budżetów                        | Dołączenie do cudzego budżetu – zamiast tego: zaproszenie (karta dołączenia)                      |
-| Podział wydatku            | `import { ExpenseForm } from "@koperty/ui/views/expenses/expense-form"`            | Nowy wydatek (osobna strona)                                  | Przychód – zamiast tego: formularz przychodu                                                      |
+| Podział wydatku            | `import { ExpenseForm } from "@koperty/ui/views/expenses/expense-form"`            | Nowy wydatek i edycja wydatku (osobne strony)                 | Przychód – zamiast tego: formularz przychodu                                                      |
 | Potwierdzenie usunięcia    | `import { ConfirmDeleteDialog } from "@koperty/ui/patterns/confirm-delete-dialog"` | Usunięcie przychodu, wydatku                                  | Archiwizacja koperty (odwracalna) – zamiast tego: akcja bez pytania + przywróć                    |
 | Widok szczegółów           | `import { ExpenseDetails } from "@koperty/ui/views/expenses/expense-details"`      | Wydatek otwarty z listy operacji                              | Szybka edycja kwoty w liście – zamiast tego: formularz wydatku                                    |
 | Zaproszenie                | `import { InviteLinkPanel } from "@koperty/ui/product/budgets/invite-link-panel"`  | Ustawienia budżetu: zaproszenia                               | Zmiana roli członka – zamiast tego: wiersz członka                                                |
+
+### Eksportowane typy
+
+| Moduł                                                  | Typy                                                                                                                    |
+| ------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------- |
+| `patterns/use-form-submit`                             | `SubmitResult`, `FieldErrors`                                                                                           |
+| `patterns/confirm-delete-dialog`, `patterns/name-form` | `ConfirmDeleteDialogProps`, `NameFormProps`                                                                             |
+| `views/expenses/expense-form`                          | `ExpenseFormProps` (dane do edycji: `ExpenseFormProps["initial"]`), `ExpenseValues`                                     |
+| `views/expenses/expense-details`                       | `ExpenseDetail`, `ExpenseDetailsProps`                                                                                  |
+| `views/funds/income-form`                              | `IncomeFormProps`, `IncomeValues`                                                                                       |
+| `views/*` (pozostałe)                                  | `<Nazwa>Props`                                                                                                          |
+| `product/expenses/operation-row`, `split-editor`       | `Operation`; `SplitPart`, `EnvelopeOption`                                                                              |
+| `product/envelopes/envelope-list`                      | `EnvelopeSummary`                                                                                                       |
+| `product/overview/month-summary-table`                 | `EnvelopeMonth`, `MonthTotals`                                                                                          |
+| `product/budgets/budget-switcher`, `join-budget-card`  | `BudgetOption`; `JoinState`                                                                                             |
+| `product/account/app-shell`                            | `NavItem`, `LinkRenderProps`                                                                                            |
+| `primitives/*`                                         | `<Nazwa>Props` tam, gdzie komponent ma własne propsy (`ButtonProps`, `AlertProps`, `StateMessageProps`, `SpinnerProps`) |
 
 Pomocnicze: `@koperty/ui/lib/online` (`useOnline`), `@koperty/ui/lib/split` (`splitEvenly`, `remainingToSplit`), `@koperty/ui/lib/utils` (`cn`). Wewnętrzny: `@koperty/ui/primitives/label` (część `FormField`).
 
@@ -166,7 +206,7 @@ Wartości są tylko w `packages/ui/src/tokens/tokens.css` (oba motywy przez `lig
 | `shadow-card`     | `shadow-card`    | Karta: zawsze razem z obramowaniem | W5, K4    |
 | `shadow-overlay`  | `shadow-overlay` | Dialog, menu, toast                | W5        |
 
-Kontrolki: `h-control` (40 px), `h-control-sm` (32 px, tylko akcje w wierszach), `px-control-x`; znacznik `h-badge`; ikony `size-icon`, `size-icon-standalone`.
+Szerokości: stałe z tokenów (`w-content`, `w-control`, `max-w-content`), poza tym proporcje (`w-full`, `w-1/3`) – to nie są wartości spoza tokenów (propozycja E5-P5). Kontrolki: `h-control` (40 px), `h-control-sm` (32 px, tylko akcje w wierszach), `px-control-x`; znacznik `h-badge`; ikony `size-icon`, `size-icon-standalone`.
 
 ## Jeśli… to użyj…
 

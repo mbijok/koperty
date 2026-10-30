@@ -70,6 +70,10 @@ Nowy wydatek i edycja (`initial`, `submitLabel="Zapisz zmiany"`, „Anuluj”). 
 | Fokus na kwocie tylko przy otwarciu ekranu, nie w dokumentacji z wieloma przykładami.              | E3-Q4              |
 | Tylko aktywne koperty na liście.                                                                   | US-13              |
 
+### Edycja wydatku z częścią na zarchiwizowanej kopercie
+
+`update_expense` pozwala zostawić istniejącą część na kopercie zarchiwizowanej po zapisaniu wydatku (do nowych części tylko aktywne koperty, `docs/architecture.md`), ale `ExpenseForm` dostaje listę `envelopes` i select nie pokaże koperty spoza niej. Sposób prezentacji czeka na decyzję – strona „Czego brakuje”.
+
 ## 8. Treść
 
 | Zasada                        | Przykład                                                         | Źródło              |
@@ -122,6 +126,48 @@ Błędy części mają klucze `<id części>.envelope` i `<id części>.amount`.
   onSuccess={() => navigate({ to: "/" })}
 />
 ```
+
+Edycja (US-19): dane z API zamień na `initial` – identyfikatory kopert i kwoty jako tekst (`formatAmountInput`); formularz wyświetl dopiero z danymi:
+
+```tsx
+import { formatAmountInput } from "@koperty/ui/lib/money";
+import type { ExpenseFormProps } from "@koperty/ui/views/expenses/expense-form";
+
+const expense = useQuery(expenseQuery(expenseId)); // null przy PT404
+if (expense.isPending) return <EditExpenseSkeleton />; // szkielet pól, wzorzec Formularz
+if (!expense.data) return <ExpenseDetails onBack={() => navigate({ to: "/operations" })} />;
+
+const initial: ExpenseFormProps["initial"] = {
+  amount: formatAmountInput(expense.data.amount),
+  date: expense.data.occurred_on,
+  description: expense.data.description ?? "",
+  parts: expense.data.splits.map((split) => ({
+    envelopeId: split.envelope_id,
+    amount: formatAmountInput(split.amount),
+  })),
+};
+
+<ExpenseForm
+  envelopes={envelopes.data ?? []}
+  initial={initial}
+  submitLabel="Zapisz zmiany"
+  submit={async ({ amount, date, description, parts }) => {
+    const { error } = await supabase.rpc("update_expense", {
+      p_expense_id: expenseId,
+      p_amount: amount,
+      p_occurred_on: date,
+      p_description: description,
+      p_splits: parts.map((part) => ({ envelope_id: part.envelopeId, amount: part.amount })),
+    });
+    if (error) throw error;
+    return { ok: true };
+  }}
+  onSuccess={() => navigate({ to: "/expenses/$id", params: { id: expenseId } })}
+  onCancel={() => navigate({ to: "/expenses/$id", params: { id: expenseId } })}
+/>;
+```
+
+Ekran: Ekrany → Wydatki, „Edycja wydatku”.
 
 <Canvas of={Stories.Playground} />
 

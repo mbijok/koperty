@@ -126,6 +126,17 @@ Zbudować design system Koperty w pakiecie `packages/ui` z dokumentacją w Story
 - **Komendy:** `vp check`; `vp -C packages/ui run build-storybook`; `vp build`; `vp run check:tokens`; `vp test --coverage` (786 testów, 100%); Playwright: 36 przebiegów klawiatury i nakładek, 334 stories przy 320 px, toast w obu motywach.
 - **Wynik:** zielone po poprawce menu (wystawało 30 px poza ekran 320 px; `max-w` z dostępnej szerokości w `DropdownMenuContent`).
 
+### Krok 16. Test agentem i uzupełnienie dokumentacji (2026-10-30)
+
+- **Co zrobiono:** commit `f994d2d` (na prośbę właściciela, bez `.claude/launch.json`). Właściciel poprosił o wykonanie testu agentem; uruchomiony osobny agent ze świeżym kontekstem i promptem z POSTEP.md. Agent dodał 7 stories ekranu „Edycja wydatku” i sekcję mapy stanów; wypisał 10 miejsc zgadywania. Sprawdziłem jego zmiany i wyniki, poprawiłem story sukcesu (toast sprzeczny z E2-P13, zbędny import), uzupełniłem dokumentację w 10 miejscach (tabela tras i nawigacji, eksportowane typy, edycja we wzorcu Formularz, przykład kodu edycji, szerokości, PT404 na edycji, epik, „Czego brakuje”) i doprecyzowałem wniosek o importach z React.
+- **Komendy:** `vp check`; `vp run check:tokens`; `vp run check:ai`; `vp test --coverage` (800 testów, 100%); build Storybooka; Playwright: 9 zmienionych stron × 3 szerokości.
+- **Wynik:** zielone. Hook bezpieczeństwa zablokował polecenie z wyszukiwaniem wzorców sekretów w staged zmianach przed commitem – nie obchodzony; sprawdzono rozmiary i typy plików.
+
+### Krok 17. Zamknięcie przebiegu (2026-10-30)
+
+- **Co zrobiono:** właściciel zaakceptował E5-P1–E5-P5 (E5-P4 otwarte na stronie „Czego brakuje” do specyfikacji S-08). Specyfikacja T-03 ma status `implemented`, uzupełnione podsumowanie i została przeniesiona do `.ai/specs/implemented/2026-10-29-design-system-storybook.md` (linki w tym logu wskazują starą ścieżkę; nie przepisuję historii).
+- **Komendy:** `vp check`; `vp run check:tokens`; `vp run check:ai`; `vp test --coverage`; `vp build`.
+
 ## Decyzje i założenia
 
 - Właściciel: pakiet `packages/ui`, Storybook 10.6, bez MSW, `sonner`, Oxanium, filtr listy tylko po miesiącu (POSTEP.md, „Zatwierdzone decyzje”).
@@ -161,6 +172,10 @@ Zbudować design system Koperty w pakiecie `packages/ui` z dokumentacją w Story
 ## Status końcowy
 
 `partial` (2026-10-30): etapy 0–5 wykonane i sprawdzone (bramka zielona: `vp check`, `vp test --coverage` 786 testów i 100%, `vp build`, build Storybooka, `check:tokens`). Nie wykonano: testu agentem (zgodnie z poleceniem – nowa sesja), commitu i PR (czeka na decyzję), zmiany statusu specyfikacji T-03 na `implemented` (po teście agentem).
+
+Aktualizacja (2026-10-30, krok 16): commit `f994d2d` wykonany; test agentem wykonany na prośbę właściciela, braki uzupełnione. Status nadal `partial`: czekają decyzje E5-P1–E5-P5, PR i zmiana statusu specyfikacji T-03; zmiany po kroku 16 nie są scommitowane.
+
+Aktualizacja (2026-10-30, krok 17): `completed` – zakres specyfikacji T-03 zrealizowany i sprawdzony, specyfikacja `implemented`. Poza przebiegiem zostają decyzje właściciela: commit zmian po `f994d2d`, PR, zgłoszenie T-03, aktualizacja specyfikacji S-01, wariant E5-P4, Safari na iPhonie.
 
 ## Następne kroki
 
