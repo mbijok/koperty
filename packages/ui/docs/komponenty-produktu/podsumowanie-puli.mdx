@@ -1,0 +1,116 @@
+import { Canvas, Meta } from "@storybook/addon-docs/blocks";
+import * as Stories from "../../src/product/funds/pool-summary.stories";
+
+<Meta of={Stories} name="Dokumentacja" />
+
+# Podsumowanie puli
+
+`import { PoolSummary } from "@koperty/ui/product/funds/pool-summary";`
+
+## 1. Do czego służy
+
+Pokazuje, ile pieniędzy czeka na przydział do kopert, i mówi, co zrobić, gdy przydzielono za dużo.
+
+## 2. Kiedy używać
+
+| Sytuacja w produkcie                                           | Źródło       |
+| -------------------------------------------------------------- | ------------ |
+| Góra widoku kopert, nad listą                                  | US-21        |
+| Po dodaniu przychodu i zmianie przydziału (pula się przelicza) | US-14, US-16 |
+
+## 3. Kiedy nie używać
+
+| Sytuacja                 | Zamiast                      | Źródło |
+| ------------------------ | ---------------------------- | ------ |
+| Saldo koperty            | karta koperty                | US-21  |
+| Suma przychodów miesiąca | tabela podsumowania miesiąca | US-22  |
+
+## 4. Anatomia
+
+| Część        | Opcjonalna | Uwagi                                                  |
+| ------------ | ---------- | ------------------------------------------------------ |
+| Karta        | nie        | `Card`, nagłówek `h2` „Do rozdysponowania”             |
+| Kwota główna | nie        | `Amount size="lg"`, ujemna z „Debet”                   |
+| Wyjaśnienie  | nie        | dodatnia: czym jest pula (Z2); ujemna: co zrobić (AC4) |
+| Akcja        | tak        | np. „Dodaj przychód”                                   |
+
+## 5. Warianty
+
+Jeden wariant; treść zależy od znaku kwoty.
+
+## 6. Stany
+
+<Canvas of={Stories.Ujemna} />
+<Canvas of={Stories.Ladowanie} />
+<Canvas of={Stories.Blad} />
+
+| Stan danych                | Zachowanie                                                              | Źródło             |
+| -------------------------- | ----------------------------------------------------------------------- | ------------------ |
+| Ładowanie                  | szkielet kwoty, ukryty tekst „Ładowanie puli…”, bez akcji               | E2-P12             |
+| Pusto (nowy budżet)        | „0,00 zł” i wyjaśnienie                                                 | US-04              |
+| Błąd                       | alert `danger` z „Spróbuj ponownie”                                     | WCAG 3.3.1         |
+| Częściowe dane             | brak kwoty (`amount` niepodane) pokazuje „0,00 zł” – story „Bez danych” | propozycja (E3-P3) |
+| Dużo danych, długie teksty | kwota do 12 cyfr mieści się na 320 px                                   | WCAG 1.4.10        |
+| Ujemna                     | „−200,00 zł”, „Debet”, rzeczowa podpowiedź                              | US-16, AC4         |
+
+## 7. Zachowanie i dostępność
+
+| Zasada                                              | Źródło         |
+| --------------------------------------------------- | -------------- |
+| Nagłówek `h2` „Do rozdysponowania” (sprawdza test). | WCAG 1.3.1     |
+| Karta ma `aria-busy` w trakcie ładowania.           | WAI-ARIA       |
+| Debet: znak i słowo, bez czerwieni.                 | K3, WCAG 1.4.1 |
+
+## 8. Treść
+
+| Stan     | Tekst                                                                        | Źródło      |
+| -------- | ---------------------------------------------------------------------------- | ----------- |
+| Dodatnia | „Przychody minus przydziały, także na przyszłe miesiące.”                    | PRD 4.3, Z2 |
+| Ujemna   | „Przydzielono więcej, niż wpłynęło. Dodaj przychód albo zmniejsz przydział.” | US-16, AC4  |
+
+## 9. Responsywność
+
+Na 320 px karta na pełną szerokość, kwota `lg` się nie zawija; na 768 i 1440 px w `max-w-content`.
+
+<Canvas of={Stories.DuzaKwota} />
+
+## 10. API
+
+| Prop      | Typ          | Opis                      |
+| --------- | ------------ | ------------------------- |
+| `amount`  | `number`     | pula w groszach           |
+| `loading` | `boolean`    | ładowanie                 |
+| `error`   | `string`     | komunikat błędu wczytania |
+| `onRetry` | `() => void` | ponowna próba             |
+| `action`  | `ReactNode`  | następny krok             |
+
+## 11. Kod
+
+Typowy w produkcie (widok kopert, US-21):
+
+```tsx
+<PoolSummary
+  amount={pool.data}
+  loading={pool.isPending}
+  error={pool.isError ? "Nie udało się wczytać puli" : undefined}
+  onRetry={() => pool.refetch()}
+  action={
+    <Button variant="secondary" asChild>
+      <Link to="/incomes/new">Dodaj przychód</Link>
+    </Button>
+  }
+/>
+```
+
+<Canvas of={Stories.Playground} />
+
+## 12. Dobrze i źle
+
+| Dobrze                                            | Źle                                                   |
+| ------------------------------------------------- | ----------------------------------------------------- |
+| „−200,00 zł” z „Debet” i podpowiedzią, co zrobić. | Czerwona kwota i „Uwaga! Przekroczono budżet!” (AC4). |
+
+## 13. Powiązane
+
+- Mylone z: **kartą koperty**, **tabelą podsumowania miesiąca**.
+- Występuje we wzorcach: kwota ujemna i debet, pierwsze uruchomienie, widok kopert.

@@ -1,0 +1,41 @@
+import { Meta, Unstyled } from "@storybook/addon-docs/blocks";
+import { TokenTable } from "../blocks/foundations";
+import { shapeTokens } from "../blocks/foundations-data";
+
+<Meta title="Fundamenty/Kształt i głębia" />
+
+# Kształt i głębia
+
+Mały promień i obramowania pochodzą z R01.3, delikatny cień kart z W5.
+
+<Unstyled>
+  <TokenTable
+    caption="Promienie, obramowania i cienie"
+    rows={shapeTokens}
+    preview={(row) => (
+      <span
+        aria-hidden="true"
+        className={`block h-control w-full border border-subtle bg-surface-card ${row.className}`}
+      />
+    )}
+  />
+</Unstyled>
+
+## Kiedy wolno ich użyć
+
+| Element                          | Promień           | Obramowanie                                                            | Cień                                                  | Źródło    |
+| -------------------------------- | ----------------- | ---------------------------------------------------------------------- | ----------------------------------------------------- | --------- |
+| Przycisk, pole, select, znacznik | `rounded-control` | pole: `border-control`; przycisk: brak (poza wariantem z obramowaniem) | nigdy                                                 | R01.3, P1 |
+| Karta, panel, alert              | `rounded-card`    | zawsze `border-subtle`                                                 | karta: `shadow-card`; alert: brak                     | W5, K4    |
+| Menu, popover, podpowiedź, toast | `rounded-card`    | `border-subtle`                                                        | `shadow-overlay`                                      | W5        |
+| Dialog                           | `rounded-overlay` | `border-subtle`                                                        | `shadow-overlay`, tło `bg-surface-scrim` bez rozmycia | W5, K5    |
+| Wiersz listy                     | brak              | separator `border-b border-subtle`                                     | nigdy                                                 | R01.3     |
+
+## Zasady
+
+| Zasada                                                                                          | Źródło                              |
+| ----------------------------------------------------------------------------------------------- | ----------------------------------- |
+| Cień nigdy nie jest jedynym oddzieleniem treści: karta ma zawsze obramowanie.                   | K4                                  |
+| Nie kładź karty w karcie. Wewnątrz karty grupuj separatorami i odstępem `space-between-groups`. | polecenie budowy („karta w karcie”) |
+| Nie zaokrąglaj elementów do pigułki (`rounded-full`) poza awatarem.                             | K6, P1                              |
+| Nie rozmywaj tła (`backdrop-blur`) ani nie używaj efektu szkła.                                 | K5, AC1                             |

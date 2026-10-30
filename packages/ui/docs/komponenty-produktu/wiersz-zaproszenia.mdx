@@ -1,0 +1,96 @@
+import { Canvas, Meta } from "@storybook/addon-docs/blocks";
+import * as Stories from "../../src/product/budgets/invitation-row.stories";
+
+<Meta of={Stories} name="Dokumentacja" />
+
+# Wiersz zaproszenia
+
+`import { InvitationRow } from "@koperty/ui/product/budgets/invitation-row";`
+
+## 1. Do czego służy
+
+Pokazuje właścicielowi aktywny link zaproszenia, do kiedy działa, i pozwala go unieważnić.
+
+## 2. Kiedy używać
+
+| Sytuacja w produkcie                             | Źródło |
+| ------------------------------------------------ | ------ |
+| Lista aktywnych zaproszeń w ustawieniach budżetu | US-07  |
+
+## 3. Kiedy nie używać
+
+| Sytuacja                              | Zamiast                 | Źródło |
+| ------------------------------------- | ----------------------- | ------ |
+| Nowo wygenerowany link do skopiowania | panel linku zaproszenia | US-07  |
+| Członek budżetu                       | wiersz członka          | US-09  |
+
+## 4. Anatomia
+
+| Część                                   | Opcjonalna | Uwagi                                             |
+| --------------------------------------- | ---------- | ------------------------------------------------- |
+| Ikona linku                             | nie        | dekoracyjna                                       |
+| „Link zaproszenia” i znacznik „Aktywne” | nie        | –                                                 |
+| Ważność i autor                         | nie        | „Ważne do 5 listopada 2026 · autor: Ala Kowalska” |
+| „Unieważnij…”                           | tak        | tylko dla właściciela; otwiera potwierdzenie      |
+
+## 5. Warianty
+
+Jeden wariant; lista pokazuje tylko aktywne zaproszenia (wygasłe, zużyte i unieważnione nie dają dostępu i nie są pokazywane).
+
+## 6. Stany
+
+| Stan                   | Zachowanie                                                                 | Źródło |
+| ---------------------- | -------------------------------------------------------------------------- | ------ |
+| Aktywne                | znacznik i data ważności                                                   | US-07  |
+| Bez uprawnień          | bez „Unieważnij…”                                                          | US-07  |
+| Pusto, ładowanie, błąd | lista zaproszeń w ekranie ustawień (pusty stan „Brak aktywnych zaproszeń”) | –      |
+
+<Canvas of={Stories.BezUprawnien} />
+
+## 7. Zachowanie i dostępność
+
+| Zasada                                    | Źródło |
+| ----------------------------------------- | ------ |
+| Unieważnienie przez dialog potwierdzenia. | US-07  |
+| Data w formacie `pl-PL`.                  | DS-S06 |
+
+## 8. Treść
+
+„Ważne do 5 listopada 2026 · autor: Ala Kowalska” – forma bezosobowa, bez „utworzył/utworzyła”.
+
+## 9. Responsywność
+
+Na 320 px przycisk przechodzi pod tekst; na 768 i 1440 px w linii.
+
+<Canvas of={Stories.WaskiEkran} />
+
+## 10. API
+
+| Prop        | Typ          | Opis          |
+| ----------- | ------------ | ------------- |
+| `expiresOn` | `string`     | `RRRR-MM-DD`  |
+| `createdBy` | `string`     | autor         |
+| `onRevoke`  | `() => void` | unieważnienie |
+
+## 11. Kod
+
+```tsx
+<InvitationRow
+  expiresOn={invitation.expires_on}
+  createdBy={invitation.created_by_name}
+  onRevoke={() => confirmRevoke(invitation)}
+/>
+```
+
+<Canvas of={Stories.Playground} />
+
+## 12. Dobrze i źle
+
+| Dobrze                | Źle                                       |
+| --------------------- | ----------------------------------------- |
+| „autor: Ala Kowalska” | „utworzył Ala Kowalska” (forma rodzajowa) |
+
+## 13. Powiązane
+
+- Mylony z: **panelem linku zaproszenia**, **wierszem członka**.
+- Występuje we wzorcach: udostępnienie i otwarcie zaproszenia, ustawienia budżetu.

@@ -1,0 +1,100 @@
+import { Canvas, Meta } from "@storybook/addon-docs/blocks";
+import * as Stories from "../../src/product/budgets/budget-switcher.stories";
+
+<Meta of={Stories} name="Dokumentacja" />
+
+# Przełącznik budżetu
+
+`import { BudgetSwitcher } from "@koperty/ui/product/budgets/budget-switcher";`
+
+## 1. Do czego służy
+
+Pokazuje, w którym budżecie jesteś, i pozwala przejść do innego albo utworzyć nowy.
+
+## 2. Kiedy używać
+
+| Sytuacja w produkcie         | Źródło |
+| ---------------------------- | ------ |
+| Nagłówek powłoki aplikacji   | US-05  |
+| Utworzenie kolejnego budżetu | US-04  |
+
+## 3. Kiedy nie używać
+
+| Sytuacja                     | Zamiast                                 | Źródło |
+| ---------------------------- | --------------------------------------- | ------ |
+| Pierwszy budżet nowego konta | formularz utworzenia budżetu na ekranie | US-04  |
+| Wybór budżetu w formularzu   | select                                  | –      |
+
+## 4. Anatomia
+
+| Część           | Opcjonalna | Uwagi                                                                            |
+| --------------- | ---------- | -------------------------------------------------------------------------------- |
+| Przycisk        | nie        | nazwa budżetu (`text-section`, skracana), strzałka, ukryty przedrostek „Budżet:” |
+| Lista budżetów  | nie        | pozycje wyboru z zaznaczonym bieżącym                                            |
+| „Utwórz budżet” | nie        | po separatorze                                                                   |
+
+## 5. Warianty
+
+Jeden wariant.
+
+## 6. Stany
+
+| Stan                  | Zachowanie                                                    | Źródło             |
+| --------------------- | ------------------------------------------------------------- | ------------------ |
+| Wybrany budżet        | jego nazwa na przycisku, zaznaczenie w liście (sprawdza test) | US-05              |
+| Bez wybranego budżetu | „Wybierz budżet”                                              | propozycja (E3-P6) |
+| Jeden budżet          | lista z jednym budżetem i „Utwórz budżet”                     | US-04              |
+| Otwarte, fokus        | jak menu                                                      | –                  |
+
+<Canvas of={Stories.BezWybranegoBudzetu} />
+
+## 7. Zachowanie i dostępność
+
+| Zasada                                                                            | Źródło          |
+| --------------------------------------------------------------------------------- | --------------- |
+| Nazwa przycisku „Budżet: Dom” (ukryty przedrostek).                               | WCAG 2.4.6      |
+| Pozycje `menuitemradio` z `aria-checked`; strzałki, Enter, Escape jak w menu.     | WAI-ARIA (menu) |
+| Wybór budżetu zmienia wszystkie dane ekranu; aplikacja zapamiętuje ostatni wybór. | US-05           |
+
+## 8. Treść
+
+Nazwy budżetów takie, jak wpisali je właściciele; długa nazwa skracana wielokropkiem na przycisku, w liście też (pozycja menu).
+
+<Canvas of={Stories.DlugaNazwa} />
+
+## 9. Responsywność
+
+Na 320 px przycisk zajmuje miejsce do awatara konta i skraca nazwę; na 768 i 1440 px więcej miejsca na nazwę.
+
+## 10. API
+
+| Prop        | Typ                    | Opis                |
+| ----------- | ---------------------- | ------------------- |
+| `budgets`   | `{ id, name }[]`       | budżety użytkownika |
+| `currentId` | `string`               | bieżący budżet      |
+| `onSwitch`  | `(id: string) => void` | wybór budżetu       |
+| `onCreate`  | `() => void`           | „Utwórz budżet”     |
+
+## 11. Kod
+
+```tsx
+<BudgetSwitcher
+  budgets={budgets.data}
+  currentId={budgetId}
+  onSwitch={switchBudget}
+  onCreate={() => navigate({ to: "/budgets/new" })}
+/>
+```
+
+<Canvas of={Stories.Playground} />
+
+## 12. Dobrze i źle
+
+| Dobrze                                              | Źle                                                                           |
+| --------------------------------------------------- | ----------------------------------------------------------------------------- |
+| Nazwa bieżącego budżetu zawsze widoczna w nagłówku. | Budżet wybierany tylko w ustawieniach: łatwo zapisać wydatek w złym budżecie. |
+
+## 13. Powiązane
+
+- Mylony z: **menu konta** (powłoka aplikacji), **selectem**.
+- Występuje we wzorcach: powłoka aplikacji, pierwsze uruchomienie.

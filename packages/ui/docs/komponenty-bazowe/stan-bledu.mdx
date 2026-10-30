@@ -1,0 +1,133 @@
+import { ArgTypes, Canvas, Meta, Unstyled } from "@storybook/addon-docs/blocks";
+import { Button } from "@koperty/ui/primitives/button";
+import { ErrorState } from "@koperty/ui/primitives/empty";
+import { DoDont } from "../blocks/frames";
+import * as Stories from "../../src/primitives/error-state.stories";
+
+<Meta of={Stories} name="Dokumentacja" />
+
+# Stan błędu
+
+`import { ErrorState } from "@koperty/ui/primitives/empty";`
+
+## 1. Do czego służy
+
+Zastępuje treść, której nie udało się wczytać, mówi, co się stało, i pozwala spróbować ponownie.
+
+## 2. Kiedy używać
+
+| Sytuacja w produkcie                                               | Akcja                    | Źródło                                            |
+| ------------------------------------------------------------------ | ------------------------ | ------------------------------------------------- |
+| Błąd wczytania widoku kopert, listy operacji, podsumowania         | „Spróbuj ponownie”       | S-01 (`defaultErrorComponent`)                    |
+| Brak sieci przy wczytaniu                                          | „Spróbuj ponownie”       | US-23                                             |
+| Budżet nie istnieje albo brak dostępu (np. po usunięciu z budżetu) | „Wróć do moich budżetów” | US-05, US-09, polecenie budowy (widok szczegółów) |
+| Zaproszenie wygasło, zużyte lub unieważnione                       | „Przejdź do aplikacji”   | US-08                                             |
+
+## 3. Kiedy nie używać
+
+| Sytuacja                                         | Zamiast                        | Źródło                       |
+| ------------------------------------------------ | ------------------------------ | ---------------------------- |
+| Błąd jednego pola formularza                     | błąd w `FormField`             | WCAG 3.3.1                   |
+| Błąd zapisu formularza (dane zostają na ekranie) | alert `danger` nad formularzem | polecenie budowy (formularz) |
+| Błąd, który wymaga działania, jako toast         | stan błędu albo alert          | E2-Q4                        |
+| Pusta lista                                      | pusty stan                     | –                            |
+
+## 4. Anatomia
+
+| Część               | Opcjonalna | Uwagi                                                   |
+| ------------------- | ---------- | ------------------------------------------------------- |
+| Ikona `CircleAlert` | nie        | 20 px, `text-danger`, dekoracyjna                       |
+| Tytuł               | nie        | `text-section`: co się nie udało                        |
+| Opis                | tak        | co zrobić; uspokaja, że dane są zapisane, gdy to prawda |
+| Akcja               | tak        | „Spróbuj ponownie” albo przejście w bezpieczne miejsce  |
+
+## 5. Warianty
+
+Jeden wygląd; treść zależy od przyczyny (błąd serwera, brak sieci, brak dostępu).
+
+<Canvas of={Stories.Stany} />
+
+## 6. Stany
+
+Stan błędu jest statyczny; ponowna próba pokazuje szkielet albo wskaźnik ładowania, a potem dane, pusty stan lub znowu błąd. Najechanie, fokus i ładowanie dotyczą przycisku.
+
+## 7. Zachowanie i dostępność
+
+| Zasada                                                                                  | Źródło                  |
+| --------------------------------------------------------------------------------------- | ----------------------- |
+| `role="alert"`: czytnik ogłasza błąd od razu (sprawdza test).                           | WCAG 4.1.3              |
+| Znaczenie niesie tytuł, ikona jest dodatkiem.                                           | WCAG 1.4.1              |
+| „Brak dostępu” i „nie istnieje” to ten sam komunikat – nie zdradza, że budżet istnieje. | PRD 6 (izolacja danych) |
+
+## 8. Treść
+
+| Część | Zasada                                      | Przykład                                                | Źródło                   |
+| ----- | ------------------------------------------- | ------------------------------------------------------- | ------------------------ |
+| Tytuł | co się nie udało, bez kodów technicznych    | „Nie udało się wczytać kopert”                          | polecenie budowy (Treść) |
+| Opis  | co zrobić                                   | „Spróbuj ponownie za chwilę. Twoje dane są bezpieczne.” | WCAG 3.3.3               |
+| Akcja | czasownik                                   | „Spróbuj ponownie”                                      | E2-P2                    |
+| Ton   | bez obwiniania użytkownika i bez straszenia | –                                                       | AC4                      |
+
+<Canvas of={Stories.DlugaTresc} />
+
+## 9. Responsywność
+
+| Szerokość     | Zachowanie                                      |
+| ------------- | ----------------------------------------------- |
+| 320 px        | przycisk może zająć pełną szerokość             |
+| 768 i 1440 px | najwyżej 65 znaków szerokości, w miejscu treści |
+
+## 10. API
+
+<ArgTypes of={Stories} />
+
+| Prop          | Typ         | Opis                         |
+| ------------- | ----------- | ---------------------------- |
+| `title`       | `string`    | co się nie udało             |
+| `description` | `string`    | co zrobić                    |
+| `action`      | `ReactNode` | ponowna próba albo przejście |
+
+## 11. Kod
+
+Minimalny:
+
+```tsx
+<ErrorState
+  title="Nie udało się wczytać operacji"
+  action={
+    <Button variant="secondary" onClick={() => refetch()}>
+      Spróbuj ponownie
+    </Button>
+  }
+/>
+```
+
+Typowy w produkcie (domyślny komponent błędu trasy, S-01):
+
+<Canvas of={Stories.Playground} />
+
+## 12. Dobrze i źle
+
+<Unstyled>
+  <DoDont
+    good={{
+      node: (
+        <ErrorState
+          title="Nie udało się wczytać kopert"
+          description="Spróbuj ponownie za chwilę."
+          action={<Button variant="secondary">Spróbuj ponownie</Button>}
+        />
+      ),
+      note: "mówi, co się nie udało, i daje wyjście.",
+    }}
+    bad={{
+      node: <ErrorState title="Error 500: PGRST301" />,
+      note: "kod techniczny nic nie mówi i nie ma wyjścia.",
+    }}
+  />
+</Unstyled>
+
+## 13. Powiązane
+
+- Mylony z: **alertem** (komunikat nad treścią, która jest), **pustym stanem** (brak danych, nie błąd).
+- Występuje we wzorcach: widok szczegółów („nie istnieje albo brak dostępu”), formularz (brak sieci), lista.

@@ -1,0 +1,32 @@
+import { Meta, Unstyled } from "@storybook/addon-docs/blocks";
+import { TypeSpecimen } from "../blocks/foundations";
+import { typeRoles } from "../blocks/foundations-data";
+
+<Meta title="Fundamenty/Typografia" />
+
+# Typografia
+
+Cały interfejs używa kroju Oxanium Variable (W3, R01.4), dołączonego do pakietu (`@fontsource-variable/oxanium`, podzbiory `latin` i `latin-ext`), bez ładowania z zewnętrznego CDN. Wybierasz rolę tekstu, a nie rozmiar.
+
+## Role
+
+<Unstyled>
+  <TypeSpecimen roles={typeRoles} />
+</Unstyled>
+
+## Zasady
+
+| Zasada                                                                                                                                                                                                        | Źródło                                 |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------- |
+| Używaj klas ról (`text-page`, `text-section`, `text-body`, `text-label`, `text-input`, `text-meta`, `text-amount`, `text-amount-lg`). Domyślne rozmiary Tailwinda (`text-sm`, `text-xl`) są wyłączone.        | P3, ADR 0012                           |
+| Tekst w polach ma 16 px (`text-input`), żeby iOS Safari nie powiększał strony przy fokusie.                                                                                                                   | K1                                     |
+| Tekst ciągły (opisy, komunikaty dłuższe niż jedno zdanie) ma najwyżej około 65 znaków w linii: `max-w-measure`.                                                                                               | P3, polecenie budowy                   |
+| Kwoty mają cyfry tabelaryczne. Oxanium ma je domyślnie (wszystkie cyfry mają tę samą szerokość), więc kolumny kwot wyrównują się bez dodatkowych klas. Nie włączaj `font-variant-numeric: proportional-nums`. | W3, brief: fakty sprawdzone            |
+| Kwoty w kolumnach wyrównuj do prawej.                                                                                                                                                                         | AC3 (liczby z hierarchią) – propozycja |
+| Jedna rola `text-page` na ekran (nagłówek `h1`), sekcje mają `text-section` (`h2`).                                                                                                                           | WCAG 1.3.1, 2.4.6                      |
+| Oxanium nie ma kursywy: wyróżnienie robisz grubością (`text-label`) albo kolorem `text-muted` dla treści drugorzędnej, nie kursywą.                                                                           | brief: fakty sprawdzone                |
+| Link zaproszenia i kody piszesz krojem o stałej szerokości (`font-mono`).                                                                                                                                     | P8                                     |
+
+## Liczby, daty i waluta
+
+Kwoty i daty formatuje warstwa prezentacji w locale `pl-PL`, waluta PLN, np. „1 234,56 zł”, „29 października 2026” (AGENTS.md, PRD 6). Ujemna kwota ma znak minus i znacznik „Debet” (K3); szczegóły na stronie „Treść”.

@@ -1,0 +1,67 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Design system/Treść" />
+
+# Treść
+
+Ton wynika z charakteru produktu (C1, AC4): rzeczowo, krótko, bez oceniania. Mówimy, co się stało i co zrobić. Debet to stan do uporządkowania, nie wina.
+
+## Ton
+
+| Produkt mówi                                                                             | Produkt nie mówi                                 | Źródło   |
+| ---------------------------------------------------------------------------------------- | ------------------------------------------------ | -------- |
+| „Przydzielono więcej, niż wpłynęło. Dodaj przychód albo zmniejsz przydział.”             | „Uwaga! Przekroczyłeś budżet!”                   | AC4, K3  |
+| „Nie udało się zapisać. Wpisane dane zostały w formularzu – spróbuj ponownie za chwilę.” | „Ups! Coś poszło nie tak 😕”                     | AC1, AC2 |
+| „Koperty to cele wydatków, np. Jedzenie albo Rachunki. Zacznij od pierwszej.”            | „Świetnie! Zdobądź odznakę za pierwszą kopertę!” | AC2      |
+
+Zwracamy się do osoby w drugiej osobie liczby pojedynczej („Wpisz”, „Masz już kopertę o tej nazwie”). Bez wykrzykników, emoji i żartów (AC1, AC2).
+
+## Przyciski i akcje
+
+| Zasada                                                    | Przykład                                        | Źródło            |
+| --------------------------------------------------------- | ----------------------------------------------- | ----------------- |
+| Czasownik i obiekt, w trybie rozkazującym                 | „Zapisz wydatek”, „Usuń budżet”, nigdy „OK”     | polecenie budowy  |
+| Akcja otwierająca dialog lub kolejny krok kończy się „…”  | „Usuń wydatek…”, „Unieważnij…”                  | E2-P9             |
+| Tekst w trakcie: czynność w toku, nie dłuższa od etykiety | „Zapisz wydatek” → „Zapisywanie…”               | E2-Q2             |
+| Akcja tekstowa też ma czasownik                           | „Wyślij nowy kod”, „Wróć do bieżącego miesiąca” | polecenie budowy  |
+| Nazwa przycisku ikonowego z obiektem                      | „Edytuj wydatek: Biedronka”                     | WCAG 4.1.2, E2-P9 |
+
+## Błędy
+
+| Zasada                                                    | Przykład                                                                             | Źródło          |
+| --------------------------------------------------------- | ------------------------------------------------------------------------------------ | --------------- |
+| Co się stało i co zrobić, z przykładem poprawnej wartości | „Podaj kwotę, np. 5000 albo 120,50.”                                                 | WCAG 3.3.3      |
+| Przy błędzie sieci i serwera: że dane zostały             | „Brak połączenia z internetem. Wpisane dane zostały…”                                | E3-P7           |
+| Brak dostępu i brak obiektu: jeden komunikat              | „Wydatek nie istnieje albo nie masz do niego dostępu.”                               | PT404           |
+| Zablokowana akcja: dlaczego i co zrobić                   | „Jesteś jedynym właścicielem. Nadaj rolę właściciela innej osobie albo usuń budżet.” | US-10, E2-Q1    |
+| Kody błędów (`ENVELOPE_NAME_TAKEN`) nigdy w interfejsie   | „Masz już kopertę o tej nazwie.”                                                     | kontrakt błędów |
+
+## Puste stany
+
+| Zasada                                        | Przykład                                                              | Źródło           |
+| --------------------------------------------- | --------------------------------------------------------------------- | ---------------- |
+| Dlaczego pusto i jeden następny krok          | „Nie masz jeszcze kopert” + „Dodaj kopertę”                           | E2-Q5            |
+| Brak wyników filtra ≠ „jeszcze nic tu nie ma” | „Brak operacji w wybranym miesiącu” vs „Brak operacji w tym budżecie” | polecenie budowy |
+| Brak opisu nazwany wprost                     | „Wydatek bez opisu”                                                   | E3-P4            |
+
+## Formaty
+
+| Co                 | Format                                                            | Przykład                    | Źródło          |
+| ------------------ | ----------------------------------------------------------------- | --------------------------- | --------------- |
+| Kwota              | `formatPLN`: grupowanie tysięcy zawsze, minus „−”, „zł” po spacji | „1 250,00 zł”, „−30,00 zł”  | E3-P1, DS-S06   |
+| Przychód na liście | znak „+”                                                          | „+5 000,00 zł”              | P7              |
+| Kwota w polu       | jak się pisze, porządkowana po opuszczeniu pola                   | „1234,5” → „1 234,50”       | E3-P2           |
+| Data               | `formatDate`: dzień, miesiąc słownie, rok                         | „29 października 2026”      | DS-S06          |
+| Nagłówek dnia      | `formatDayHeading`                                                | „czwartek, 29 października” | DS-S06          |
+| Miesiąc            | `formatMonth`: z wielkiej litery, w mianowniku                    | „Październik 2026”          | DS-S06, E3-P4   |
+| Godzina            | nie pokazujemy – operacje mają tylko datę                         | –                           | PRD 4.1, DS-S06 |
+| Liczba wyników     | bez odmiany liczebnika                                            | „Liczba operacji: 5”        | E3-P8           |
+| Link i kod         | krój o stałej szerokości                                          | link zaproszenia            | P8              |
+
+## Długie teksty
+
+| Zasada                                                                                   | Źródło                     |
+| ---------------------------------------------------------------------------------------- | -------------------------- |
+| Nazwy (koperty, budżetu, osoby) zawijają się w treści; w przycisku i menu – wielokropek. | przełącznik budżetu, E2-P2 |
+| Kwota nigdy się nie łamie (`whitespace-nowrap`).                                         | W3, kwota                  |
+| Opis w liście zawija się; brak limitu długości w interfejsie – limity ustala baza.       | AGENTS.md                  |

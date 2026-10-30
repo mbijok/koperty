@@ -3,12 +3,15 @@
   "version": "0.0.0",
   "private": true,
   "workspaces": [
-    "apps/*"
+    "apps/*",
+    "packages/*"
   ],
   "type": "module",
   "scripts": {
     "prepare": "vp config --no-agent",
-    "check:ai": "node scripts/check-ai.ts"
+    "check:ai": "node scripts/check-ai.ts",
+    "check:tokens": "node packages/ui/scripts/check-tokens.ts",
+    "test:storybook": "vp test --project ui --project ui-dark"
   },
   "devDependencies": {
     "@vitest/coverage-v8": "5.0.5",

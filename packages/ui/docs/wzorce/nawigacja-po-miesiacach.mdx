@@ -1,0 +1,112 @@
+import { Canvas, Meta } from "@storybook/addon-docs/blocks";
+import * as Stories from "./month-navigation.stories";
+
+<Meta of={Stories} name="Dokumentacja" />
+
+# Nawigacja po miesiącach
+
+`import { MonthSwitcher } from "@koperty/ui/product/funds/month-switcher";`
+
+## 1. Do czego służy
+
+Przełącza widok między miesiącami: przeszłymi (sprawdzenie), bieżącym i przyszłymi (planowanie przydziałów). Wzorzec łączy przełącznik miesiąca z danymi miesiąca i powrotem do bieżącego.
+
+## 2. Kiedy używać
+
+| Sytuacja w produkcie            | Źródło |
+| ------------------------------- | ------ |
+| Podsumowanie miesiąca           | US-22  |
+| Lista operacji                  | US-20  |
+| Przydziały na przyszłe miesiące | US-16  |
+
+## 3. Kiedy nie używać
+
+| Sytuacja                    | Zamiast    | Źródło |
+| --------------------------- | ---------- | ------ |
+| Wybór daty wydatku          | pole daty  | US-17  |
+| Zakres kilku miesięcy naraz | brak w MVP | PRD 3  |
+
+## 4. Anatomia
+
+| Część                        | Opcjonalna | Uwagi                                   |
+| ---------------------------- | ---------- | --------------------------------------- |
+| Przełącznik miesiąca         | nie        | poprzedni / nazwa miesiąca / następny   |
+| „Wróć do bieżącego miesiąca” | tak        | tylko poza bieżącym miesiącem           |
+| Dane miesiąca                | nie        | tabela podsumowania albo lista operacji |
+
+## 5. Warianty
+
+Jeden wariant; dane pod przełącznikiem zależą od ekranu.
+
+## 6. Stany
+
+| Stan             | Story             | Zachowanie                                                     | Źródło       |
+| ---------------- | ----------------- | -------------------------------------------------------------- | ------------ |
+| Bieżący miesiąc  | `Playground`      | bez „Wróć do bieżącego miesiąca”                               | E3-P8        |
+| Przyszły miesiąc | `PrzyszlyMiesiac` | same przydziały, bez wydatków; saldo początkowe z października | US-16, US-22 |
+| Przejście roku   | `PrzejscieRoku`   | „Grudzień 2026” → „Styczeń 2027”; miesiąc bez danych pusty     | PRD 4.2      |
+
+<Canvas of={Stories.PrzyszlyMiesiac} />
+
+## 7. Zachowanie i dostępność
+
+| Zasada                                                                               | Źródło         |
+| ------------------------------------------------------------------------------------ | -------------- |
+| Nazwa miesiąca jest regionem `aria-live`: zmiana jest ogłaszana.                     | WCAG 4.1.3     |
+| Przyciski ikonowe mają nazwy „Poprzedni miesiąc” i „Następny miesiąc” i podpowiedzi. | WCAG 4.1.2     |
+| Miesiąc w adresie (`?month=2026-10`): odświeżenie i link zachowują widok.            | standardy 4.3  |
+| Bez ograniczenia w przód: przydziały można planować na dowolny miesiąc.              | US-16, PRD 4.4 |
+| Saldo końcowe miesiąca jest saldem początkowym następnego (liczy baza).              | US-22, PRD 4.5 |
+
+## 8. Treść
+
+| Zasada                          | Przykład           | Źródło |
+| ------------------------------- | ------------------ | ------ |
+| Miesiąc z wielkiej litery i rok | „Październik 2026” | DS-S06 |
+
+## 9. Responsywność
+
+Przełącznik na całą szerokość; tabela przewija się w bok w swoim kontenerze.
+
+<Canvas of={Stories.WaskiEkran} />
+
+## 10. API
+
+Wzorzec składa gotowe komponenty: `MonthSwitcher` (`month`, `onMonthChange`), `MonthSummaryTable` albo `OperationsPanel` (ma już „Wróć do bieżącego miesiąca”). Funkcje: `addMonths`, `monthOf`, `todayInWarsaw` z `@koperty/ui/lib/dates`.
+
+## 11. Kod
+
+```tsx
+const current = monthOf(todayInWarsaw());
+const { month = current } = Route.useSearch();
+const setMonth = (next: string) => navigate({ search: { month: next } });
+
+<MonthSwitcher month={month} onMonthChange={setMonth} />;
+{
+  month !== current && (
+    <Button variant="link" size="sm" onClick={() => setMonth(current)}>
+      Wróć do bieżącego miesiąca
+    </Button>
+  );
+}
+<MonthSummaryTable
+  month={month}
+  rows={summary.data?.rows}
+  totals={summary.data?.totals}
+  loading={summary.isPending}
+/>;
+```
+
+<Canvas of={Stories.Playground} />
+
+## 12. Dobrze i źle
+
+| Dobrze                                        | Źle                                                      |
+| --------------------------------------------- | -------------------------------------------------------- |
+| Miesiąc w adresie, powrót jednym kliknięciem. | Miesiąc tylko w stanie komponentu, ginie po odświeżeniu. |
+| Przyszłe miesiące dostępne.                   | Blokada „Następny miesiąc” na bieżącym miesiącu.         |
+
+## 13. Powiązane
+
+- Komponenty: przełącznik miesiąca, tabela podsumowania miesiąca, lista operacji.
+- Wzorce: lista z filtrem miesiąca, kwota ujemna i debet.

@@ -1,0 +1,23 @@
+import { Meta, Unstyled } from "@storybook/addon-docs/blocks";
+import { TokenTable } from "../blocks/foundations";
+import { motionTokens } from "../blocks/foundations-data";
+
+<Meta title="Fundamenty/Ruch" />
+
+# Ruch
+
+Ruch tylko informuje o zmianie stanu; nie ma animacji dla efektu (AC1).
+
+<Unstyled>
+  <TokenTable caption="Czasy i krzywa" rows={motionTokens} />
+</Unstyled>
+
+## Zasady
+
+| Sytuacja                                    | Zachowanie                                                                                                           | Źródło         |
+| ------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- | -------------- |
+| Najechanie, wciśnięcie, zmiana koloru       | `transition-colors duration-fast ease-standard`                                                                      | P6             |
+| Otwarcie i zamknięcie dialogu, menu, toastu | przenikanie i lekkie przesunięcie, `duration-base ease-standard`                                                     | P6             |
+| `prefers-reduced-motion: reduce`            | wszystkie przejścia i animacje trwają 0,01 ms (globalny styl w `styles.css`), czyli zmiana jest natychmiastowa       | P6, WCAG 2.3.3 |
+| Wskaźnik ładowania                          | jedyna animacja ciągła; przy ograniczonym ruchu wskaźnik zostaje widoczny bez obrotu, a stan ładowania ogłasza tekst | WCAG 2.2.2, P6 |
+| Konfetti, pulsowanie, animowane liczby      | nie używamy                                                                                                          | AC1, AC2       |

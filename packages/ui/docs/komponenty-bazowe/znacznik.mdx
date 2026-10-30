@@ -1,0 +1,126 @@
+import { Canvas, Meta, Unstyled } from "@storybook/addon-docs/blocks";
+import { Badge } from "@koperty/ui/primitives/badge";
+import { DoDont } from "../blocks/frames";
+import * as Stories from "../../src/primitives/badge.stories";
+
+<Meta of={Stories} name="Dokumentacja" />
+
+# Znacznik
+
+`import { Badge } from "@koperty/ui/primitives/badge";`
+
+## 1. Do czego służy
+
+Pokazuje krótki status lub rolę obiektu jednym słowem obok jego nazwy.
+
+## 2. Kiedy używać
+
+| Sytuacja w produkcie  | Treść                                               | Źródło           |
+| --------------------- | --------------------------------------------------- | ---------------- |
+| Rola członka budżetu  | „Właściciel”, „Członek”                             | US-09            |
+| Koperta w archiwum    | „Zarchiwizowana”                                    | US-13            |
+| Stan zaproszenia      | „Aktywne do 5 listopada”, „Wygasło”, „Wykorzystane” | US-07, US-08     |
+| Ujemne saldo lub pula | „Debet” obok kwoty ze znakiem minus                 | K3, PRD 4.3, 4.5 |
+
+## 3. Kiedy nie używać
+
+| Sytuacja                          | Zamiast                                               | Źródło          |
+| --------------------------------- | ----------------------------------------------------- | --------------- |
+| Komunikat, który wymaga działania | alert                                                 | WCAG 3.3.1      |
+| Filtr lub przełączanie widoku     | przycisk lub przełącznik (znacznik nie jest klikalny) | WAI-ARIA        |
+| Liczba nieprzeczytanych, licznik  | brak w produkcie (PRD 3 – bez powiadomień)            | PRD 3           |
+| Kolor jako jedyny nośnik statusu  | słowo w znaczniku                                     | WCAG 1.4.1, AC4 |
+
+## 4. Anatomia
+
+| Część    | Opcjonalna | Uwagi                                                                                         |
+| -------- | ---------- | --------------------------------------------------------------------------------------------- |
+| Kontener | nie        | 20 px wysokości, promień kontrolki, tło `surface-muted`, obramowanie `border-subtle` (P1, K6) |
+| Tekst    | nie        | `text-meta` 12 px, jedno lub kilka słów                                                       |
+
+## 5. Warianty
+
+Jeden wariant. Status niesie słowo, nie kolor – żaden status nie jest czerwony ani zielony (K3, AC4, W4).
+
+## 6. Stany
+
+<Canvas of={Stories.Stany} />
+
+Znacznik nie jest interaktywny: najechanie, fokus, wciśnięcie, zablokowanie, ładowanie i błąd nie dotyczą. Macierz pokazuje statusy używane w produkcie.
+
+<Canvas of={Stories.Debet} />
+
+## 7. Zachowanie i dostępność
+
+| Zasada                                                                                  | Źródło     |
+| --------------------------------------------------------------------------------------- | ---------- |
+| Zwykły tekst w kolejności czytania, bez roli i bez fokusu (sprawdza test w Playground). | WCAG 1.3.2 |
+| Czytnik czyta słowo w znaczniku razem z nazwą obiektu; nie dodawaj `aria-label`.        | WCAG 1.3.1 |
+| „Debet” stoi zaraz po kwocie, więc czytnik ogłasza „minus 30 złotych, Debet”.           | K3         |
+
+## 8. Treść
+
+| Zasada                                                            | Przykład                                            | Źródło             |
+| ----------------------------------------------------------------- | --------------------------------------------------- | ------------------ |
+| Jedno słowo albo krótka fraza, najwyżej około 24 znaków           | „Wygasło”, „Aktywne do 5 listopada”                 | propozycja (E2-P2) |
+| Rzeczownik lub przymiotnik w formie pasującej do obiektu          | „Zarchiwizowana” (koperta), „Wygasło” (zaproszenie) | –                  |
+| Daty w znaczniku w formacie `pl-PL`, bez roku, gdy to bieżący rok | „5 listopada”                                       | DS-S06             |
+| Tekst się nie zawija; dłuższy status to treść, nie znacznik       | –                                                   | P1                 |
+
+## 9. Responsywność
+
+| Szerokość     | Zachowanie                                                        |
+| ------------- | ----------------------------------------------------------------- |
+| 320 px        | znacznik przechodzi do nowej linii pod długą nazwą, nie ucina się |
+| 768 i 1440 px | w jednej linii z nazwą                                            |
+
+<Canvas of={Stories.WaskiEkran} />
+
+## 10. API
+
+| Prop       | Typ               | Domyślnie | Opis          |
+| ---------- | ----------------- | --------- | ------------- |
+| `children` | `ReactNode`       | –         | tekst statusu |
+| pozostałe  | atrybuty `<span>` | –         | –             |
+
+## 11. Kod
+
+Minimalny:
+
+```tsx
+<Badge>Właściciel</Badge>
+```
+
+Typowy w produkcie (saldo koperty, K3):
+
+```tsx
+<span className="flex items-center gap-inline">
+  <span className="text-amount">{formatAmount(balance)}</span>
+  {balance < 0 && <Badge>Debet</Badge>}
+</span>
+```
+
+## 12. Dobrze i źle
+
+<Unstyled>
+  <DoDont
+    good={{
+      node: (
+        <span className="flex items-center gap-inline">
+          <span className="text-amount">−30,00 zł</span>
+          <Badge>Debet</Badge>
+        </span>
+      ),
+      note: "znak minus i słowo: widać bez koloru.",
+    }}
+    bad={{
+      node: <span className="text-amount text-danger">30,00 zł</span>,
+      note: "czerwona kwota bez minusa: straszy i nie mówi, co oznacza (AC4).",
+    }}
+  />
+</Unstyled>
+
+## 13. Powiązane
+
+- Mylony z: **przyciskiem** (znacznik nie jest klikalny), **alertem** (komunikat z działaniem).
+- Występuje we wzorcach: kwota ujemna i debet, lista członków, lista zaproszeń.

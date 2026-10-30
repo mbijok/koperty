@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Instrukcje dla agentów kodujących pracujących w tym repozytorium. Opis produktu i kontekst znajdziesz w [README.md](README.md), wymagania w [docs/prd.md](docs/prd.md), architekturę w [docs/architecture.md](docs/architecture.md), uzasadnienia decyzji w [docs/adr/](docs/adr/), plan prac w GitHub Issues (zasady w [docs/backlog.md](docs/backlog.md)), a obowiązujące standardy kodu i wzorce w [docs/engineering-standards.md](docs/engineering-standards.md). Specyfikacje, logi przebiegów i wnioski z pracy agentów znajdują się w katalogu `.ai/` (zasady w sekcji „Katalog `.ai/`” poniżej).
+Instrukcje dla agentów kodujących pracujących w tym repozytorium. Opis produktu i kontekst znajdziesz w [README.md](README.md), wymagania w [docs/prd.md](docs/prd.md), architekturę w [docs/architecture.md](docs/architecture.md), uzasadnienia decyzji w [docs/adr/](docs/adr/), plan prac w GitHub Issues (zasady w [docs/backlog.md](docs/backlog.md)), obowiązujące standardy kodu i wzorce w [docs/engineering-standards.md](docs/engineering-standards.md), a skrót design systemu (komponenty, tokeny, „jeśli… to użyj…”, czego unikać) w [docs/design-system.md](docs/design-system.md). Specyfikacje, logi przebiegów i wnioski z pracy agentów znajdują się w katalogu `.ai/` (zasady w sekcji „Katalog `.ai/`” poniżej).
 
 Ten plik jest jedynym źródłem zasad projektu dla wszystkich agentów (Claude Code, Codex, Cursor i innych). Pliki specyficzne dla narzędzi, takie jak `CLAUDE.md`, tylko go importują i dodają mechanikę danego narzędzia. Nowe zasady projektu dopisuj wyłącznie tutaj.
 
@@ -147,7 +147,7 @@ Katalog `.ai/` to wspólna, wersjonowana pamięć projektu dla wszystkich agent�
 - React + TypeScript w trybie `strict`. Bez `any`; jeśli typ jest naprawdę nieznany, użyj `unknown` i zawężaj.
 - Aplikacja jest SPA, bez renderowania po stronie serwera.
 - Routing: TanStack Router. Dane z backendu: TanStack Query (bez pobierania danych w `useEffect`). Klucze zapytań definiuj w jednym miejscu.
-- UI: Tailwind CSS i shadcn/ui. Komponenty shadcn dodawaj przez jego CLI, a nie przepisuj ręcznie. Interfejs musi działać dobrze na telefonie (mobile first).
+- UI: Tailwind CSS i shadcn/ui w design systemie `packages/ui` ([ADR 0012](docs/adr/0012-design-system-package-storybook.md)). Komponenty shadcn dodawaj przez jego CLI do `packages/ui`, a potem dostosuj do tokenów i dokumentuj w Storybooku; nie przepisuj ich od zera. Wartości tylko z tokenów (`vp run check:tokens`). Interfejs musi działać dobrze na telefonie (mobile first). Zanim zbudujesz ekran, przeczytaj [docs/design-system.md](docs/design-system.md): wybieraj gotowe widoki, wzorce i komponenty z pakietu, a brakujących elementów nie dodawaj bez zgody (strona „Czego brakuje” w Storybooku).
 - Nie dodawaj nowych zależności bez uzasadnienia i mojej zgody.
 
 **Vite+**
@@ -179,7 +179,6 @@ Wszystkie komendy uruchamiasz z katalogu głównego repozytorium. Komendy Supaba
 | Dodanie / usunięcie zależności aplikacji                         | `vp -C apps/web add <pakiet>` / `vp -C apps/web remove <pakiet>` (`-D` dla dev)                 |
 | Dodanie zależności narzędziowej do katalogu głównego             | `vp add -D <pakiet>`                                                                            |
 | Jednorazowe uruchomienie narzędzia                               | `vp dlx <pakiet>`                                                                               |
-| Dodanie komponentu shadcn/ui                                     | `vp -C apps/web dlx shadcn@latest add <komponent>`                                              |
 | Serwer deweloperski                                              | `vp dev` (z dodatkowymi flagami: `vp -C apps/web dev --port <port>`)                            |
 | Formatowanie, lint, typy                                         | `vp check` (poprawki: `vp check --fix`)                                                         |
 | Testy jednostkowe                                                | `vp test`                                                                                       |
@@ -187,6 +186,10 @@ Wszystkie komendy uruchamiasz z katalogu głównego repozytorium. Komendy Supaba
 | Kontrola katalogu `.ai/` (nazwy, statusy, indeks wniosków)       | `vp run check:ai`                                                                               |
 | Hook pre-commit (`vp staged`: `vp check --fix`, kontrola `.ai/`) | instalowany przez `vp install` (skrypt `prepare` → `vp config`); wyłączenie: `vp hooks disable` |
 | Build produkcyjny                                                | `vp build`                                                                                      |
+| Storybook (design system, `packages/ui`)                         | `vp -C packages/ui run storybook` / `vp -C packages/ui run build-storybook`                     |
+| Testy stories w obu motywach (Chromium)                          | `vp run test:storybook` (część `vp test`)                                                       |
+| Wartości spoza tokenów design systemu                            | `vp run check:tokens`                                                                           |
+| Dodanie komponentu shadcn/ui do design systemu                   | `vp -C packages/ui dlx shadcn@latest add <komponent>`                                           |
 | Lokalny Supabase (start / stop / adresy i klucze)                | `vp exec supabase start` / `vp exec supabase stop` / `vp exec supabase status`                  |
 | Nowa migracja                                                    | `vp exec supabase migration new <nazwa>`                                                        |
 | Odtworzenie bazy z migracji i seed                               | `vp exec supabase db reset`                                                                     |
@@ -199,7 +202,7 @@ Wszystkie komendy uruchamiasz z katalogu głównego repozytorium. Komendy Supaba
 - Każda reguła domenowa ma testy na poziomie bazy (pgTAP), łącznie z przypadkami brzegowymi: zera, kwoty ujemne, przekroczenie puli, zaokrąglenia przy podziale.
 - Każda tabela z danymi budżetu ma testy RLS potwierdzające, że członek budżetu A nie widzi ani nie modyfikuje danych budżetu B, a osoba niezalogowana nie ma dostępu do niczego.
 - Logikę po stronie frontendu (formatowanie, mapowanie danych, hooki) testuj w Vitest.
-- Każda nowa funkcja i każdy zmieniony kod TypeScript (moduły, funkcje, hooki, komponenty, skrypty) muszą mieć 100% pokrycia testami jednostkowymi we wszystkich metrykach: linie, gałęzie, funkcje i instrukcje. Próg jest liczony dla każdego pliku osobno i egzekwowany w CI przez `vp test --coverage`; zadanie z pokryciem poniżej 100% nie jest skończone. Wykluczenia z pomiaru (wyłącznie pliki generowane, komponenty shadcn/ui i punkt wejścia `main.tsx`) są w `test.coverage.exclude` w głównym `vite.config.ts`. Nowe wykluczenie lub komentarz wyłączający pomiar (`v8 ignore`) wymaga uzasadnienia i mojej zgody.
+- Każda nowa funkcja i każdy zmieniony kod TypeScript (moduły, funkcje, hooki, komponenty, skrypty) muszą mieć 100% pokrycia testami jednostkowymi we wszystkich metrykach: linie, gałęzie, funkcje i instrukcje. Próg jest liczony dla każdego pliku osobno i egzekwowany w CI przez `vp test --coverage`; zadanie z pokryciem poniżej 100% nie jest skończone. Wykluczenia z pomiaru (wyłącznie pliki generowane, stories design systemu `*.stories.tsx`, które same są testami, i punkt wejścia `main.tsx`) są w `test.coverage.exclude` w głównym `vite.config.ts`. Nowe wykluczenie lub komentarz wyłączający pomiar (`v8 ignore`) wymaga uzasadnienia i mojej zgody.
 - Kluczowe ścieżki użytkownika obejmij testami E2E (Playwright), gdy powstaną.
 - Testy piszesz na podstawie kryteriów akceptacji z PRD. Jeśli kryteria nie pozwalają jednoznacznie ustalić oczekiwanego wyniku, zapytaj.
 

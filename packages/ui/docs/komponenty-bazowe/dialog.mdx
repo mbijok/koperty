@@ -1,0 +1,134 @@
+import { Canvas, Meta } from "@storybook/addon-docs/blocks";
+import * as Stories from "../../src/primitives/dialog.stories";
+
+<Meta of={Stories} name="Dokumentacja" />
+
+# Dialog
+
+`import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@koperty/ui/primitives/dialog";`
+
+## 1. Do czego służy
+
+Pozwala wykonać krótką, wydzieloną czynność bez opuszczania ekranu, np. zmienić nazwę koperty.
+
+## 2. Kiedy używać
+
+| Sytuacja w produkcie                                       | Źródło |
+| ---------------------------------------------------------- | ------ |
+| Zmiana nazwy koperty                                       | US-12  |
+| Przydział środków do koperty na miesiąc (jedno pole kwoty) | US-16  |
+| Wygenerowanie i skopiowanie linku zaproszenia              | US-07  |
+
+Wszystkie trzy to propozycje z etapu 0 (specyfikacje S-03, S-05, S-11 jeszcze nie istnieją).
+
+## 3. Kiedy nie używać
+
+| Sytuacja                                                     | Zamiast                                   | Źródło                 |
+| ------------------------------------------------------------ | ----------------------------------------- | ---------------------- |
+| Potwierdzenie operacji nieodwracalnej                        | dialog potwierdzenia                      | WAI-ARIA (alertdialog) |
+| Formularz z wieloma polami lub krokami (wydatek z podziałem) | osobna strona                             | propozycja (E2-P8)     |
+| Informacja bez czynności                                     | treść na stronie albo alert               | –                      |
+| Dialog otwierany z dialogu                                   | jeden poziom; drugi krok to osobna strona | propozycja (E2-P8)     |
+
+## 4. Anatomia
+
+| Część                      | Opcjonalna | Uwagi                                                                                                                      |
+| -------------------------- | ---------- | -------------------------------------------------------------------------------------------------------------------------- |
+| Tło (`surface-scrim`)      | nie        | bez rozmycia (K5)                                                                                                          |
+| Panel                      | nie        | `rounded-overlay`, `shadow-overlay`, wnętrze `space-panel`, najwyżej 65 znaków szerokości, margines strony z każdej strony |
+| Tytuł (`DialogTitle`)      | nie        | `text-section`; nazwa czynności                                                                                            |
+| Opis (`DialogDescription`) | tak        | skutek czynności                                                                                                           |
+| Treść                      | tak        | pola formularza                                                                                                            |
+| Stopka (`DialogFooter`)    | nie        | „Anuluj” i czynność główna                                                                                                 |
+| Przycisk „Zamknij”         | nie        | ikona w prawym górnym rogu, `aria-label="Zamknij"`                                                                         |
+
+## 5. Warianty
+
+Jeden wariant. Szerokość wynika z treści, najwyżej `max-w-measure`.
+
+## 6. Stany
+
+<Canvas of={Stories.Otwarty} />
+
+| Stan                           | Zachowanie                                                                     | Źródło                              |
+| ------------------------------ | ------------------------------------------------------------------------------ | ----------------------------------- |
+| Zamknięty                      | widoczny tylko przycisk otwierający                                            | –                                   |
+| Otwierany / zamykany           | przenikanie `duration-base`; przy ograniczonym ruchu natychmiast               | P6                                  |
+| Otwarty                        | fokus w dialogu, reszta strony niedostępna                                     | WAI-ARIA (dialog)                   |
+| Zapisywanie                    | przycisk główny z `loading`; dialog zostaje otwarty do potwierdzenia z serwera | E2-Q2, polecenie budowy (formularz) |
+| Błąd zapisu                    | błąd pola w `FormField` albo alert `danger` w dialogu                          | WCAG 3.3.1                          |
+| Najechanie, wciśnięty, wybrany | dotyczą przycisków w dialogu                                                   | –                                   |
+
+**Wyjątek dostępności (opisany):** stories z otwartym dialogiem wyłączają regułę axe `aria-hidden-focus` – Radix ukrywa resztę strony i trzyma fokus w dialogu, ale statyczny zrzut widzi przycisk otwierający pod `aria-hidden`.
+
+## 7. Zachowanie i dostępność
+
+| Zasada                                                                                                                                            | Źródło                        |
+| ------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------- |
+| Rola `dialog` z nazwą z tytułu i opisem z `DialogDescription`.                                                                                    | WAI-ARIA (dialog)             |
+| Po otwarciu fokus trafia na pierwsze pole; Tab krąży w dialogu; Escape i „Zamknij” zamykają; fokus wraca na przycisk otwierający (sprawdza test). | WAI-ARIA (dialog), WCAG 2.4.3 |
+| Dialog i jego tło renderują się w portalu na `<body>`, a motyw działa, bo jest ustawiony na `<html>`.                                             | zasada 9 polecenia            |
+| Cele dotyku: przyciski 40 px, „Zamknij” 32 px.                                                                                                    | WCAG 2.5.8                    |
+
+## 8. Treść
+
+| Część           | Zasada                                              | Przykład                                         | Źródło                   |
+| --------------- | --------------------------------------------------- | ------------------------------------------------ | ------------------------ |
+| Tytuł           | czasownik i obiekt                                  | „Zmień nazwę koperty”                            | E2-P2                    |
+| Opis            | skutek, jedno zdanie                                | „Nowa nazwa pojawi się też w historii operacji.” | US-12                    |
+| Przycisk główny | konkretna czynność, nie „OK”                        | „Zapisz nazwę”                                   | polecenie budowy (Treść) |
+| Długa treść     | panel przewija się w sobie, stopka zostaje w panelu | –                                                | WCAG 1.4.10              |
+
+<Canvas of={Stories.DlugaTresc} />
+
+## 9. Responsywność
+
+| Szerokość     | Zachowanie                                                                               | Źródło |
+| ------------- | ---------------------------------------------------------------------------------------- | ------ |
+| 320 px        | panel na pełną szerokość z marginesem 16 px, przyciski jeden pod drugim, główny na górze | E2-P5  |
+| 768 i 1440 px | panel do 65 znaków szerokości, wyśrodkowany; przyciski obok siebie, główny po prawej     | E2-P5  |
+
+## 10. API
+
+Propsy `Dialog.Root` z Radix: `open`, `defaultOpen`, `onOpenChange`. `DialogContent` przyjmuje propsy `Dialog.Content` (np. `onOpenAutoFocus`). Pozostałe części – atrybuty elementu.
+
+## 11. Kod
+
+Minimalny:
+
+```tsx
+<Dialog>
+  <DialogTrigger asChild>
+    <Button variant="secondary">Zmień nazwę</Button>
+  </DialogTrigger>
+  <DialogContent>
+    <DialogHeader>
+      <DialogTitle>Zmień nazwę koperty</DialogTitle>
+    </DialogHeader>
+    <DialogFooter>
+      <DialogClose asChild>
+        <Button variant="secondary">Anuluj</Button>
+      </DialogClose>
+      <Button onClick={save}>Zapisz nazwę</Button>
+    </DialogFooter>
+  </DialogContent>
+</Dialog>
+```
+
+Typowy w produkcie (zmiana nazwy koperty, US-12):
+
+<Canvas of={Stories.Playground} />
+
+## 12. Dobrze i źle
+
+| Dobrze                                                            | Źle                                                                                      |
+| ----------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| Tytuł „Zmień nazwę koperty”, przyciski „Anuluj” i „Zapisz nazwę”. | Tytuł „Edycja”, przyciski „OK” i „Anuluj”: nie wiadomo, co się zmieni.                   |
+| Jedno pole, czynność kończy się w dialogu.                        | Formularz wydatku z podziałem w dialogu: na telefonie się nie mieści – to osobna strona. |
+
+Przykłady obok siebie wymagają otwartych dialogów, które w dokumentacji przykryłyby stronę; dlatego ta sekcja jest tabelą, a poprawny wygląd pokazuje story „Otwarty”.
+
+## 13. Powiązane
+
+- Mylony z: **dialogiem potwierdzenia** (decyzja przed operacją nieodwracalną), **menu** (lista akcji), **osobną stroną** (dłuższe formularze).
+- Występuje we wzorcach: formularz, przydział do koperty, zaproszenie.

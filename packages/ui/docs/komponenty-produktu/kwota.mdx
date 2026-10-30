@@ -1,0 +1,123 @@
+import { ArgTypes, Canvas, Meta, Unstyled } from "@storybook/addon-docs/blocks";
+import { Amount } from "@koperty/ui/product/funds/amount";
+import { DoDont } from "../blocks/frames";
+import * as Stories from "../../src/product/funds/amount.stories";
+
+<Meta of={Stories} name="Dokumentacja" />
+
+# Kwota
+
+`import { Amount } from "@koperty/ui/product/funds/amount";` · formatowanie: `import { formatPLN } from "@koperty/ui/lib/money";`
+
+## 1. Do czego służy
+
+Pokazuje kwotę w złotych tak samo w całym produkcie i wyraźnie oznacza debet bez straszenia.
+
+## 2. Kiedy używać
+
+| Sytuacja w produkcie                         | Rodzaj                    | Źródło              |
+| -------------------------------------------- | ------------------------- | ------------------- |
+| Saldo koperty, pula „Do rozdysponowania”     | `balance` (domyślny)      | US-21, PRD 4.3, 4.5 |
+| Przychód na liście operacji                  | `income` („+5 000,00 zł”) | US-20, P7           |
+| Wydatek na liście operacji                   | `expense` (bez znaku)     | US-20, P7           |
+| Kwota główna ekranu (pula, saldo w nagłówku) | `size="lg"`               | P3                  |
+
+## 3. Kiedy nie używać
+
+| Sytuacja                                      | Zamiast                       | Źródło                  |
+| --------------------------------------------- | ----------------------------- | ----------------------- |
+| Wpisywanie kwoty                              | pole kwoty                    | –                       |
+| Kwota w zdaniu („120,50 zł wróci do koperty”) | `formatPLN(grosze)` w tekście | standardy 4.4           |
+| Kwota w kolorze (zielona, czerwona)           | `Amount` bez koloru           | W4, AC4                 |
+| Własne formatowanie (`toFixed`, `/ 100`)      | `formatPLN`                   | standardy 4.4, ADR 0004 |
+
+## 4. Anatomia
+
+| Część            | Opcjonalna         | Uwagi                                                                 |
+| ---------------- | ------------------ | --------------------------------------------------------------------- |
+| Kwota            | nie                | `text-amount` lub `text-amount-lg`, cyfry tabelaryczne, bez zawijania |
+| Znak             | tak                | „−” dla ujemnego salda, „+” dla przychodu                             |
+| Znacznik „Debet” | tylko ujemne saldo | neutralny znacznik (K3)                                               |
+
+## 5. Warianty
+
+<Canvas of={Stories.Stany} />
+
+| Rodzaj / rozmiar | Kiedy wybrać                                                |
+| ---------------- | ----------------------------------------------------------- |
+| `balance`        | saldo i pula; ujemne dostaje minus i „Debet”                |
+| `income`         | przychód na liście operacji                                 |
+| `expense`        | wydatek na liście operacji (kwota zawsze dodatnia, PRD 4.6) |
+| `default`, `lg`  | w wierszu / kwota główna                                    |
+
+## 6. Stany
+
+| Stan                   | Wygląd                                                           | Źródło           |
+| ---------------------- | ---------------------------------------------------------------- | ---------------- |
+| Dodatnia, zero         | kwota bez znaku                                                  | W4               |
+| Ujemna (saldo, pula)   | „−30,00 zł” i znacznik „Debet”                                   | K3, PRD 4.3, 4.5 |
+| Ładowanie, pusto, błąd | należą do komponentu, który pokazuje kwotę (karta koperty, pula) | –                |
+| Interaktywne stany     | nie dotyczy                                                      | –                |
+
+## 7. Zachowanie i dostępność
+
+| Zasada                                                                                       | Źródło         |
+| -------------------------------------------------------------------------------------------- | -------------- |
+| Debet niesie znak i słowo, nie kolor; czytnik czyta „minus 30,00 zł, Debet” (sprawdza test). | WCAG 1.4.1, K3 |
+| Kwota się nie zawija; znacznik przechodzi do nowej linii przy braku miejsca.                 | WCAG 1.4.10    |
+
+## 8. Treść
+
+| Zasada                                                                | Przykład                         | Źródło             |
+| --------------------------------------------------------------------- | -------------------------------- | ------------------ |
+| Zawsze „zł” po kwocie, dwa miejsca po przecinku, przecinek dziesiętny | „179,50 zł”                      | DS-S06             |
+| Grupowanie tysięcy spacją także dla czterech cyfr                     | „1 250,00 zł” (nie „1250,00 zł”) | propozycja (E3-P1) |
+| Minus jako znak „−”, nie łącznik                                      | „−30,00 zł”                      | propozycja (E3-P1) |
+
+<Canvas of={Stories.DuzeKwoty} />
+
+## 9. Responsywność
+
+Bez zmian na 320, 768 i 1440 px; najdłuższa realna kwota („−12 345 678,90 zł”) mieści się na 320 px w rozmiarze `lg`.
+
+## 10. API
+
+<ArgTypes of={Stories} />
+
+| Prop / funkcja      | Typ                                  | Domyślnie   | Opis                       |
+| ------------------- | ------------------------------------ | ----------- | -------------------------- |
+| `amount`            | `number`                             | –           | grosze (liczba całkowita)  |
+| `kind`              | `"balance" \| "income" \| "expense"` | `"balance"` | rodzaj kwoty               |
+| `size`              | `"default" \| "lg"`                  | `"default"` | rozmiar                    |
+| `formatPLN(grosze)` | `(grosze: number) => string`         | –           | tekst kwoty, np. do zdania |
+
+## 11. Kod
+
+Minimalny:
+
+```tsx
+<Amount amount={envelope.balance} />
+```
+
+Typowy w produkcie (wiersz operacji, US-20):
+
+```tsx
+<Amount amount={operation.amount} kind={operation.type === "income" ? "income" : "expense"} />
+```
+
+## 12. Dobrze i źle
+
+<Unstyled>
+  <DoDont
+    good={{ node: <Amount amount={-3000} />, note: "minus i „Debet”: widać bez koloru." }}
+    bad={{
+      node: <span className="text-amount text-danger">30.00 PLN</span>,
+      note: "kolor zamiast znaku, kropka i „PLN” zamiast „zł”.",
+    }}
+  />
+</Unstyled>
+
+## 13. Powiązane
+
+- Mylona z: **polem kwoty** (wpisywanie), **znacznikiem** (sam status).
+- Występuje we wzorcach: kwota ujemna i debet, lista operacji, podsumowanie miesiąca.

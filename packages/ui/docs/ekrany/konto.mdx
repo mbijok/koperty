@@ -1,0 +1,38 @@
+import { Canvas, Meta } from "@storybook/addon-docs/blocks";
+import * as Stories from "./account-screens.stories";
+
+<Meta of={Stories} name="Mapa stanów" />
+
+# Ekrany: Konto
+
+Logowanie bez hasła i profil (US-01, US-02, US-24, S-01). Każdy stan to osobna story na pełny ekran; na telefonie układ jest jednokolumnowy, a nawigacja przechodzi do dolnego paska.
+
+## Logowanie (`/login`)
+
+| Stan           | Story                      | Co widać                                                 | Źródło          |
+| -------------- | -------------------------- | -------------------------------------------------------- | --------------- |
+| Krok 1: e-mail | `Logowanie: e-mail`        | nazwa produktu, „Zaloguj się”, pole adresu, „Wyślij kod” | S-01 AC-1       |
+| Krok 2: kod    | `Logowanie: kod`           | pole kodu z adresem w podpowiedzi, „Wyślij nowy kod”     | S-01 AC-1, AC-3 |
+| Link wygasł    | `Logowanie: link wygasł`   | komunikat nad krokiem 1                                  | S-01 AC-3b      |
+| Sesja wygasła  | `Logowanie: sesja wygasła` | komunikat i powrót na pierwotny adres po zalogowaniu     | S-01 AC-6b      |
+
+Stany błędów pól, oczekiwania i braku sieci: wzorzec „Logowanie kodem”.
+
+<Canvas of={Stories.LogowanieEmail} />
+<Canvas of={Stories.LogowanieSesjaWygasla} />
+
+## Profil (`/profile`)
+
+| Stan        | Story                 | Co widać                                                     | Źródło              |
+| ----------- | --------------------- | ------------------------------------------------------------ | ------------------- |
+| Gotowy      | `Profil`              | nazwa wyświetlana, adres logowania, „Wyloguj”, „Usuń konto…” | US-24, US-02, US-03 |
+| Pusta nazwa | `Profil: pusta nazwa` | błąd przy polu, nic nie wysłane                              | US-24, S-01 AC-9    |
+| Ładowanie   | `Profil: ładowanie`   | szkielety                                                    | E2-P12              |
+
+<Canvas of={Stories.Profil} />
+
+## Użyte elementy
+
+- Widoki i wzorce: `SignInForm`, `NameForm`, potwierdzenie usunięcia (usunięcie konta).
+- Komponenty: powłoka aplikacji, przycisk, szkielet ładowania.
+- Usunięcie konta jedynego właściciela budżetu zależy od decyzji [Z5] w PRD – ekran pokazuje tylko przycisk.

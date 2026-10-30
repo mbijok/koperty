@@ -1,0 +1,144 @@
+import { Canvas, Meta, Unstyled } from "@storybook/addon-docs/blocks";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@koperty/ui/primitives/tabs";
+import { DoDont } from "../blocks/frames";
+import * as Stories from "../../src/primitives/tabs.stories";
+
+<Meta of={Stories} name="Dokumentacja" />
+
+# Zakładki
+
+`import { Tabs, TabsContent, TabsList, TabsTrigger } from "@koperty/ui/primitives/tabs";`
+
+## 1. Do czego służy
+
+Dzieli jeden ekran na kilka równorzędnych części, między którymi użytkownik przełącza się bez zmiany kontekstu.
+
+## 2. Kiedy używać
+
+| Sytuacja w produkcie                             | Źródło                              |
+| ------------------------------------------------ | ----------------------------------- |
+| Ustawienia budżetu: „Członkowie” i „Zaproszenia” | US-09, US-07 (propozycja z etapu 0) |
+
+## 3. Kiedy nie używać
+
+| Sytuacja                                                     | Zamiast                                           | Źródło                               |
+| ------------------------------------------------------------ | ------------------------------------------------- | ------------------------------------ |
+| Główna nawigacja aplikacji (koperty, operacje, podsumowanie) | linki do osobnych stron (każda ma własny adres)   | WAI-ARIA (link), propozycja (E2-P10) |
+| Kroki procesu (logowanie: e-mail, potem kod)                 | kolejne widoki wzorca logowania                   | S-01                                 |
+| Przełączanie miesiąca                                        | przełącznik miesiąca (komponent produktu, etap 3) | US-20                                |
+| Filtrowanie listy                                            | filtr miesiąca we wzorcu listy                    | Q5                                   |
+| Więcej niż 4 zakładki                                        | osobne strony                                     | propozycja (E2-P10)                  |
+
+## 4. Anatomia
+
+| Część                    | Opcjonalna | Uwagi                                                            |
+| ------------------------ | ---------- | ---------------------------------------------------------------- |
+| Lista (`TabsList`)       | nie        | linia `border-subtle` pod zakładkami; `aria-label` z nazwą grupy |
+| Zakładka (`TabsTrigger`) | nie        | 40 px (W1), `text-label`                                         |
+| Podkreślenie wybranej    | nie        | 2 px w kolorze tekstu (`tabs-indicator`), nie szmaragd (E2-P10)  |
+| Panel (`TabsContent`)    | nie        | treść wybranej zakładki                                          |
+
+## 5. Warianty
+
+Jeden wariant (podkreślenie). Odmiana „pigułkowa” z bazy jest pominięta (K6).
+
+## 6. Stany
+
+<Canvas of={Stories.Stany} />
+
+| Stan            | Wygląd                                     | Źródło                                                              |
+| --------------- | ------------------------------------------ | ------------------------------------------------------------------- |
+| Wybrana         | `text-default`, podkreślenie 2 px          | E2-P10, WCAG 1.4.1 (wybór widać po podkreśleniu, nie tylko kolorze) |
+| Niewybrana      | `text-muted`                               | K2                                                                  |
+| Najechanie      | `text-default`                             | propozycja (E2-P10)                                                 |
+| Fokus           | linia `focus-ring`                         | W2                                                                  |
+| Zablokowana     | przezroczystość 50%; powód w treści ekranu | E2-Q1                                                               |
+| Ładowanie, błąd | należą do treści panelu (szkielet, alert)  | –                                                                   |
+
+## 7. Zachowanie i dostępność
+
+| Zasada                                                                                                                       | Źródło                                  |
+| ---------------------------------------------------------------------------------------------------------------------------- | --------------------------------------- |
+| Role `tablist`, `tab`, `tabpanel`; `aria-selected` na wybranej.                                                              | WAI-ARIA (tabs)                         |
+| Tab wchodzi do listy na wybraną zakładkę; strzałki przesuwają i od razu wybierają; Tab przechodzi do panelu (sprawdza test). | WAI-ARIA (tabs, automatyczna aktywacja) |
+| Lista ma `aria-label` (np. „Ustawienia budżetu”).                                                                            | WCAG 1.3.1                              |
+| Cel: 40 px wysokości.                                                                                                        | WCAG 2.5.8                              |
+
+## 8. Treść
+
+| Zasada                                                  | Przykład                    | Źródło              |
+| ------------------------------------------------------- | --------------------------- | ------------------- |
+| Rzeczownik, 1–2 słowa                                   | „Członkowie”, „Zaproszenia” | E2-P2               |
+| Liczba elementów w nawiasie, gdy pomaga                 | „Zaproszenia (2)”           | propozycja (E2-P10) |
+| Długie nazwy się nie zawijają; lista przewija się w bok | –                           | WCAG 1.4.10         |
+
+## 9. Responsywność
+
+| Szerokość     | Zachowanie                                                                       |
+| ------------- | -------------------------------------------------------------------------------- |
+| 320 px        | lista przewija się w bok, gdy zakładki się nie mieszczą; strona się nie przewija |
+| 768 i 1440 px | zakładki w jednej linii, w szerokości treści                                     |
+
+<Canvas of={Stories.WaskiEkran} />
+
+## 10. API
+
+`Tabs` – propsy `Tabs.Root` z Radix (`value`, `defaultValue`, `onValueChange`). `TabsTrigger`, `TabsContent` – `value`, `disabled`. `TabsList` – `aria-label`.
+
+## 11. Kod
+
+Minimalny i typowy w produkcie (ustawienia budżetu):
+
+```tsx
+<Tabs defaultValue="members">
+  <TabsList aria-label="Ustawienia budżetu">
+    <TabsTrigger value="members">Członkowie</TabsTrigger>
+    <TabsTrigger value="invitations">Zaproszenia ({invitations.length})</TabsTrigger>
+  </TabsList>
+  <TabsContent value="members">
+    <MemberList />
+  </TabsContent>
+  <TabsContent value="invitations">
+    <InvitationList />
+  </TabsContent>
+</Tabs>
+```
+
+<Canvas of={Stories.Playground} />
+
+## 12. Dobrze i źle
+
+<Unstyled>
+  <DoDont
+    good={{
+      node: (
+        <Tabs defaultValue="a" className="w-full">
+          <TabsList aria-label="Ustawienia budżetu (przykład)">
+            <TabsTrigger value="a">Członkowie</TabsTrigger>
+            <TabsTrigger value="b">Zaproszenia (2)</TabsTrigger>
+          </TabsList>
+          <TabsContent value="a" />
+        </Tabs>
+      ),
+      note: "dwie równorzędne części jednego ekranu.",
+    }}
+    bad={{
+      node: (
+        <Tabs defaultValue="a" className="w-full">
+          <TabsList aria-label="Nawigacja (przykład)">
+            <TabsTrigger value="a">Koperty</TabsTrigger>
+            <TabsTrigger value="b">Operacje</TabsTrigger>
+            <TabsTrigger value="c">Podsumowanie</TabsTrigger>
+          </TabsList>
+          <TabsContent value="a" />
+        </Tabs>
+      ),
+      note: "główna nawigacja w zakładkach: ekrany nie mają własnych adresów.",
+    }}
+  />
+</Unstyled>
+
+## 13. Powiązane
+
+- Mylone z: **linkami nawigacji** (osobne strony), **przełącznikiem miesiąca** (zmiana danych, nie widoku).
+- Występuje we wzorcach: ustawienia budżetu (członkowie i zaproszenia, etap 3).

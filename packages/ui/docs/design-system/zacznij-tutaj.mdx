@@ -1,0 +1,29 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+import { CATALOG } from "../blocks/catalog-data";
+import { ComponentTable, DocsLink } from "../blocks/catalog";
+
+<Meta title="Design system/Zacznij tutaj" />
+
+# Zacznij tutaj
+
+Koperty to narzędzie do pilnowania pieniędzy domu metodą kopertową, a nie rozrywka. Interfejs jest precyzyjny i zwarty: dużo informacji na ekranie, czytelna hierarchia, liczby wyrównane jak w księdze. Nie ocenia i nie straszy – debet to stan do uporządkowania, a nie alarm.
+
+**Słowa charakteru:** precyzyjny, zwarty, „księgowy” (C1). **Czym nie jest:** krzykliwym fintechem, grywalizacją, surowym arkuszem, alarmem (AC1–AC4). Źródło: `packages/ui/brief.md`.
+
+## Jak zbudować ekran w pięciu krokach
+
+1. **Znajdź wzorzec.** Sprawdź sekcję Wzorce i ekrany epiku (Design system → Epik). Ekran z formularzem zaczyna się od wzorca „Formularz”, lista od „Listy z filtrem miesiąca”, usunięcie od „Potwierdzenia usunięcia”.
+2. **Wybierz komponenty** według strony <DocsLink id="design-system-jak-wybrać--docs">Jak wybrać</DocsLink>. Najpierw widoki i komponenty produktu, dopiero potem komponenty bazowe.
+3. **Używaj tokenów znaczeniowych** (`bg-surface-card`, `text-muted`, `gap-group`, `h-control`…), nigdy wartości wprost. Paleta, skala odstępów i arbitralne wartości Tailwinda są wyłączone; `vp run check:tokens` wskaże każdą wartość spoza tokenów.
+4. **Zaprojektuj stany danych:** ładowanie, pusto (dwa rodzaje: brak wyników i „jeszcze nic tu nie ma”), błąd, częściowe dane, dużo danych, długie teksty; w formularzu także oczekiwanie, błąd pola, błąd serwera i brak sieci.
+5. **Sprawdź** <DocsLink id="design-system-czego-unikać--docs">Czego unikać</DocsLink> i ekran przy 320 px w obu motywach.
+
+## Wszystkie komponenty
+
+Nazwa prowadzi do strony z 13 sekcjami (do czego służy, kiedy używać i kiedy nie, anatomia, warianty, stany, dostępność, treść, responsywność, API, kod, dobrze i źle, powiązane). Podglądy: <DocsLink id="design-system-komponenty--docs">Komponenty</DocsLink>.
+
+<ComponentTable entries={CATALOG} />
+
+## Dla agentów
+
+Skrót design systemu jest w `docs/design-system.md` w repozytorium; agent budujący ekran czyta go jako pierwszy (odwołanie w AGENTS.md).

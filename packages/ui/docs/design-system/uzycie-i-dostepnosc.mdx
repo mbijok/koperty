@@ -1,0 +1,83 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Design system/Użycie i dostępność" />
+
+# Użycie i dostępność
+
+Cel: WCAG 2.1 AA (DS-S01, PRD 6). Każda reguła ma źródło; reguła bez źródła jest oznaczona jako propozycja. Stories sprawdzają axe w obu motywach (`vp run test:storybook`), naruszenie jest błędem testu.
+
+## Klawiatura i fokus
+
+| Zasada                                                                                                 | Źródło                        |
+| ------------------------------------------------------------------------------------------------------ | ----------------------------- |
+| Wszystko działa z klawiatury; kolejność fokusu zgodna z kolejnością na ekranie.                        | WCAG 2.1.1, 2.4.3             |
+| Fokus widoczny: pełna linia 2 px w kolorze `focus-ring`, odstęp 2 px, kontrast ≥ 3 : 1.                | K2, W2, WCAG 2.4.7, 1.4.11    |
+| Pierwszy Tab na ekranie po zalogowaniu trafia w „Przejdź do treści”.                                   | WCAG 2.4.1, powłoka aplikacji |
+| Dialog: fokus w środku, Escape zamyka, po zamknięciu fokus wraca na element, który go otworzył.        | WAI-ARIA APG (dialog)         |
+| Dialog potwierdzenia: fokus startowy na „Anuluj”.                                                      | WAI-ARIA APG (alertdialog)    |
+| Po zmianie kroku formularza fokus trafia na pole nowego kroku; po błędzie – na pierwsze pole z błędem. | WCAG 2.4.3, 3.3.1             |
+| Zmiana kolejności kopert przyciskami, fokus zostaje na przesuniętej kopercie; bez przeciągania.        | E3-Q3, WCAG 2.5.7             |
+| Przewijana tabela ma nazwę i `tabIndex=0`, przewija się strzałkami.                                    | WCAG 2.1.1, axe               |
+
+## Formularze i komunikaty
+
+| Zasada                                                                                            | Źródło            |
+| ------------------------------------------------------------------------------------------------- | ----------------- |
+| Etykieta zawsze widoczna (`FormField`), nigdy tylko placeholder.                                  | WCAG 3.3.2, 1.3.1 |
+| Błąd przy polu, połączony `aria-describedby`, pole ma `aria-invalid`.                             | WCAG 3.3.1        |
+| Walidacja po opuszczeniu pola i przy wysłaniu, nie w trakcie pisania.                             | polecenie budowy  |
+| Dane zostają po każdym błędzie; sukces dopiero po potwierdzeniu z serwera.                        | polecenie budowy  |
+| Komunikat błędu mówi, co zrobić, z przykładem.                                                    | WCAG 3.3.3        |
+| Pola mają `autocomplete` i klawiaturę dopasowaną do treści (`email`, `one-time-code`, `decimal`). | WCAG 1.3.5        |
+| Tekst w polach 16 px – iOS Safari nie powiększa strony przy fokusie.                              | K1                |
+| Zmiany stanu ogłaszane bez przenoszenia fokusu: licznik wyników, miesiąc, brak sieci.             | WCAG 4.1.3        |
+
+## Kolor
+
+| Zasada                                                                                                                 | Źródło                 |
+| ---------------------------------------------------------------------------------------------------------------------- | ---------------------- |
+| Tekst ≥ 4,5 : 1, elementy interfejsu i obramowania pól ≥ 3 : 1 w obu motywach (tabela kontrastu w Fundamenty → Kolor). | K2, WCAG 1.4.3, 1.4.11 |
+| Status nigdy tylko kolorem: debet to znak minus i słowo „Debet”, błąd pola to tekst i ikona.                           | K3, W4, WCAG 1.4.1     |
+| Kwoty bez koloru znaczeniowego, ani dodatnie, ani ujemne.                                                              | W4, AC4                |
+| Szmaragd tylko dla akcji i fokusu; wybrana zakładka nie jest szmaragdowa.                                              | R01.2, E2-P10          |
+| Motyw systemowy z przełącznikiem; motyw ustawiony na `<html>`, więc działa też w nakładkach.                           | T1                     |
+
+## Ruch
+
+| Zasada                                                                 | Źródło         |
+| ---------------------------------------------------------------------- | -------------- |
+| 100 ms dla zmian koloru, 150 ms dla nakładek; bez animacji dla efektu. | P6, AC1        |
+| Przy `prefers-reduced-motion` bez przesunięć i powiększeń.             | P6, WCAG 2.3.3 |
+
+## Treść
+
+| Zasada                                                                             | Źródło            |
+| ---------------------------------------------------------------------------------- | ----------------- |
+| Interfejs po polsku, kwoty i daty `pl-PL`, waluta PLN.                             | DS-S06            |
+| Przycisk z ikoną ma nazwę z czasownikiem i obiektem; nazwa zawiera widoczny tekst. | WCAG 4.1.2, 2.5.3 |
+| Szczegóły: strona „Treść”.                                                         | –                 |
+
+## Układ na różnych szerokościach
+
+| Zasada                                                                                                       | Źródło              |
+| ------------------------------------------------------------------------------------------------------------ | ------------------- |
+| Mobile first; wszystko działa od 320 px bez przewijania w poziomie (tabela przewija się w swoim kontenerze). | DS-S02, WCAG 1.4.10 |
+| Na telefonie nawigacja w dolnym pasku, „Dodaj wydatek” w zasięgu kciuka; od 768 px w nagłówku.               | E3-Q2, DS-S04       |
+| Szerokość treści 640 px, tabela podsumowania 960 px; marginesy 16 px, od 768 px 24 px.                       | P5                  |
+| Kontrolki 40 px, akcje wiersza 32 px z celem dotyku ≥ 24 px.                                                 | P2, W1, WCAG 2.5.8  |
+| Przyciski formularza na telefonie na całą szerokość, jeden pod drugim.                                       | wzorzec Formularz   |
+| Ekran ma jeden `h1`; komponenty z nagłówkami `h3` (karty kopert, dni listy) stoją pod `h2`.                  | E3-P13, WCAG 1.3.1  |
+
+## Reguły produktu pilnowane przez interfejs
+
+Reguły domenowe egzekwuje baza (AGENTS.md, ADR 0003). Interfejs tylko je pokazuje i pomaga ich przestrzegać:
+
+| Reguła                                                    | Co robi interfejs                                                    | Źródło                   |
+| --------------------------------------------------------- | -------------------------------------------------------------------- | ------------------------ |
+| Saldo koperty i pula mogą być ujemne                      | minus i „Debet”, bez blokady zapisu; podgląd puli przed przydziałem  | PRD 4.3, 4.5, US-16      |
+| Suma części wydatku równa kwocie                          | „Do podziału”, „Podziel po równo” (reszta groszy w pierwszej części) | PRD 4.6, US-18           |
+| Archiwizacja tylko przy saldzie zero                      | pozycja menu zablokowana z wyjaśnieniem                              | US-13 [Z4]               |
+| Ostatni właściciel nie opuszcza budżetu                   | „Opuść budżet…” zablokowane z wyjaśnieniem                           | PRD 4.9, US-10           |
+| Archiwalnych kopert nie ma w wyborze wydatku i przydziału | select pokazuje tylko aktywne koperty                                | US-13                    |
+| Obiekt innego budżetu jest „nie istnieje”                 | jeden komunikat „nie istnieje albo brak dostępu”                     | kontrakt błędów (PT404)  |
+| Kwoty w groszach, daty bez godzin                         | `parsePLN`, `formatPLN`, `todayInWarsaw` z `@koperty/ui/lib`         | AGENTS.md, standardy 4.4 |

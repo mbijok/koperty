@@ -1,0 +1,83 @@
+@import "tailwindcss";
+@import "@koperty/ui/styles.css";
+
+@source "../docs";
+
+/*
+ * Frozen state previews for the documentation (state matrices): an element with
+ * data-preview-state="hover | active | focus" gets the same declarations as the real :hover, :active
+ * and :focus-visible. Only this Storybook stylesheet defines them; the app build never does.
+ */
+@custom-variant hover {
+  @media (hover: hover) {
+    &:hover {
+      @slot;
+    }
+  }
+  &[data-preview-state~="hover"] {
+    @slot;
+  }
+}
+
+@custom-variant active {
+  &:active {
+    @slot;
+  }
+  &[data-preview-state~="active"] {
+    @slot;
+  }
+}
+
+[data-preview-state~="focus"] {
+  outline: var(--focus-width) solid var(--focus-ring);
+  outline-offset: var(--focus-offset);
+}
+
+/*
+ * Storybook documentation chrome follows the product theme and tokens, so MDX pages read correctly
+ * in both themes. Documentation only; components never rely on these selectors.
+ */
+.sbdocs.sbdocs-wrapper {
+  background-color: var(--surface-page);
+}
+
+.sbdocs-content :where(h1, h2, h3, h4, p, li, td, th, strong, a) {
+  color: var(--text-default) !important;
+}
+
+.sbdocs-content :where(table) {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.sbdocs-content :where(tr, td, th) {
+  background-color: var(--surface-page) !important;
+  border-color: var(--border-subtle) !important;
+}
+
+.sbdocs-content :where(code) {
+  background-color: var(--surface-muted) !important;
+  border-color: var(--border-subtle) !important;
+  color: var(--text-default) !important;
+  overflow-wrap: anywhere !important;
+  white-space: normal !important;
+}
+
+/* Catalog cards (Design system / Komponenty): a large component as a clipped, inert preview.
+   contain: paint keeps fixed parts (the phone bottom bar) inside the card. */
+.catalog-static {
+  max-height: calc(var(--control-height) * 5);
+  overflow: hidden;
+  contain: paint;
+}
+
+/* Tailwind preflight removes list markers; MDX lists in the docs need their numbers and bullets back.
+   Lists inside components (direct children only are MDX) keep the product styles. */
+.sbdocs-content > ol {
+  list-style: decimal;
+}
+
+.sbdocs-content > ul {
+  list-style: disc;
+}

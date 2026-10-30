@@ -1,0 +1,48 @@
+import { Canvas, Meta } from "@storybook/addon-docs/blocks";
+import * as Stories from "./budgets-screens.stories";
+
+<Meta of={Stories} name="Mapa stanów" />
+
+# Ekrany: Budżety i członkostwo
+
+Utworzenie budżetu, ustawienia (nazwa, członkowie, zaproszenia, usunięcie) i dołączenie przez link (US-04–US-10).
+
+## Utworzenie budżetu
+
+| Stan            | Story                          | Co widać                                                        | Źródło       |
+| --------------- | ------------------------------ | --------------------------------------------------------------- | ------------ |
+| Pierwszy budżet | `Utworzenie budżetu: pierwszy` | bez nawigacji (nie ma jeszcze budżetu), wskazówka o zaproszeniu | US-04        |
+| Kolejny budżet  | `Utworzenie budżetu: kolejny`  | w powłoce, z „Anuluj”                                           | US-04, US-05 |
+
+<Canvas of={Stories.PierwszyBudzet} />
+
+## Ustawienia budżetu
+
+| Stan              | Story                           | Co widać                                                            | Źródło              |
+| ----------------- | ------------------------------- | ------------------------------------------------------------------- | ------------------- |
+| Właściciel        | `Ustawienia: właściciel`        | nazwa, członkowie z akcjami, zaproszenia, „Usuń budżet…”            | US-06, US-07, US-09 |
+| Jedyny właściciel | `Ustawienia: jedyny właściciel` | „Opuść budżet…” zablokowane z wyjaśnieniem                          | US-10, PRD 4.9      |
+| Członek           | `Ustawienia: członek`           | lista bez akcji właściciela, „Opuść budżet…”, wyjaśnienie zaproszeń | US-07, US-10        |
+
+Usuwanie, unieważnianie i opuszczanie otwierają potwierdzenie usunięcia.
+
+<Canvas of={Stories.UstawieniaWlasciciel} />
+<Canvas of={Stories.UstawieniaCzlonek} />
+
+## Dołączenie (`/join/<token>`)
+
+| Stan              | Story                           | Co widać                                         | Źródło |
+| ----------------- | ------------------------------- | ------------------------------------------------ | ------ |
+| Ważny link        | `Dołączenie: ważny link`        | nazwa budżetu, zapraszający, „Dołącz do budżetu” | US-08  |
+| Sprawdzanie linku | `Dołączenie: sprawdzanie linku` | szkielet karty                                   | US-08  |
+| Link wygasł       | `Dołączenie: link wygasł`       | komunikat i „Przejdź do aplikacji”               | US-08  |
+| Bez zalogowania   | `Dołączenie: bez zalogowania`   | logowanie z nazwą budżetu, potem powrót          | US-08  |
+
+Link użyty i unieważniony: karta dołączenia (stories `Uzyte`, `Uniewaznione`).
+
+<Canvas of={Stories.DolaczenieWazny} />
+
+## Użyte elementy
+
+- Widoki i wzorce: `CreateBudgetForm`, `NameForm`, `SignInForm`, zaproszenie, potwierdzenie usunięcia.
+- Komponenty: wiersz członka, panel linku zaproszenia, wiersz zaproszenia, karta dołączenia, powłoka aplikacji.

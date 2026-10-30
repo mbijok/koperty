@@ -1,0 +1,110 @@
+import { Canvas, Meta } from "@storybook/addon-docs/blocks";
+import * as Stories from "../../src/primitives/tooltip.stories";
+
+<Meta of={Stories} name="Dokumentacja" />
+
+# Podpowiedź
+
+`import { Tooltip, TooltipContent, TooltipTrigger } from "@koperty/ui/primitives/tooltip";`
+
+## 1. Do czego służy
+
+Pokazuje widzącym użytkownikom nazwę przycisku z samą ikoną, którą czytnik ekranu odczytuje z `aria-label`.
+
+## 2. Kiedy używać
+
+| Sytuacja w produkcie                                                                           | Źródło       |
+| ---------------------------------------------------------------------------------------------- | ------------ |
+| Przyciski ikonowe w wierszach: „Zmień nazwę koperty”, „Usuń wydatek”, „Więcej akcji: Jedzenie” | US-12, US-19 |
+| Przyciski kolejności kopert („Przesuń w górę”)                                                 | US-12        |
+
+## 3. Kiedy nie używać
+
+| Sytuacja                                                        | Zamiast                                                               | Źródło                                   |
+| --------------------------------------------------------------- | --------------------------------------------------------------------- | ---------------------------------------- |
+| Informacja potrzebna do działania (format kwoty, powód blokady) | podpowiedź pola (`hint`) albo tekst obok przycisku                    | polecenie budowy („Czego unikać”), E2-Q1 |
+| Telefon: podpowiedź nie pojawia się po dotknięciu               | etykieta widoczna albo `aria-label` (podpowiedź jest tylko dodatkiem) | WCAG 1.4.13                              |
+| Przycisk z tekstem                                              | nic – tekst już jest                                                  | –                                        |
+| Wyjaśnienie ujemnego salda                                      | treść na ekranie albo alert                                           | K3, US-16                                |
+
+## 4. Anatomia
+
+| Część              | Opcjonalna | Uwagi                                                                                                                                                                      |
+| ------------------ | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Element wywołujący | nie        | przycisk ikonowy z tym samym tekstem w `aria-label`                                                                                                                        |
+| Dymek              | nie        | `surface-overlay`, `border-subtle`, `shadow-overlay`, `text-meta`, najwyżej 65 znaków szerokości, odstęp `space-inline` (E2, propozycja kolorów zaakceptowana w różnicach) |
+
+## 5. Warianty
+
+Jeden wariant; strona wyświetlenia (`side`) dobiera się automatycznie przy krawędzi.
+
+## 6. Stany
+
+<Canvas of={Stories.Stany} />
+
+| Stan                                  | Zachowanie                                                   | Źródło      |
+| ------------------------------------- | ------------------------------------------------------------ | ----------- |
+| Ukryta                                | –                                                            | –           |
+| Widoczna                              | po najechaniu i po fokusie z klawiatury, z opóźnieniem Radix | WCAG 1.4.13 |
+| Zamykanie                             | Escape, opuszczenie elementu lub utrata fokusu               | WCAG 1.4.13 |
+| Zablokowany, ładowanie, błąd, wybrany | nie dotyczy                                                  | –           |
+
+## 7. Zachowanie i dostępność
+
+| Zasada                                                                                              | Źródło                         |
+| --------------------------------------------------------------------------------------------------- | ------------------------------ |
+| Pojawia się także przy fokusie z klawiatury, nie tylko przy najechaniu (sprawdza test).             | WCAG 1.4.13                    |
+| Escape ukrywa podpowiedź bez przenoszenia fokusu (sprawdza test).                                   | WCAG 1.4.13                    |
+| Rola `tooltip`; nazwa przycisku pochodzi z `aria-label`, nie z podpowiedzi – działa także bez niej. | WAI-ARIA (tooltip), WCAG 4.1.2 |
+| Dymek nie zawiera linków ani przycisków.                                                            | WAI-ARIA (tooltip)             |
+
+## 8. Treść
+
+| Zasada                                                                             | Przykład       | Źródło |
+| ---------------------------------------------------------------------------------- | -------------- | ------ |
+| Taki sam tekst jak `aria-label`: czasownik i obiekt                                | „Usuń wydatek” | E2-P2  |
+| Jedna linia; dłuższy tekst się zawija, ale to znak, że informacja należy do treści | –              | P3     |
+
+<Canvas of={Stories.DlugaTresc} />
+
+## 9. Responsywność
+
+| Szerokość     | Zachowanie                                                                               |
+| ------------- | ---------------------------------------------------------------------------------------- |
+| 320 px        | dymek mieści się w ekranie i zawija tekst; na ekranach dotykowych zwykle się nie pojawia |
+| 768 i 1440 px | po najechaniu i fokusie                                                                  |
+
+## 10. API
+
+`Tooltip` – propsy `Tooltip.Root` z Radix (`open`, `defaultOpen`, `onOpenChange`; zawiera własny `TooltipProvider`). `TooltipContent` – `side`, `align`. `TooltipTrigger` – zwykle `asChild` z przyciskiem.
+
+## 11. Kod
+
+Minimalny i typowy w produkcie (wiersz wydatku, US-19):
+
+```tsx
+<Tooltip>
+  <TooltipTrigger asChild>
+    <Button variant="ghost" size="icon" aria-label="Usuń wydatek">
+      <Trash2 aria-hidden="true" />
+    </Button>
+  </TooltipTrigger>
+  <TooltipContent>Usuń wydatek</TooltipContent>
+</Tooltip>
+```
+
+<Canvas of={Stories.Playground} />
+
+## 12. Dobrze i źle
+
+| Dobrze                                                                   | Źle                                                                                                                                  |
+| ------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------ |
+| Podpowiedź „Usuń wydatek” powtarza `aria-label` przycisku z ikoną kosza. | Podpowiedź „Kwota w złotych, z przecinkiem” przy polu: na telefonie nikt jej nie zobaczy – to treść `hint`.                          |
+| Powód blokady w tekście pod przyciskiem.                                 | Powód blokady tylko w podpowiedzi zablokowanego przycisku: zablokowany element nie dostaje fokusu, więc podpowiedź jest niedostępna. |
+
+Podpowiedź otwiera się w portalu nad stroną, więc pary są tabelą; wygląd pokazuje story „Stany”.
+
+## 13. Powiązane
+
+- Mylona z: **podpowiedzią pola** (`FormField` `hint` – zawsze widoczna), **popoverem** (brak w produkcie, strona „Czego brakuje”).
+- Występuje we wzorcach: wiersz koperty, wiersz operacji.

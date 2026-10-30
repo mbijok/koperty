@@ -1,0 +1,101 @@
+import { Canvas, Meta } from "@storybook/addon-docs/blocks";
+import * as Stories from "./connection-session.stories";
+
+<Meta of={Stories} name="Dokumentacja" />
+
+# Brak sieci i wygasła sesja
+
+`import { OfflineBanner } from "@koperty/ui/product/app/offline-banner";`
+
+## 1. Do czego służy
+
+Mówi wprost, co się stało, gdy znika połączenie albo kończy się sesja, i co zrobić dalej. Aplikacja nie ma trybu offline; dane wczytane wcześniej zostają na ekranie.
+
+## 2. Kiedy używać
+
+| Sytuacja w produkcie                         | Źródło       |
+| -------------------------------------------- | ------------ |
+| Utrata połączenia w trakcie pracy            | US-23, PRD 6 |
+| Otwarcie aplikacji bez połączenia            | US-23        |
+| Sesja wygasła albo zakończona w innej karcie | S-01 AC-6b   |
+
+## 3. Kiedy nie używać
+
+| Sytuacja                  | Zamiast                             | Źródło                   |
+| ------------------------- | ----------------------------------- | ------------------------ |
+| Nieudany zapis formularza | komunikat formularza (dane zostają) | wzorzec Formularz, E3-P7 |
+| Brak dostępu do obiektu   | „nie istnieje albo brak dostępu”    | widok szczegółów         |
+
+## 4. Anatomia
+
+| Część                         | Opcjonalna | Uwagi                                                |
+| ----------------------------- | ---------- | ---------------------------------------------------- |
+| Komunikat braku sieci         | nie        | `OfflineBanner` nad treścią, pojawia się i znika sam |
+| Stan błędu wczytania          | tak        | gdy nic się nie wczytało; „Spróbuj ponownie”         |
+| Logowanie z komunikatem sesji | –          | `SignInForm` z `notice`                              |
+
+## 5. Warianty
+
+Dwie sytuacje: brak sieci (komunikat i stan błędu) oraz wygasła sesja (logowanie z powrotem na pierwotny adres).
+
+## 6. Stany
+
+| Stan                 | Story                | Zachowanie                                      | Źródło           |
+| -------------------- | -------------------- | ----------------------------------------------- | ---------------- |
+| Utrata połączenia    | `UtrataPolaczenia`   | komunikat nad treścią, wczytane koperty zostają | US-23            |
+| Start bez połączenia | `StartBezPolaczenia` | komunikat i stan błędu z „Spróbuj ponownie”     | US-23            |
+| Wygasła sesja        | `WygaslaSesja`       | logowanie z komunikatem; po zalogowaniu powrót  | S-01 AC-6, AC-6b |
+
+<Canvas of={Stories.UtrataPolaczenia} />
+<Canvas of={Stories.StartBezPolaczenia} />
+
+## 7. Zachowanie i dostępność
+
+| Zasada                                                                                                  | Źródło       |
+| ------------------------------------------------------------------------------------------------------- | ------------ |
+| Komunikat braku sieci śledzi zdarzenia `online` i `offline` (`useOnline`); znika sam.                   | US-23        |
+| Ogłaszany grzecznie (`role="status"`), bez przenoszenia fokusu.                                         | WCAG 4.1.3   |
+| Bez trybu offline: zapis nie jest kolejkowany, formularz zachowuje dane i mówi o braku sieci.           | PRD 6, E3-P7 |
+| Sesja: przy `SIGNED_OUT` albo `NOT_AUTHENTICATED` czyszczenie cache i przejście na `/login?redirect=…`. | S-01 AC-6b   |
+
+## 8. Treść
+
+| Zasada                          | Przykład                                                                 | Źródło              |
+| ------------------------------- | ------------------------------------------------------------------------ | ------------------- |
+| Co widać i kiedy zadziała zapis | „Widzisz dane wczytane wcześniej. Zapis zadziała, gdy połączenie wróci.” | propozycja (E3-P11) |
+| Start bez połączenia            | „Aplikacja potrzebuje internetu. Sprawdź połączenie i spróbuj ponownie.” | propozycja (E3-P11) |
+| Wygasła sesja                   | „Sesja wygasła. Zaloguj się ponownie, a wrócisz do miejsca…”             | propozycja (E3-P10) |
+
+## 9. Responsywność
+
+Komunikat na całą szerokość treści; na telefonie tekst zawija się pod tytułem.
+
+<Canvas of={Stories.WaskiEkran} />
+
+## 10. API
+
+`OfflineBanner` nie ma propów. `useOnline()` z `@koperty/ui/lib/online` zwraca `boolean` dla własnych zastosowań. Wygasła sesja: `SignInForm` z `notice` (strona „Logowanie kodem”).
+
+## 11. Kod
+
+```tsx
+// Układ tras po zalogowaniu
+<AppShell …>
+  <OfflineBanner />
+  <Outlet />
+</AppShell>
+```
+
+<Canvas of={Stories.WygaslaSesja} />
+
+## 12. Dobrze i źle
+
+| Dobrze                                               | Źle                                                   |
+| ---------------------------------------------------- | ----------------------------------------------------- |
+| Wczytane dane zostają pod komunikatem.               | Pusty ekran z „Błąd sieci”.                           |
+| Logowanie z komunikatem i powrotem na ten sam adres. | Ciche przekierowanie na stronę główną po zalogowaniu. |
+
+## 13. Powiązane
+
+- Komponenty: komunikat braku sieci, stan błędu, powłoka aplikacji.
+- Wzorce: formularz, logowanie kodem.

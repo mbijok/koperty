@@ -1,0 +1,132 @@
+import { Canvas, Meta } from "@storybook/addon-docs/blocks";
+import * as Stories from "../../src/views/account/sign-in-form.stories";
+
+<Meta of={Stories} name="Dokumentacja" />
+
+# Logowanie kodem
+
+`import { SignInForm } from "@koperty/ui/views/account/sign-in-form";`
+
+## 1. Do czego służy
+
+Loguje bez hasła w dwóch krokach: adres e-mail, potem 6-cyfrowy kod z wiadomości (S-01). Link z tej samej wiadomości działa równolegle i nie wymaga formularza.
+
+## 2. Kiedy używać
+
+| Sytuacja w produkcie                        | Źródło                 |
+| ------------------------------------------- | ---------------------- |
+| Ekran `/login`                              | US-01, S-01 AC-1, AC-4 |
+| Powrót po wygasłym linku lub wygasłej sesji | S-01 AC-3b, AC-6b      |
+| Otwarcie zaproszenia bez zalogowania        | US-08                  |
+
+## 3. Kiedy nie używać
+
+| Sytuacja                   | Zamiast                       | Źródło                                  |
+| -------------------------- | ----------------------------- | --------------------------------------- |
+| Zmiana nazwy wyświetlanej  | formularz (wzorzec Formularz) | US-24                                   |
+| Logowanie hasłem lub OAuth | brak w MVP                    | PRD, AGENTS.md (rozstrzygnięte decyzje) |
+
+## 4. Anatomia
+
+| Część                       | Opcjonalna | Uwagi                                                         |
+| --------------------------- | ---------- | ------------------------------------------------------------- |
+| Komunikat powodu (`notice`) | tak        | `Alert` nad formularzem                                       |
+| Krok 1: „Adres e-mail”      | nie        | `type="email"`, `autocomplete="email"`, „Wyślij kod”          |
+| Krok 2: „Kod z wiadomości”  | nie        | `inputmode="numeric"`, `autocomplete="one-time-code"`, 6 cyfr |
+| „Wyślij nowy kod”           | nie        | bez ponownego wpisywania adresu                               |
+| „Zmień adres e-mail”        | nie        | powrót do kroku 1 z zachowanym adresem                        |
+
+## 5. Warianty
+
+Jeden formularz; różni się tylko komunikatem powodu: wygasły link, wygasła sesja, zaproszenie.
+
+## 6. Stany
+
+| Stan                                                    | Story                                                                         | Zachowanie                                                | Źródło                |
+| ------------------------------------------------------- | ----------------------------------------------------------------------------- | --------------------------------------------------------- | --------------------- |
+| E-mail → kod → zalogowanie                              | `Playground`                                                                  | fokus na polu kodu, spacje i myślniki w kodzie usuwane    | S-01 AC-1, WCAG 2.4.3 |
+| Błędny adres                                            | `BlednyAdres`                                                                 | błąd po opuszczeniu pola i przy wysłaniu, nic nie wysłane | S-01 AC-4             |
+| Wysyłanie                                               | `Wysylanie`                                                                   | „Wysyłanie…”, blokada podwójnego wysłania                 | wzorzec Formularz     |
+| Limit wiadomości                                        | `LimitWiadomosci`                                                             | komunikat Auth, adres zostaje                             | S-01 (`toAppError`)   |
+| Błędny lub wygasły kod                                  | `BlednyKod`                                                                   | błąd przy polu i „Wyślij nowy kod”                        | S-01 AC-3             |
+| Błąd serwera przy kodzie                                | `KodBladSerwera`                                                              | kod zostaje w polu                                        | wzorzec Formularz     |
+| Nowy kod, zmiana adresu                                 | `NowyKodIZmianaAdresu`                                                        | „Wysłaliśmy nowy kod…”; powrót z fokusem na adresie       | US-01                 |
+| Nowy kod: oczekiwanie, limit, nieznany błąd, brak sieci | `NowyKodWysylanie`, `NowyKodLimit`, `NowyKodNieznanyBlad`, `NowyKodBrakSieci` | komunikat nad przyciskiem                                 | S-01, E3-P7           |
+| Wygasły link                                            | `LinkWygasl`                                                                  | komunikat nad krokiem 1                                   | S-01 AC-3b            |
+| Wygasła sesja                                           | `SesjaWygasla`                                                                | komunikat; po zalogowaniu powrót na pierwotny adres       | S-01 AC-6, AC-6b      |
+| Przed dołączeniem                                       | `PrzedDolaczeniem`                                                            | nazwa budżetu w komunikacie                               | US-08                 |
+
+<Canvas of={Stories.BlednyKod} />
+<Canvas of={Stories.SesjaWygasla} />
+
+## 7. Zachowanie i dostępność
+
+| Zasada                                                                               | Źródło               |
+| ------------------------------------------------------------------------------------ | -------------------- |
+| Po zmianie kroku fokus trafia na pole nowego kroku.                                  | WCAG 2.4.3           |
+| Kod podpowiadany przez system (`one-time-code`), klawiatura numeryczna na telefonie. | WCAG 1.3.5           |
+| Podpowiedź pola kodu mówi, na jaki adres wysłano wiadomość.                          | WCAG 3.3.2           |
+| Walidacja formatu tylko dla wygody; o poprawności decyduje Supabase Auth.            | S-01 AC-4, AGENTS.md |
+| Bez haseł i bez zapamiętywania kodu w aplikacji.                                     | PRD (logowanie)      |
+
+## 8. Treść
+
+| Zasada                            | Przykład                                                     | Źródło              |
+| --------------------------------- | ------------------------------------------------------------ | ------------------- |
+| Komunikat formatu z przykładem    | „Podaj adres e-mail w formacie nazwa@domena.pl.”             | WCAG 3.3.3          |
+| Wygasły link                      | „Link wygasł lub został już użyty. Wyślij nową wiadomość.”   | S-01 AC-3b          |
+| Wygasła sesja z obietnicą powrotu | „Sesja wygasła. Zaloguj się ponownie, a wrócisz do miejsca…” | propozycja (E3-P10) |
+| Nowy kod unieważnia poprzedni     | „Wysłaliśmy nowy kod. Poprzedni już nie działa.”             | propozycja (E3-P10) |
+
+## 9. Responsywność
+
+Na telefonie przyciski główne zajmują całą szerokość; od 768 px mają szerokość treści.
+
+<Canvas of={Stories.WaskiEkran} />
+
+## 10. API
+
+| Prop          | Typ                                                              | Opis                                     |
+| ------------- | ---------------------------------------------------------------- | ---------------------------------------- |
+| `requestCode` | `(email: string) => Promise<SubmitResult<"email">>`              | `signInWithOtp`; błędy Auth → komunikaty |
+| `verifyCode`  | `(email: string, code: string) => Promise<SubmitResult<"code">>` | `verifyOtp`                              |
+| `onSignedIn`  | `() => void`                                                     | przejście na adres powrotu               |
+| `notice`      | `string`                                                         | powód wejścia na ekran                   |
+
+## 11. Kod
+
+```tsx
+<SignInForm
+  notice={
+    search.error_code === "otp_expired"
+      ? "Link wygasł lub został już użyty. Wyślij nową wiadomość."
+      : undefined
+  }
+  requestCode={async (email) => {
+    const { error } = await supabase.auth.signInWithOtp({
+      email,
+      options: { emailRedirectTo: `${origin}/login` },
+    });
+    return error ? { ok: false, formError: toAppError(error).message } : { ok: true };
+  }}
+  verifyCode={async (email, token) => {
+    const { error } = await supabase.auth.verifyOtp({ email, token, type: "email" });
+    return error ? { ok: false, fieldErrors: { code: toAppError(error).message } } : { ok: true };
+  }}
+  onSignedIn={() => navigate({ to: search.redirect })}
+/>
+```
+
+<Canvas of={Stories.Playground} />
+
+## 12. Dobrze i źle
+
+| Dobrze                                             | Źle                                                |
+| -------------------------------------------------- | -------------------------------------------------- |
+| „Wyślij nowy kod” bez ponownego wpisywania adresu. | Powrót do pustego formularza po błędnym kodzie.    |
+| Powód wejścia na ekran nad formularzem.            | Przekierowanie na logowanie bez słowa wyjaśnienia. |
+
+## 13. Powiązane
+
+- Wzorce: formularz, brak sieci i wygasła sesja, zaproszenie.
+- Komponenty bazowe: pole formularza, pole tekstowe, alert.

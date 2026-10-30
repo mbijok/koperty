@@ -1,0 +1,126 @@
+import { Canvas, Meta } from "@storybook/addon-docs/blocks";
+import * as Stories from "../../src/views/funds/allocation-form.stories";
+
+<Meta of={Stories} name="Dokumentacja" />
+
+# Kwota ujemna i debet
+
+`import { AllocationForm } from "@koperty/ui/views/funds/allocation-form";`
+
+## 1. Do czego służy
+
+Pokazuje ujemne salda i ujemną pulę tak samo w całym produkcie oraz prowadzi do wyjścia z debetu: zwiększenia przydziału. Formularz przydziału pokazuje pulę po zapisie, zanim osoba zapisze.
+
+## 2. Kiedy używać
+
+| Sytuacja w produkcie                          | Źródło         |
+| --------------------------------------------- | -------------- |
+| Przydział środków do koperty (także przyszły) | US-16          |
+| Saldo koperty poniżej zera po wydatku         | US-17, PRD 4.5 |
+| Pula poniżej zera                             | US-16, PRD 4.3 |
+
+## 3. Kiedy nie używać
+
+| Sytuacja                       | Zamiast                             | Źródło       |
+| ------------------------------ | ----------------------------------- | ------------ |
+| Kwota wydatku w liście         | kwota `kind="expense"` (bez minusa) | P7           |
+| Blokowanie zapisu przy debecie | nigdy – debet jest dozwolony        | PRD 4.3, 4.5 |
+
+## 4. Anatomia
+
+| Część               | Opcjonalna | Uwagi                              |
+| ------------------- | ---------- | ---------------------------------- |
+| Kwota z minusem „−” | nie        | `Amount`, znak minus, nie łącznik  |
+| Znacznik „Debet”    | nie        | przy saldzie i puli poniżej zera   |
+| Pole przydziału     | nie        | etykieta z kopertą i miesiącem     |
+| „Pula po zapisie”   | nie        | podgląd na żywo, `aria-live`       |
+| Wyjaśnienie         | tak        | przy puli ujemnej: zapis dozwolony |
+
+## 5. Warianty
+
+Formularz: nowy przydział (puste pole) i zmiana istniejącego (kwota w polu, zmniejszenie zwraca różnicę do puli).
+
+## 6. Stany
+
+| Stan                    | Story                    | Zachowanie                                      | Źródło            |
+| ----------------------- | ------------------------ | ----------------------------------------------- | ----------------- |
+| Przydział z puli        | `Playground`             | 5000 → 800: „Pula po zapisie: 4 200,00 zł”      | US-16             |
+| Pula poniżej zera       | `PulaPonizejZera`        | −200,00 zł, „Debet”, wyjaśnienie; zapis możliwy | US-16             |
+| Zmniejszenie przydziału | `ZmniejszeniePrzydzialu` | 800 → 600: 200 zł wraca do puli                 | US-16, PRD 4.4    |
+| Przyszły miesiąc        | `PrzyszlyMiesiac`        | miesiąc w etykiecie pola                        | US-16             |
+| Błędna kwota            | `BladKwoty`              | bez podglądu, nic nie wysłane                   | WCAG 3.3.1        |
+| Błąd serwera            | `BladSerwera`            | kwota zostaje                                   | wzorzec Formularz |
+| Debet w kopercie i puli | `DebetWKopercieIPuli`    | minus i „Debet”, akcja „Przydziel środki”       | K3, US-21         |
+
+<Canvas of={Stories.PulaPonizejZera} />
+<Canvas of={Stories.DebetWKopercieIPuli} />
+
+## 7. Zachowanie i dostępność
+
+| Zasada                                                                    | Źródło             |
+| ------------------------------------------------------------------------- | ------------------ |
+| Ujemna wartość ma minus i słowo „Debet”, nigdy sam kolor.                 | K3, W4, WCAG 1.4.1 |
+| Debet nie blokuje zapisu; interfejs mówi, co się stanie.                  | PRD 4.3, 4.5       |
+| Podgląd puli liczy klient tylko dla wygody; pulę wylicza baza z historii. | PRD 4.3, AGENTS.md |
+| Zero usuwa przydział (zwraca całość do puli).                             | propozycja (E3-P9) |
+| Wyjście z debetu: „Przydziel środki” przy kopercie.                       | PRD 4.5            |
+
+## 8. Treść
+
+| Zasada               | Przykład                                                                        | Źródło             |
+| -------------------- | ------------------------------------------------------------------------------- | ------------------ |
+| Skutek przed zapisem | „Przydzielasz więcej, niż jest w puli. Możesz to zapisać – pula będzie ujemna.” | propozycja (E3-P9) |
+| Wyjście z debetu     | „Debet pokrywasz, zwiększając przydział koperty.”                               | PRD 4.5            |
+| Pula ujemna          | „Przydzielono więcej, niż wpłynęło. Dodaj przychód albo zmniejsz przydział.”    | podsumowanie puli  |
+
+## 9. Responsywność
+
+Długa nazwa koperty w etykiecie zawija się; podgląd puli pod polem.
+
+<Canvas of={Stories.WaskiEkran} />
+
+## 10. API
+
+| Prop                    | Typ                                                   | Opis                                   |
+| ----------------------- | ----------------------------------------------------- | -------------------------------------- |
+| `envelopeName`          | `string`                                              | koperta                                |
+| `month`                 | `string`                                              | `RRRR-MM`                              |
+| `current`               | `number`                                              | obecny przydział w groszach (0 = brak) |
+| `pool`                  | `number`                                              | pula przed zmianą                      |
+| `submit`                | `(amount: number) => Promise<SubmitResult<"amount">>` | `set_allocation`                       |
+| `onSuccess`, `onCancel` | –                                                     | jak w formularzu                       |
+
+## 11. Kod
+
+```tsx
+<AllocationForm
+  envelopeName={envelope.name}
+  month={month}
+  current={allocation.data?.amount ?? 0}
+  pool={pool.data ?? 0}
+  submit={async (amount) => {
+    const { error } = await supabase.rpc("set_allocation", {
+      p_envelope_id: envelope.id,
+      p_period: `${month}-01`,
+      p_amount: amount,
+    });
+    if (error) throw error;
+    return { ok: true };
+  }}
+  onSuccess={() => navigate({ to: "/" })}
+/>
+```
+
+<Canvas of={Stories.Playground} />
+
+## 12. Dobrze i źle
+
+| Dobrze                                       | Źle                                         |
+| -------------------------------------------- | ------------------------------------------- |
+| „−30,00 zł” i „Debet”.                       | Czerwona kwota bez minusa i bez słowa.      |
+| Podgląd puli przed zapisem, zapis dozwolony. | Blokada przycisku „Za mało środków w puli”. |
+
+## 13. Powiązane
+
+- Komponenty: kwota, podsumowanie puli, karta koperty, pole kwoty.
+- Wzorce: nawigacja po miesiącach, podział wydatku.

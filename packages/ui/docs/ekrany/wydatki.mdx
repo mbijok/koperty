@@ -1,0 +1,47 @@
+import { Canvas, Meta } from "@storybook/addon-docs/blocks";
+import * as Stories from "./expenses-screens.stories";
+
+<Meta of={Stories} name="Mapa stanów" />
+
+# Ekrany: Wydatki
+
+Nowy wydatek, lista operacji miesiąca i szczegóły wydatku (US-17–US-20).
+
+## Nowy wydatek (`/expenses/new`)
+
+| Stan        | Story                   | Co widać                                                | Źródło       |
+| ----------- | ----------------------- | ------------------------------------------------------- | ------------ |
+| Pusty       | `Nowy wydatek`          | kwota, koperta, przełącznik podziału, data (dziś), opis | US-17, E3-Q4 |
+| Z podziałem | `Nowy wydatek: podział` | dwie części, „Podzielono całą kwotę.”                   | US-18        |
+
+Błędy, suma części i odpowiedzi API: wzorzec „Podział wydatku”.
+
+<Canvas of={Stories.NowyWydatek} />
+
+## Operacje (`/operations?month=…`)
+
+| Stan          | Story                     | Co widać                                                     | Źródło     |
+| ------------- | ------------------------- | ------------------------------------------------------------ | ---------- |
+| Z danymi      | `Operacje`                | przełącznik miesiąca, „Liczba operacji: 5”, dni z operacjami | US-20      |
+| Pusty miesiąc | `Operacje: pusty miesiąc` | „Brak operacji w wybranym miesiącu”, powrót do bieżącego     | Q5, E3-P8  |
+| Pusty budżet  | `Operacje: pusty budżet`  | „Brak operacji w tym budżecie”, „Dodaj wydatek”              | US-21      |
+| Ładowanie     | `Operacje: ładowanie`     | szkielety, bez licznika                                      | E2-P12     |
+| Błąd          | `Operacje: błąd`          | stan błędu, bez licznika                                     | WCAG 3.3.1 |
+
+<Canvas of={Stories.Operacje} />
+
+## Szczegóły wydatku (`/expenses/<id>`)
+
+| Stan                           | Story                                       | Co widać                                          | Źródło |
+| ------------------------------ | ------------------------------------------- | ------------------------------------------------- | ------ |
+| Pełne dane                     | `Szczegóły wydatku`                         | opis jako `h1`, kwota, „Edytuj”, „Usuń…”, podział | US-19  |
+| Nie istnieje albo brak dostępu | `Szczegóły: nie istnieje albo brak dostępu` | jeden komunikat, „Wróć do operacji”               | PT404  |
+
+Usunięcie: wzorzec „Potwierdzenie usunięcia”.
+
+<Canvas of={Stories.Szczegoly} />
+
+## Użyte elementy
+
+- Widoki: `ExpenseForm`, `OperationsPanel`, `ExpenseDetails`.
+- Wzorce: podział wydatku, lista z filtrem miesiąca, widok szczegółów, potwierdzenie usunięcia.

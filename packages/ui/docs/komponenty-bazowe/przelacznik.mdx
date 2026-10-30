@@ -1,0 +1,140 @@
+import { ArgTypes, Canvas, Meta, Unstyled } from "@storybook/addon-docs/blocks";
+import { Button } from "@koperty/ui/primitives/button";
+import { FormField } from "@koperty/ui/primitives/field";
+import { Switch } from "@koperty/ui/primitives/switch";
+import { DoDont } from "../blocks/frames";
+import * as Stories from "../../src/primitives/switch.stories";
+
+<Meta of={Stories} name="Dokumentacja" />
+
+# Przełącznik
+
+`import { Switch } from "@koperty/ui/primitives/switch";` – w `FormField` z `orientation="horizontal"`.
+
+## 1. Do czego służy
+
+Włącza lub wyłącza ustawienie widoku albo formularza, które działa od razu, bez przycisku „Zapisz”.
+
+## 2. Kiedy używać
+
+| Sytuacja w produkcie                                                              | Źródło                       |
+| --------------------------------------------------------------------------------- | ---------------------------- |
+| „Pokaż zarchiwizowane koperty” na liście kopert                                   | US-13                        |
+| „Podziel wydatek na kilka kopert” w formularzu wydatku (pokazuje edytor podziału) | US-18 (propozycja z etapu 0) |
+
+## 3. Kiedy nie używać
+
+| Sytuacja                                      | Zamiast                                                     | Źródło            |
+| --------------------------------------------- | ----------------------------------------------------------- | ----------------- |
+| Czynność (zapis, usunięcie, archiwizacja)     | Przycisk                                                    | WAI-ARIA (switch) |
+| Wybór jednej z kilku wartości                 | Select                                                      | –                 |
+| Zgoda na warunki lub potwierdzenie „Rozumiem” | brak w produkcie (checkbox jest na stronie „Czego brakuje”) | PRD 3             |
+
+## 4. Anatomia
+
+| Część      | Opcjonalna | Uwagi                                                                        |
+| ---------- | ---------- | ---------------------------------------------------------------------------- |
+| Tor        | nie        | 44 × 24 px, granica `border-control` (E2-Q3)                                 |
+| Kciuk      | nie        | 20 px; wyłączony: szary (`switch-thumb-off`), włączony: jasny na szmaragdzie |
+| Etykieta   | nie        | z `FormField`, klikalna razem z przełącznikiem                               |
+| Podpowiedź | tak        | skutek włączenia, gdy nie wynika z etykiety                                  |
+
+## 5. Warianty
+
+Jeden wariant i jeden rozmiar (E2-Q3).
+
+## 6. Stany
+
+<Canvas of={Stories.Stany} />
+
+| Stan                       | Wygląd                                                                                              | Źródło             |
+| -------------------------- | --------------------------------------------------------------------------------------------------- | ------------------ |
+| Wyłączony                  | tor `surface-muted`, szary kciuk po lewej (kontrast kciuka do toru ≥ 3 : 1)                         | E2-Q3, WCAG 1.4.11 |
+| Włączony                   | tor `action-primary`, kciuk po prawej; stan rozpoznawalny po położeniu kciuka, nie tylko po kolorze | WCAG 1.4.1         |
+| Fokus                      | linia `focus-ring`                                                                                  | W2                 |
+| Zablokowany                | przezroczystość 50%, powód w podpowiedzi                                                            | E2-Q1              |
+| Najechanie                 | bez zmiany (cały wiersz jest celem)                                                                 | propozycja (E2-P4) |
+| Ładowanie, błąd, wciśnięty | nie dotyczy: ustawienie działa lokalnie i natychmiast                                               | –                  |
+
+## 7. Zachowanie i dostępność
+
+| Zasada                                                                         | Źródło            |
+| ------------------------------------------------------------------------------ | ----------------- |
+| Rola `switch` z `aria-checked`; Spacja przełącza (sprawdza test w Playground). | WAI-ARIA (switch) |
+| Kliknięcie etykiety przełącza (sprawdza test).                                 | WCAG 2.5.8, 1.3.1 |
+| Czytnik ogłasza etykietę, rolę i stan: „włączony” / „wyłączony”.               | WAI-ARIA          |
+| Zmiana działa od razu; jeśli wymaga zapisu na serwerze, użyj przycisku.        | WCAG 3.2.2        |
+| Cel: tor 44 × 24 px i cała etykieta.                                           | WCAG 2.5.8        |
+
+## 8. Treść
+
+| Zasada                                                                         | Przykład                                           | Źródło             |
+| ------------------------------------------------------------------------------ | -------------------------------------------------- | ------------------ |
+| Etykieta opisuje stan włączony, bez przeczeń                                   | „Pokaż zarchiwizowane koperty”, nie „Nie ukrywaj…” | propozycja (E2-P2) |
+| Bez „Włącz” w etykiecie – mówi to sam przełącznik                              | –                                                  | WAI-ARIA (switch)  |
+| Długa etykieta i podpowiedź się zawijają, przełącznik zostaje na końcu wiersza | –                                                  | WCAG 1.4.10        |
+
+<Canvas of={Stories.DlugaTresc} />
+
+## 9. Responsywność
+
+| Szerokość     | Zachowanie                                                     |
+| ------------- | -------------------------------------------------------------- |
+| 320 px        | etykieta po lewej zawija się, przełącznik przy prawej krawędzi |
+| 768 i 1440 px | wiersz w szerokości formularza (`max-w-content`)               |
+
+## 10. API
+
+<ArgTypes of={Stories} />
+
+Propsy `Switch.Root` z Radix: `checked`, `defaultChecked`, `onCheckedChange`, `disabled`, `name`, `id`, `aria-*`.
+
+## 11. Kod
+
+Minimalny:
+
+```tsx
+<FormField label="Pokaż zarchiwizowane koperty" orientation="horizontal">
+  {(control) => <Switch {...control} checked={showArchived} onCheckedChange={setShowArchived} />}
+</FormField>
+```
+
+Typowy w produkcie (wydatek z podziałem, US-18):
+
+```tsx
+<FormField label="Podziel wydatek na kilka kopert" orientation="horizontal" optional>
+  {(control) => <Switch {...control} checked={isSplit} onCheckedChange={setIsSplit} />}
+</FormField>
+```
+
+## 12. Dobrze i źle
+
+<Unstyled>
+  <DoDont
+    good={{
+      node: (
+        <div className="w-full">
+          <FormField label="Pokaż zarchiwizowane koperty" orientation="horizontal">
+            {(control) => <Switch {...control} />}
+          </FormField>
+        </div>
+      ),
+      note: "ustawienie widoku, działa od razu.",
+    }}
+    bad={{
+      node: (
+        <div className="w-full">
+          <FormField label="Zarchiwizuj kopertę" orientation="horizontal">
+            {(control) => <Switch {...control} />}
+          </FormField>
+        </div>
+      ),
+      note: "archiwizacja to czynność z regułą salda – potrzebny przycisk.",
+    }}
+  />
+</Unstyled>
+
+## 13. Powiązane
+
+- Mylony z: **przyciskiem** (czynność), **checkboxem** (brak w produkcie).
+- Występuje we wzorcach: lista kopert z archiwum, podział wydatku.

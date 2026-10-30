@@ -1,0 +1,141 @@
+import { Canvas, Meta } from "@storybook/addon-docs/blocks";
+import * as Stories from "../../src/primitives/alert-dialog.stories";
+
+<Meta of={Stories} name="Dokumentacja" />
+
+# Dialog potwierdzenia
+
+`import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@koperty/ui/primitives/alert-dialog";`
+
+## 1. Do czego służy
+
+Zatrzymuje użytkownika przed operacją, której nie da się cofnąć, i mówi, co dokładnie zostanie usunięte.
+
+## 2. Kiedy używać
+
+| Sytuacja w produkcie                           | Źródło       |
+| ---------------------------------------------- | ------------ |
+| Usunięcie wydatku lub przychodu                | US-19, US-15 |
+| Usunięcie budżetu                              | US-06        |
+| Usunięcie konta                                | US-03        |
+| Usunięcie członka budżetu, opuszczenie budżetu | US-09, US-10 |
+| Unieważnienie zaproszenia                      | US-07        |
+
+## 3. Kiedy nie używać
+
+| Sytuacja                                                      | Zamiast                      | Źródło |
+| ------------------------------------------------------------- | ---------------------------- | ------ |
+| Operacja odwracalna (archiwizacja koperty – można przywrócić) | wykonaj od razu, bez pytania | US-13  |
+| Formularz                                                     | dialog                       | –      |
+| Informacja „Zapisano”                                         | toast (partia 4)             | E2-Q4  |
+
+## 4. Anatomia
+
+| Część                          | Opcjonalna | Uwagi                                                  |
+| ------------------------------ | ---------- | ------------------------------------------------------ |
+| Tło i panel                    | nie        | jak w dialogu; bez przycisku „Zamknij” – trzeba wybrać |
+| Tytuł                          | nie        | pytanie z nazwą obiektu                                |
+| Opis                           | nie        | skutek i „Tej operacji nie da się cofnąć.”             |
+| „Anuluj” (`AlertDialogCancel`) | nie        | `secondary`, łatwy do znalezienia, dostaje fokus       |
+| Czynność (`AlertDialogAction`) | nie        | `danger`, czasownik i obiekt                           |
+
+## 5. Warianty
+
+Jeden wariant. `AlertDialogAction` ma domyślnie `variant="danger"`; inny wariant tylko, gdy operacja nie usuwa danych.
+
+## 6. Stany
+
+<Canvas of={Stories.Otwarty} />
+<Canvas of={Stories.Oczekiwanie} />
+
+| Stan                  | Zachowanie                                                                                                             | Źródło                                  |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------------- | --------------------------------------- |
+| Otwarty               | fokus na „Anuluj”                                                                                                      | WAI-ARIA (alertdialog)                  |
+| Oczekiwanie na serwer | czynność z `loading` („Usuwanie…”), „Anuluj” zablokowane, dialog otwarty do odpowiedzi; drugie kliknięcie nic nie robi | E2-Q2, polecenie budowy (potwierdzenie) |
+| Błąd usuwania         | alert `danger` w dialogu z treścią błędu; dialog zostaje otwarty                                                       | WCAG 3.3.1                              |
+| Sukces                | dialog się zamyka, obiekt znika z listy, toast „Usunięto wydatek”                                                      | E2-Q4                                   |
+
+**Wyjątek dostępności (opisany):** jak w dialogu – reguła `aria-hidden-focus` wyłączona w stories z otwartym panelem.
+
+## 7. Zachowanie i dostępność
+
+| Zasada                                                                                           | Źródło                 |
+| ------------------------------------------------------------------------------------------------ | ---------------------- |
+| Rola `alertdialog`, nazwa z tytułu, opis z opisu.                                                | WAI-ARIA (alertdialog) |
+| Fokus startuje na „Anuluj”; Escape anuluje; fokus wraca na przycisk otwierający (sprawdza test). | WAI-ARIA, WCAG 2.4.3   |
+| Kliknięcie tła nie zamyka dialogu.                                                               | WAI-ARIA (alertdialog) |
+| Przy oczekiwaniu: `aria-busy` na czynności.                                                      | E2-Q2                  |
+
+## 8. Treść
+
+| Część      | Zasada                                   | Przykład                                                                 | Źródło                                     |
+| ---------- | ---------------------------------------- | ------------------------------------------------------------------------ | ------------------------------------------ |
+| Tytuł      | pytanie z nazwą obiektu w cudzysłowie    | „Usunąć wydatek „Biedronka” z 29 października?”                          | polecenie budowy (potwierdzenie usunięcia) |
+| Opis       | co się stanie i że nie da się cofnąć     | „120,50 zł wróci do koperty „Jedzenie”. Tej operacji nie da się cofnąć.” | US-03, US-06                               |
+| Czynność   | czasownik i obiekt, nigdy „OK” ani „Tak” | „Usuń wydatek”, „Usuń budżet”                                            | polecenie budowy                           |
+| Rezygnacja | „Anuluj”                                 | –                                                                        | –                                          |
+
+## 9. Responsywność
+
+| Szerokość     | Zachowanie                                                                              |
+| ------------- | --------------------------------------------------------------------------------------- |
+| 320 px        | przyciski jeden pod drugim, czynność na górze, „Anuluj” pod nią, oba na pełną szerokość |
+| 768 i 1440 px | obok siebie, „Anuluj” po lewej, czynność po prawej                                      |
+
+## 10. API
+
+`AlertDialog` – propsy `AlertDialog.Root` z Radix (`open`, `defaultOpen`, `onOpenChange`). `AlertDialogAction` i `AlertDialogCancel` przyjmują propsy przycisku (`variant`, `loading`, `loadingText`, `disabled`, `onClick`). Aby czekać na serwer, wywołaj `event.preventDefault()` w `onClick` akcji i zamknij dialog po odpowiedzi.
+
+## 11. Kod
+
+Minimalny:
+
+```tsx
+<AlertDialog>
+  <AlertDialogTrigger asChild>
+    <Button variant="ghost" size="icon" aria-label="Usuń wydatek">
+      <Trash2 aria-hidden="true" />
+    </Button>
+  </AlertDialogTrigger>
+  <AlertDialogContent>
+    <AlertDialogHeader>
+      <AlertDialogTitle>Usunąć wydatek „{expense.description}”?</AlertDialogTitle>
+      <AlertDialogDescription>Tej operacji nie da się cofnąć.</AlertDialogDescription>
+    </AlertDialogHeader>
+    <AlertDialogFooter>
+      <AlertDialogCancel>Anuluj</AlertDialogCancel>
+      <AlertDialogAction onClick={remove}>Usuń wydatek</AlertDialogAction>
+    </AlertDialogFooter>
+  </AlertDialogContent>
+</AlertDialog>
+```
+
+Typowy w produkcie (czekanie na serwer, US-06):
+
+```tsx
+<AlertDialogAction
+  loading={deleteBudget.isPending}
+  loadingText="Usuwanie…"
+  onClick={(event) => {
+    event.preventDefault();
+    deleteBudget.mutate(undefined, { onSuccess: () => setOpen(false) });
+  }}
+>
+  Usuń budżet
+</AlertDialogAction>
+```
+
+## 12. Dobrze i źle
+
+| Dobrze                                                | Źle                                                          |
+| ----------------------------------------------------- | ------------------------------------------------------------ |
+| „Usunąć budżet „Dom”?” z przyciskiem „Usuń budżet”.   | „Czy na pewno?” z przyciskiem „OK”: nie wiadomo, co zniknie. |
+| „Anuluj” obok, w wariancie `secondary`.               | „Anuluj” jako mały link w rogu: trudno go znaleźć.           |
+| Dialog zostaje otwarty, dopóki serwer nie potwierdzi. | Dialog zamyka się od razu, a błąd pojawia się w toaście.     |
+
+Otwarte panele zasłoniłyby stronę, więc pary są tabelą; poprawny wygląd pokazuje story „Otwarty”.
+
+## 13. Powiązane
+
+- Mylony z: **dialogiem** (formularz), **alertem** (komunikat bez decyzji).
+- Występuje we wzorcu: potwierdzenie usunięcia.

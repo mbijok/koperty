@@ -1,0 +1,120 @@
+import { Canvas, Meta } from "@storybook/addon-docs/blocks";
+import * as Stories from "./invitation-flow.stories";
+import * as JoinStories from "../../src/product/budgets/join-budget-card.stories";
+import * as SignInStories from "../../src/views/account/sign-in-form.stories";
+
+<Meta of={Stories} name="Dokumentacja" />
+
+# Zaproszenie
+
+`import { InviteLinkPanel } from "@koperty/ui/product/budgets/invite-link-panel";`
+
+## 1. Do czego służy
+
+Prowadzi przez obie strony zaproszenia: właściciel tworzy jednorazowy link i przekazuje go dowolnym kanałem, a zaproszona osoba otwiera go, w razie potrzeby loguje się i dołącza.
+
+## 2. Kiedy używać
+
+| Sytuacja w produkcie               | Źródło          |
+| ---------------------------------- | --------------- |
+| Ustawienia budżetu: zaproszenia    | US-07, PRD 4.10 |
+| Ekran dołączenia (`/join/<token>`) | US-08           |
+
+## 3. Kiedy nie używać
+
+| Sytuacja                         | Zamiast                                 | Źródło   |
+| -------------------------------- | --------------------------------------- | -------- |
+| Zmiana roli członka              | wiersz członka                          | US-09    |
+| Zaproszenie e-mailem z aplikacji | brak w MVP – link przekazuje właściciel | PRD 4.10 |
+
+## 4. Anatomia
+
+| Część                       | Opcjonalna | Uwagi                                                        |
+| --------------------------- | ---------- | ------------------------------------------------------------ |
+| Panel linku                 | nie        | „Wygeneruj link”, potem link, „Kopiuj link”, „Udostępnij”    |
+| Aktywne zaproszenia         | nie        | wiersze z ważnością i autorem; „Unieważnij…” dla właściciela |
+| Potwierdzenie unieważnienia | –          | wzorzec potwierdzenia usunięcia                              |
+| Karta dołączenia            | –          | strona zaproszonej osoby                                     |
+| Logowanie z komunikatem     | –          | zaproszona osoba bez sesji                                   |
+
+## 5. Warianty
+
+Widok właściciela (tworzy i unieważnia) i widok członka (tylko widzi aktywne zaproszenia).
+
+## 6. Stany
+
+| Stan                              | Story                                                | Zachowanie                                       | Źródło         |
+| --------------------------------- | ---------------------------------------------------- | ------------------------------------------------ | -------------- |
+| Udostępnienie i unieważnienie     | `Udostepnienie`                                      | link po wygenerowaniu; unieważnienie z pytaniem  | US-07          |
+| Błąd tworzenia linku              | `BladGenerowania`                                    | komunikat w panelu                               | WCAG 3.3.1     |
+| Widok członka                     | `WidokCzlonka`                                       | bez akcji, z wyjaśnieniem                        | US-07, PRD 4.9 |
+| Otwarcie ważnego linku            | `Otwarcie`                                           | nazwa budżetu i „Dołącz do budżetu”              | US-08          |
+| Bez zalogowania                   | logowanie: `PrzedDolaczeniem`                        | komunikat z nazwą budżetu, po zalogowaniu powrót | US-08          |
+| Link wygasły, użyty, unieważniony | karta dołączenia: `Wygaslo`, `Uzyte`, `Uniewaznione` | osobny komunikat i powrót do aplikacji           | US-08          |
+
+<Canvas of={Stories.Udostepnienie} />
+<Canvas of={SignInStories.PrzedDolaczeniem} />
+<Canvas of={JoinStories.Wygaslo} />
+
+## 7. Zachowanie i dostępność
+
+| Zasada                                                                     | Źródło                          |
+| -------------------------------------------------------------------------- | ------------------------------- |
+| Link ważny 7 dni, jednorazowy; ważność widoczna przy linku i w wierszu.    | PRD 4.10, US-07                 |
+| Unieważnienie pyta z datą ważności linku i czasownikiem „Unieważnij link”. | wzorzec potwierdzenia usunięcia |
+| „Udostępnij” tylko tam, gdzie działa `navigator.share`.                    | panel linku zaproszenia         |
+| Osoba już w budżecie przechodzi do niego, link nie jest zużywany.          | US-08                           |
+
+## 8. Treść
+
+| Zasada                         | Przykład                                                                     | Źródło              |
+| ------------------------------ | ---------------------------------------------------------------------------- | ------------------- |
+| Skutek unieważnienia i wyjście | „Osoba, która go dostała, nie dołączy… Zawsze możesz wygenerować nowy link.” | propozycja (E3-P11) |
+| Widok członka mówi, kto może   | „Zaproszenia tworzą i unieważniają właściciele budżetu.”                     | propozycja (E3-P11) |
+
+## 9. Responsywność
+
+Link w kroju o stałej szerokości zawija się; przyciski pod linkiem.
+
+<Canvas of={Stories.WaskiEkran} />
+
+## 10. API
+
+Wzorzec składa gotowe komponenty: `InviteLinkPanel`, `InvitationRow`, `ConfirmDeleteDialog`, `JoinBudgetCard`, `SignInForm` (`notice`). Ich API opisują strony komponentów.
+
+## 11. Kod
+
+```tsx
+<InviteLinkPanel
+  link={invite.data?.link}
+  expiresOn={invite.data?.expiresOn}
+  generating={invite.isPending}
+  error={invite.isError ? "Nie udało się wygenerować linku. Spróbuj ponownie." : undefined}
+  onGenerate={() => invite.mutate()}
+  onCopy={() =>
+    navigator.clipboard.writeText(invite.data.link).then(() => showToast("Skopiowano link"))
+  }
+/>;
+{
+  invitations.data?.map((row) => (
+    <InvitationRow
+      key={row.id}
+      expiresOn={row.expiresOn}
+      createdBy={row.createdBy}
+      onRevoke={isOwner ? () => setRevoking(row) : undefined}
+    />
+  ));
+}
+```
+
+## 12. Dobrze i źle
+
+| Dobrze                                    | Źle                                                |
+| ----------------------------------------- | -------------------------------------------------- |
+| Link dopiero po „Wygeneruj link”.         | Stały link w ustawieniach, który nigdy nie wygasa. |
+| Unieważnienie z pytaniem i datą ważności. | „Usuń” bez informacji, który link znika.           |
+
+## 13. Powiązane
+
+- Komponenty: panel linku zaproszenia, wiersz zaproszenia, karta dołączenia.
+- Wzorce: potwierdzenie usunięcia, logowanie kodem.

@@ -98,3 +98,8 @@ $RECYCLE.BIN/
 .ai/qa/artifacts_*/
 .ai/qa/test-env.json
 .ai/qa/test-env.env
+
+# =============================================================================
+# Storybook build output (packages/ui)
+# =============================================================================
+storybook-static/

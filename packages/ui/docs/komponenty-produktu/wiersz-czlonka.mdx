@@ -1,0 +1,109 @@
+import { Canvas, Meta } from "@storybook/addon-docs/blocks";
+import * as Stories from "../../src/product/budgets/member-row.stories";
+
+<Meta of={Stories} name="Dokumentacja" />
+
+# Wiersz członka
+
+`import { MemberRow } from "@koperty/ui/product/budgets/member-row";`
+
+## 1. Do czego służy
+
+Pokazuje osobę w budżecie i jej rolę oraz daje właścicielowi akcje zarządzania, a każdemu – opuszczenie budżetu.
+
+## 2. Kiedy używać
+
+| Sytuacja w produkcie                  | Źródło |
+| ------------------------------------- | ------ |
+| Lista członków w ustawieniach budżetu | US-09  |
+| Opuszczenie budżetu przez członka     | US-10  |
+
+## 3. Kiedy nie używać
+
+| Sytuacja                                | Zamiast            | Źródło |
+| --------------------------------------- | ------------------ | ------ |
+| Autor operacji                          | wiersz operacji    | US-20  |
+| Zaproszenie, które nie zostało przyjęte | wiersz zaproszenia | US-07  |
+
+## 4. Anatomia
+
+| Część               | Opcjonalna | Uwagi                                                                                           |
+| ------------------- | ---------- | ----------------------------------------------------------------------------------------------- |
+| Awatar, nazwa       | nie        | „(Ty)” przy zalogowanej osobie                                                                  |
+| Znacznik roli       | nie        | „Właściciel” / „Członek”                                                                        |
+| Akcje               | tak        | właściciel o innych: „Nadaj / Odbierz rolę właściciela”, „Usuń z budżetu…”; ja: „Opuść budżet…” |
+| Wyjaśnienie blokady | tak        | przy jedynym właścicielu                                                                        |
+
+## 5. Warianty
+
+Akcje zależą od tego, kto patrzy (`viewerIsOwner`) i czyj to wiersz (`isCurrentUser`).
+
+## 6. Stany
+
+<Canvas of={Stories.Stany} />
+
+| Stan                    | Zachowanie                                                            | Źródło       |
+| ----------------------- | --------------------------------------------------------------------- | ------------ |
+| Właściciel widzi innych | zmiana roli i usunięcie                                               | US-09        |
+| Członek widzi innych    | bez akcji                                                             | PRD 4.9      |
+| Ja                      | „Opuść budżet…”                                                       | US-10        |
+| Jedyny właściciel       | „Opuść budżet…” zablokowane z wyjaśnieniem, co zrobić (sprawdza test) | US-10, E2-Q1 |
+| Długa nazwa             | zawija się; akcje przechodzą do nowej linii                           | WCAG 1.4.10  |
+
+## 7. Zachowanie i dostępność
+
+| Zasada                                                                                 | Źródło              |
+| -------------------------------------------------------------------------------------- | ------------------- |
+| Wyjaśnienie blokady powiązane z przyciskiem przez `aria-describedby`.                  | E2-Q1, WCAG 1.3.1   |
+| „Usuń z budżetu…” i „Opuść budżet…” otwierają dialog potwierdzenia (wielokropek).      | US-09, US-10, E2-P9 |
+| Uprawnienia egzekwuje baza; wiersz tylko ukrywa akcje, których osoba nie może wykonać. | ADR 0003            |
+
+## 8. Treść
+
+| Element | Tekst                                                                                | Źródło  |
+| ------- | ------------------------------------------------------------------------------------ | ------- |
+| Blokada | „Jesteś jedynym właścicielem: nadaj rolę właściciela innej osobie albo usuń budżet.” | US-10   |
+| Role    | „Właściciel”, „Członek”                                                              | PRD 4.9 |
+
+## 9. Responsywność
+
+Na 320 px akcje pod nazwą, na 768 i 1440 px w jednej linii z nazwą.
+
+<Canvas of={Stories.DlugaNazwa} />
+
+## 10. API
+
+| Prop                                            | Typ                   | Opis              |
+| ----------------------------------------------- | --------------------- | ----------------- |
+| `name`                                          | `string`              | nazwa wyświetlana |
+| `memberRole`                                    | `"owner" \| "member"` | rola              |
+| `isCurrentUser`, `viewerIsOwner`, `isOnlyOwner` | `boolean`             | kontekst          |
+| `onToggleOwner`, `onRemove`, `onLeave`          | `() => void`          | akcje             |
+
+## 11. Kod
+
+```tsx
+<MemberRow
+  name={member.display_name}
+  memberRole={member.role}
+  isCurrentUser={member.user_id === userId}
+  viewerIsOwner={isOwner}
+  isOnlyOwner={owners === 1}
+  onToggleOwner={() => toggleOwner(member)}
+  onRemove={() => confirmRemove(member)}
+  onLeave={confirmLeave}
+/>
+```
+
+<Canvas of={Stories.Playground} />
+
+## 12. Dobrze i źle
+
+| Dobrze                                                 | Źle                              |
+| ------------------------------------------------------ | -------------------------------- |
+| Zablokowane „Opuść budżet…” z wyjaśnieniem, co zrobić. | Błąd bazy po kliknięciu „Opuść”. |
+
+## 13. Powiązane
+
+- Mylony z: **wierszem zaproszenia**.
+- Występuje we wzorcach: ustawienia budżetu (członkowie i zaproszenia), potwierdzenie usunięcia.

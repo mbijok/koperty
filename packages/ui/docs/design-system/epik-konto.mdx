@@ -1,0 +1,40 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+import { DocsLink } from "../blocks/catalog";
+
+<Meta title="Design system/Epik: Konto" />
+
+# Epik: Konto
+
+Logowanie bez hasła, wylogowanie, nazwa wyświetlana i usunięcie konta (US-01–US-03, US-24).
+
+## Kroki przepływu
+
+1. Osoba podaje e-mail, dostaje wiadomość z kodem i linkiem.
+2. Wpisuje 6-cyfrowy kod albo otwiera link; trafia na stronę główną albo na adres, z którego przyszła.
+3. Po wygaśnięciu sesji wraca na logowanie z komunikatem i po zalogowaniu na ten sam adres.
+4. W profilu zmienia nazwę wyświetlaną, wylogowuje się albo usuwa konto (z potwierdzeniem).
+
+## Ekrany i stories
+
+Wszystkie stany na pełny ekran i co w każdym widać: <DocsLink id="ekrany-konto--mapa-stanów">Ekrany → Konto (mapa stanów)</DocsLink>.
+
+| Ekran     | Stories (stany)                                                                             |
+| --------- | ------------------------------------------------------------------------------------------- |
+| Logowanie | `Logowanie: e-mail`, `Logowanie: kod`, `Logowanie: link wygasł`, `Logowanie: sesja wygasła` |
+| Profil    | `Profil`, `Profil: pusta nazwa`, `Profil: ładowanie`                                        |
+
+## Pliki źródłowe
+
+- `src/views/account/sign-in-form.tsx`
+- `src/patterns/name-form.tsx`
+- `src/product/account/app-shell.tsx`
+- `docs/ekrany/account-screens.stories.tsx`
+
+## Praca, która zostaje w produkcie
+
+Design system daje interfejs ze stanami; każde zadanie dostarcza resztę jako vertical slice (migracja, RLS, RPC, testy pgTAP, trasa, zapytania TanStack Query, podpięcie widoku) według zatwierdzonej specyfikacji. Nazwy funkcji z `docs/architecture.md`.
+
+| Zadanie z backlogu           | Do zrobienia w produkcie                                                                                                                                                              |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| S-01 Logowanie i profil (#3) | trasy `/login`, `_authenticated`, `/profile`; `signInWithOtp`, `verifyOtp`, `update_profile`; specyfikacja S-01 (`approved`) do aktualizacji: komponenty z pakietu zamiast `apps/web` |
+| S-14 Usunięcie konta (#17)   | decyzja [Z5] (jedyny właściciel), funkcja usuwania z anonimizacją autorstwa                                                                                                           |

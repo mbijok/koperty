@@ -1,0 +1,145 @@
+import { Canvas, Meta } from "@storybook/addon-docs/blocks";
+import * as Stories from "../../src/primitives/dropdown-menu.stories";
+
+<Meta of={Stories} name="Dokumentacja" />
+
+# Menu
+
+`import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@koperty/ui/primitives/dropdown-menu";`
+
+## 1. Do czego służy
+
+Chowa rzadziej używane akcje obiektu albo listę wyboru (np. budżetów) za jednym przyciskiem, żeby wiersz został czytelny.
+
+## 2. Kiedy używać
+
+| Sytuacja w produkcie                                                                     | Źródło       |
+| ---------------------------------------------------------------------------------------- | ------------ |
+| Akcje koperty: zmień nazwę, zarchiwizuj, przesuń                                         | US-12, US-13 |
+| Akcje wydatku na liście: edytuj, usuń                                                    | US-19        |
+| Akcje członka: nadaj lub odbierz rolę właściciela, usuń z budżetu                        | US-09        |
+| Przełącznik budżetu w nagłówku (lista z zaznaczonym bieżącym budżetem i „Utwórz budżet”) | US-05, US-04 |
+
+## 3. Kiedy nie używać
+
+| Sytuacja                                     | Zamiast                      | Źródło             |
+| -------------------------------------------- | ---------------------------- | ------------------ |
+| Jedna lub dwie akcje                         | przyciski widoczne w wierszu | propozycja (E2-P9) |
+| Wybór wartości w formularzu                  | Select                       | WAI-ARIA (listbox) |
+| Nawigacja główna aplikacji                   | linki                        | WAI-ARIA (link)    |
+| Najważniejsza akcja ekranu („Dodaj wydatek”) | przycisk `primary`           | E2-P4              |
+
+## 4. Anatomia
+
+| Część                                    | Opcjonalna | Uwagi                                                                                       |
+| ---------------------------------------- | ---------- | ------------------------------------------------------------------------------------------- |
+| Przycisk otwierający                     | nie        | zwykle `ghost` `icon` z `aria-label` „Więcej akcji: nazwa obiektu”                          |
+| Lista (`DropdownMenuContent`)            | nie        | nakładka `surface-overlay`, `shadow-overlay`, w portalu, odstęp `space-inline` od przycisku |
+| Pozycja (`DropdownMenuItem`)             | nie        | 40 px, ikona 16 px opcjonalna                                                               |
+| Pozycja wyboru (`DropdownMenuRadioItem`) | tak        | znacznik wyboru na końcu                                                                    |
+| Etykieta grupy (`DropdownMenuLabel`)     | tak        | `text-meta text-muted`                                                                      |
+| Separator                                | tak        | oddziela akcję usuwania                                                                     |
+
+## 5. Warianty
+
+| Wariant pozycji | Kiedy wybrać                                                                              |
+| --------------- | ----------------------------------------------------------------------------------------- |
+| `default`       | zwykłe akcje                                                                              |
+| `danger`        | akcja usuwania; zawsze na końcu, po separatorze, i otwiera dialog potwierdzenia („Usuń…”) |
+
+<Canvas of={Stories.PrzelacznikBudzetu} />
+
+## 6. Stany
+
+<Canvas of={Stories.Otwarte} />
+<Canvas of={Stories.Stany} />
+
+| Stan                                             | Wygląd                                                            | Źródło |
+| ------------------------------------------------ | ----------------------------------------------------------------- | ------ |
+| Zamknięte                                        | przycisk otwierający                                              | –      |
+| Otwarte                                          | lista pod przyciskiem, przenikanie                                | P6     |
+| Podświetlona pozycja (klawiatura lub najechanie) | tło `surface-muted`; przy klawiaturze także linia fokusu          | W2     |
+| Pozycja zablokowana                              | przezroczystość 50%, pomijana strzałkami; powód w tekście pozycji | E2-Q1  |
+| Wybrana pozycja                                  | znacznik wyboru `text-link`                                       | –      |
+| Ładowanie, błąd                                  | nie dotyczy: akcja zamyka menu i dalej działa dialog lub strona   | –      |
+
+**Wyjątek dostępności (opisany):** stories z otwartym menu wyłączają regułę axe `aria-hidden-focus` (jak w dialogu).
+
+## 7. Zachowanie i dostępność
+
+| Zasada                                                                                                                                                                     | Źródło                 |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------- |
+| Enter, Spacja lub strzałka w dół otwierają; strzałki przesuwają; pozycje zablokowane są pomijane; Enter wybiera; Escape zamyka i oddaje fokus przyciskowi (sprawdza test). | WAI-ARIA (menu button) |
+| Role `menu`, `menuitem`, `menuitemradio`.                                                                                                                                  | WAI-ARIA               |
+| Przycisk z samą ikoną ma `aria-label` z nazwą obiektu: „Więcej akcji: Jedzenie”.                                                                                           | WCAG 2.4.6, 4.1.2      |
+| Cel dotyku: przycisk 40 px, pozycje 40 px.                                                                                                                                 | WCAG 2.5.8, W1         |
+
+## 8. Treść
+
+| Zasada                                                                      | Przykład                         | Źródło             |
+| --------------------------------------------------------------------------- | -------------------------------- | ------------------ |
+| Pozycja: czasownik i obiekt albo sam czasownik, gdy obiekt wynika z wiersza | „Zmień nazwę”, „Zarchiwizuj”     | E2-P2              |
+| Wielokropek, gdy pozycja otwiera dialog                                     | „Usuń…”                          | propozycja (E2-P9) |
+| Długa nazwa budżetu w pozycji wyboru jest skracana wielokropkiem            | „Wspólne mieszkanie na Ochocie…” | WCAG 1.4.10        |
+
+## 9. Responsywność
+
+| Szerokość     | Zachowanie                                                                                    |
+| ------------- | --------------------------------------------------------------------------------------------- |
+| 320 px        | lista mieści się w ekranie (Radix przesuwa ją przy krawędzi), co najmniej szerokość przycisku |
+| 768 i 1440 px | bez zmian                                                                                     |
+
+## 10. API
+
+`DropdownMenu` – propsy `DropdownMenu.Root` z Radix (`open`, `defaultOpen`, `onOpenChange`). `DropdownMenuContent` – `align` (domyślnie `"end"`), `side`. `DropdownMenuItem` – `variant?: "default" | "danger"`, `onSelect`, `disabled`. `DropdownMenuRadioGroup` – `value`, `onValueChange`.
+
+## 11. Kod
+
+Minimalny:
+
+```tsx
+<DropdownMenu>
+  <DropdownMenuTrigger asChild>
+    <Button variant="ghost" size="icon" aria-label={`Więcej akcji: ${envelope.name}`}>
+      <EllipsisVertical aria-hidden="true" />
+    </Button>
+  </DropdownMenuTrigger>
+  <DropdownMenuContent>
+    <DropdownMenuItem onSelect={rename}>Zmień nazwę</DropdownMenuItem>
+  </DropdownMenuContent>
+</DropdownMenu>
+```
+
+Typowy w produkcie (przełącznik budżetu, US-05):
+
+```tsx
+<DropdownMenuContent align="start">
+  <DropdownMenuLabel>Budżety</DropdownMenuLabel>
+  <DropdownMenuRadioGroup value={currentBudgetId} onValueChange={switchBudget}>
+    {budgets.map((budget) => (
+      <DropdownMenuRadioItem key={budget.id} value={budget.id}>
+        {budget.name}
+      </DropdownMenuRadioItem>
+    ))}
+  </DropdownMenuRadioGroup>
+  <DropdownMenuSeparator />
+  <DropdownMenuItem onSelect={openCreateBudget}>
+    <Plus aria-hidden="true" />
+    Utwórz budżet
+  </DropdownMenuItem>
+</DropdownMenuContent>
+```
+
+## 12. Dobrze i źle
+
+| Dobrze                                                          | Źle                                               |
+| --------------------------------------------------------------- | ------------------------------------------------- |
+| „Usuń…” na końcu, po separatorze, otwiera dialog potwierdzenia. | „Usuń” jako pierwsza pozycja, usuwa od razu.      |
+| Przycisk „Więcej akcji: Jedzenie”.                              | Przycisk bez etykiety: czytnik ogłosi „przycisk”. |
+
+Otwarte menu przykryłoby stronę, więc pary są tabelą; poprawny układ pokazuje story „Otwarte”.
+
+## 13. Powiązane
+
+- Mylone z: **selectem** (wybór wartości w formularzu), **dialogiem** (czynność z polami).
+- Występuje we wzorcach: wiersz koperty, wiersz operacji, lista członków, nagłówek aplikacji.

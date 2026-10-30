@@ -1,0 +1,142 @@
+import { Canvas, Meta } from "@storybook/addon-docs/blocks";
+import * as Stories from "../../src/product/account/app-shell.stories";
+
+<Meta of={Stories} name="Dokumentacja" />
+
+# Powłoka aplikacji
+
+`import { AppShell, type NavItem } from "@koperty/ui/product/account/app-shell";`
+
+## 1. Do czego służy
+
+Daje każdemu ekranowi po zalogowaniu ten sam nagłówek, nawigację i miejsce na treść, żeby użytkownik zawsze wiedział, gdzie jest i jak szybko dodać wydatek.
+
+## 2. Kiedy używać
+
+| Sytuacja w produkcie                                                                   | Źródło               |
+| -------------------------------------------------------------------------------------- | -------------------- |
+| Układ tras po zalogowaniu (`_authenticated`): nagłówek z nazwą użytkownika i „Wyloguj” | S-01, US-02          |
+| Przełączanie budżetów w nagłówku                                                       | US-05                |
+| Szybkie „Dodaj wydatek” na telefonie                                                   | US-17, DS-S04, E3-Q2 |
+
+## 3. Kiedy nie używać
+
+| Sytuacja                                        | Zamiast                     | Źródło      |
+| ----------------------------------------------- | --------------------------- | ----------- |
+| Ekran logowania i dołączania przed zalogowaniem | sama karta na środku strony | S-01, US-08 |
+| Nawigacja w obrębie jednego ekranu              | zakładki                    | E2-P10      |
+
+## 4. Anatomia
+
+| Część                    | Opcjonalna | Uwagi                                                                                                   |
+| ------------------------ | ---------- | ------------------------------------------------------------------------------------------------------- |
+| Link „Przejdź do treści” | nie        | widoczny po fokusie z klawiatury                                                                        |
+| Nagłówek                 | nie        | przełącznik budżetu (`budgetSwitcher`), od 768 px linki i „Dodaj wydatek”, menu konta (Profil, Wyloguj) |
+| Treść (`main`)           | nie        | `max-w-content` albo `max-w-content-wide`                                                               |
+| Dolny pasek (do 768 px)  | nie        | Koperty, Operacje, Podsumowanie i „Dodaj wydatek”, nad paskiem systemowym iPhone'a                      |
+
+## 5. Warianty
+
+| Prop                       | Kiedy                                        |
+| -------------------------- | -------------------------------------------- |
+| `width="content"`          | większość ekranów (640 px)                   |
+| `width="wide"`             | podsumowanie miesiąca (960 px)               |
+| `primaryAction.shortLabel` | krótszy podpis w dolnym pasku, np. „Wydatek” |
+
+## 6. Stany
+
+| Stan                     | Zachowanie                                                                                                   | Źródło            |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------ | ----------------- |
+| Bieżąca strona           | `aria-current="page"`, w nagłówku tło `surface-muted`, w pasku pogrubienie – nie tylko kolor (sprawdza test) | WCAG 1.4.1, 4.1.2 |
+| Fokus                    | linia `focus-ring`; „Przejdź do treści” pojawia się po pierwszym Tab                                         | WCAG 2.4.1, 2.4.7 |
+| Bez budżetu (nowe konto) | bez przełącznika; treść to formularz utworzenia budżetu                                                      | US-04             |
+| Ładowanie, błąd treści   | należą do komponentów w treści                                                                               | –                 |
+
+<Canvas of={Stories.BezAkcjiGlownej} />
+
+## 7. Zachowanie i dostępność
+
+| Zasada                                                                                                                                     | Źródło            |
+| ------------------------------------------------------------------------------------------------------------------------------------------ | ----------------- |
+| Punkty orientacyjne: `header`, `nav` „Główna”, `main` (cel linku „Przejdź do treści”). Na każdej szerokości widoczna jest jedna nawigacja. | WCAG 1.3.1, 2.4.1 |
+| Menu konta: nazwa przycisku „Konto: Ala Kowalska” zawiera widoczny tekst (sprawdza test, axe `label-content-name-mismatch`).               | WCAG 2.5.3        |
+| Linki renderuje `renderLink` – aplikacja podaje w nim `Link` routera (story „Z linkiem routera”).                                          | standardy 4.3     |
+| Cele: linki 40 px, pasek dolny z marginesem bezpiecznym iPhone'a (`safe-area-inset-bottom`).                                               | WCAG 2.5.8        |
+
+## 8. Treść
+
+| Element      | Tekst                                 | Źródło       |
+| ------------ | ------------------------------------- | ------------ |
+| Linki        | „Koperty”, „Operacje”, „Podsumowanie” | E3-Q2        |
+| Akcja główna | „Dodaj wydatek” (w pasku „Wydatek”)   | E3-Q2, US-17 |
+| Menu konta   | „Profil”, „Wyloguj”                   | S-01, US-02  |
+
+## 9. Responsywność
+
+| Szerokość | Zachowanie                                                                         | Źródło        |
+| --------- | ---------------------------------------------------------------------------------- | ------------- |
+| 320 px    | nagłówek: przełącznik budżetu i awatar; nawigacja i „Dodaj wydatek” w dolnym pasku | E3-Q2, DS-S04 |
+| 768 px    | linki i „Dodaj wydatek” w nagłówku, bez dolnego paska                              | E3-Q2         |
+| 1440 px   | nagłówek do 960 px, treść 640 px (albo 960 px dla `wide`)                          | P5            |
+
+<Canvas of={Stories.SzerokaTresc} />
+
+## 10. API
+
+| Prop                         | Typ                                              | Opis                                 |
+| ---------------------------- | ------------------------------------------------ | ------------------------------------ |
+| `budgetSwitcher`             | `ReactNode`                                      | zwykle `BudgetSwitcher`              |
+| `displayName`                | `string`                                         | nazwa wyświetlana użytkownika        |
+| `onOpenProfile`, `onSignOut` | `() => void`                                     | menu konta                           |
+| `navigation`                 | `NavItem[]` (`label`, `href`, `icon`, `active?`) | linki                                |
+| `primaryAction`              | `{ label, shortLabel?, href, icon }`             | akcja główna                         |
+| `renderLink`                 | `(props) => ReactNode`                           | renderowanie linku (domyślnie `<a>`) |
+| `width`                      | `"content" \| "wide"`                            | szerokość treści                     |
+
+## 11. Kod
+
+Typowy w produkcie (trasa `_authenticated`, S-01):
+
+```tsx
+<AppShell
+  displayName={profile.display_name}
+  onOpenProfile={() => navigate({ to: "/profile" })}
+  onSignOut={signOut}
+  budgetSwitcher={
+    <BudgetSwitcher
+      budgets={budgets}
+      currentId={budgetId}
+      onSwitch={switchBudget}
+      onCreate={openCreateBudget}
+    />
+  }
+  navigation={[
+    { label: "Koperty", href: "/", icon: Wallet, active: isEnvelopes },
+    { label: "Operacje", href: "/operations", icon: ListOrdered, active: isOperations },
+    { label: "Podsumowanie", href: "/summary", icon: ChartColumn, active: isSummary },
+  ]}
+  primaryAction={{
+    label: "Dodaj wydatek",
+    shortLabel: "Wydatek",
+    href: "/expenses/new",
+    icon: Plus,
+  }}
+  renderLink={({ href, ...props }) => <Link to={href} {...props} />}
+>
+  <Outlet />
+</AppShell>
+```
+
+<Canvas of={Stories.Playground} />
+
+## 12. Dobrze i źle
+
+| Dobrze                                            | Źle                                             |
+| ------------------------------------------------- | ----------------------------------------------- |
+| „Dodaj wydatek” w dolnym pasku, w zasięgu kciuka. | Akcja główna tylko w menu w prawym górnym rogu. |
+| Bieżąca strona pogrubiona i z `aria-current`.     | Bieżąca strona oznaczona tylko kolorem.         |
+
+## 13. Powiązane
+
+- Mylona z: **zakładkami**, **menu**.
+- Występuje we wzorcach: wszystkie ekrany po zalogowaniu, brak sieci i wygasła sesja.

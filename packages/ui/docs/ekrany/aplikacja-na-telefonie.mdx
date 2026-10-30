@@ -1,0 +1,23 @@
+import { Canvas, Meta } from "@storybook/addon-docs/blocks";
+import * as Stories from "./app-screens.stories";
+
+<Meta of={Stories} name="Mapa stanów" />
+
+# Ekrany: Aplikacja na telefonie
+
+Zachowanie aplikacji bez połączenia z internetem (US-23). Instalacja jako PWA (ikona, nazwa, tryb pełnoekranowy) nie ma ekranu w aplikacji – to konfiguracja manifestu.
+
+## Brak sieci
+
+| Stan            | Story                         | Co widać                                     | Źródło |
+| --------------- | ----------------------------- | -------------------------------------------- | ------ |
+| W trakcie pracy | `Brak sieci: w trakcie pracy` | komunikat nad treścią, wczytane dane zostają | US-23  |
+| Start aplikacji | `Brak sieci: start aplikacji` | komunikat i stan błędu z „Spróbuj ponownie”  | US-23  |
+
+<Canvas of={Stories.UtrataPolaczenia} />
+<Canvas of={Stories.StartBezPolaczenia} />
+
+## Użyte elementy
+
+- Komponenty: komunikat braku sieci, stan błędu, powłoka aplikacji (dolny pasek na telefonie).
+- Wzorce: brak sieci i wygasła sesja.
