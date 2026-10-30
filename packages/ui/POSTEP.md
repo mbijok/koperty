@@ -35,18 +35,18 @@ Plik prowadzi agent budujący design system. Nowa sesja zaczyna od przeczytania 
 
 Słowa charakteru, antycharakter, kolumna „Bierzemy” i antyreferencje: **brak w materiałach** (Q1). Z dokumentów wynikają tylko decyzje funkcjonalne:
 
-| ID     | Decyzja                                                                                              | Źródło                                 |
-| ------ | ---------------------------------------------------------------------------------------------------- | -------------------------------------- |
-| DS-S01 | Dostępność WCAG 2.1 AA: kontrast, klawiatura, etykiety pól, czytelne błędy                           | PRD 6                                  |
-| DS-S02 | Mobile first; testujemy od 320 px (PRD wymaga 360 px, 320 px jest surowsze i zgodne z WCAG 1.4.10)   | PRD 6, WCAG 1.4.10                     |
-| DS-S03 | Ujemne saldo koperty i ujemna pula są wyraźnie oznaczone, nie tylko kolorem                          | PRD 4.3, 4.5, US-16, US-21, WCAG 1.4.1 |
-| DS-S04 | Szybki zapis wydatku na telefonie, także w sklepie                                                   | US-17, persona członka (PRD 2)         |
-| DS-S05 | Po otwarciu aplikacji od razu salda kopert i pula; nowy budżet pokazuje zachętę do pierwszej koperty | US-21                                  |
-| DS-S06 | Interfejs po polsku; kwoty i daty `pl-PL`, waluta PLN, daty bez godzin                               | PRD 4.1, 6, AGENTS.md                  |
-| DS-S07 | Brak sieci: czytelny komunikat, bez trybu offline                                                    | US-23                                  |
-| DS-S08 | Operacje nieodwracalne (usunięcie konta, budżetu) wymagają potwierdzenia                             | US-03, US-06                           |
-| DS-S09 | Ujemne salda mogą być mylące – prezentacja musi być czytelna                                         | PRD 8 (ryzyka)                         |
-| DS-S10 | Baza komponentów: shadcn/ui (styl `radix-nova`), Radix, ikony lucide; bez wykresów w MVP             | AGENTS.md, PRD 3                       |
+| ID     | Decyzja                                                                                                                                   | Źródło                                 |
+| ------ | ----------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------- |
+| DS-S01 | Dostępność WCAG 2.1 AA: kontrast, klawiatura, etykiety pól, czytelne błędy                                                                | PRD 6                                  |
+| DS-S02 | Mobile first; testujemy od 320 px (PRD wymaga 360 px, 320 px jest surowsze i zgodne z WCAG 1.4.10)                                        | PRD 6, WCAG 1.4.10                     |
+| DS-S03 | Ujemne saldo koperty i ujemna pula są wyraźnie oznaczone, nie tylko kolorem                                                               | PRD 4.3, 4.5, US-16, US-21, WCAG 1.4.1 |
+| DS-S04 | Szybki zapis wydatku na telefonie, także w sklepie                                                                                        | US-17, persona członka (PRD 2)         |
+| DS-S05 | Po otwarciu aplikacji od razu salda kopert i pula; nowy budżet pokazuje zachętę do pierwszej koperty                                      | US-21                                  |
+| DS-S06 | Interfejs po polsku; kwoty i daty `pl-PL`, waluta PLN, daty bez godzin                                                                    | PRD 4.1, 6, AGENTS.md                  |
+| DS-S07 | Brak sieci: czytelny komunikat, bez trybu offline                                                                                         | US-23                                  |
+| DS-S08 | Operacje nieodwracalne (usunięcie konta, budżetu) wymagają potwierdzenia                                                                  | US-03, US-06                           |
+| DS-S09 | Ujemne salda mogą być mylące – prezentacja musi być czytelna                                                                              | PRD 8 (ryzyka)                         |
+| DS-S10 | Baza komponentów: shadcn/ui (stan wyjściowy `radix-nova`; po warsztacie preset R01 `radix-mira`), Radix, ikony lucide; bez wykresów w MVP | AGENTS.md, PRD 3                       |
 
 ## Inwentaryzacja repozytorium
 
@@ -785,4 +785,4 @@ Niczego nie commituj.
 
 ## Następny krok
 
-Design system gotowy: etapy 0–5 i test agentem wykonane, specyfikacja T-03 `implemented`. Otwarte (decyzje właściciela): PR, zgłoszenie T-03 w GitHub Issues, aktualizacja specyfikacji S-01, wariant E5-P4 przy S-08, sprawdzenie w Safari na iPhonie.
+Design system gotowy: etapy 0–5 i test agentem wykonane, specyfikacja T-03 `implemented` (po korekcie z audytu), zgłoszenie #25. Otwarte (decyzje właściciela): wpis `- [ ] #25` na liście #20 (ręcznie – konto `gh` nie ma uprawnień), PR z gałęzi `feat/design-system-storybook`, aktualizacja specyfikacji S-01, wariant E5-P4 przy S-08, sprawdzenie w Safari na iPhonie.

@@ -37,7 +37,7 @@ Reguły domenowe zostają w bazie (RPC); komponenty tylko pokazują wynik. Kwoty
 | Edycja wydatku             | `/expenses/<id>/edit`                    | „Edycja wydatku”                                 | Operacje                  | Ekrany → Wydatki                | propozycja (E5-P1)   |
 | Podsumowanie miesiąca      | `/summary?month=RRRR-MM`                 | „Podsumowanie miesiąca”                          | Podsumowanie              | Ekrany → Przegląd budżetu       | propozycja (E5-P1)   |
 
-Trasy poza S-01 ustala specyfikacja zadania z backlogu; po wdrożeniu trasa jest kontraktem (`BACKWARD_COMPATIBILITY.md`).
+Widoki ekranów poza S-01 są **wstępne**: powstały przed specyfikacjami zadań, które mogą je zmienić. Trasy poza S-01 ustala specyfikacja zadania z backlogu; po wdrożeniu trasa jest kontraktem (`BACKWARD_COMPATIBILITY.md`).
 
 ## Komponenty
 

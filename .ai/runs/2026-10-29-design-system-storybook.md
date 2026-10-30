@@ -137,6 +137,11 @@ Zbudować design system Koperty w pakiecie `packages/ui` z dokumentacją w Story
 - **Co zrobiono:** właściciel zaakceptował E5-P1–E5-P5 (E5-P4 otwarte na stronie „Czego brakuje” do specyfikacji S-08). Specyfikacja T-03 ma status `implemented`, uzupełnione podsumowanie i została przeniesiona do `.ai/specs/implemented/2026-10-29-design-system-storybook.md` (linki w tym logu wskazują starą ścieżkę; nie przepisuję historii).
 - **Komendy:** `vp check`; `vp run check:tokens`; `vp run check:ai`; `vp test --coverage`; `vp build`.
 
+### Krok 18. Korekta specyfikacji po audycie (2026-10-31)
+
+- **Co zrobiono:** `om-pre-implement-spec` dla T-03 (raport `.ai/analysis/pre-implement-design-system-storybook.md`, werdykt `no-go` dla dokumentu: otwarte pytanie o zgłoszenie, 4 rozbieżności z kodem, zakres bez AC). Na decyzję właściciela utworzone zgłoszenie #25; edycja listy w #20 odrzucona przez GitHub (brak uprawnień konta `gh` do zmiany zgłoszenia) – do dopisania przez właściciela. Specyfikacja: `issue: 25`, opis skryptów i mechanizmu motywu zgodny z kodem, punkt odniesienia `radix-mira`, AC-13–AC-15 z wyroczniami, ryzyko S-01, E5-P4 przekazane do S-08; status `implemented` bez zmiany zakresu. Widoki oznaczone jako wstępne na stronach epików i w `docs/design-system.md`; DS-S10 w POSTEP.md poprawione.
+- **Komendy:** `vp check`; `vp run check:ai`; `vp test --coverage`; build Storybooka.
+
 ## Decyzje i założenia
 
 - Właściciel: pakiet `packages/ui`, Storybook 10.6, bez MSW, `sonner`, Oxanium, filtr listy tylko po miesiącu (POSTEP.md, „Zatwierdzone decyzje”).
