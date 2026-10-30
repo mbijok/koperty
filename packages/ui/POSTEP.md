@@ -751,6 +751,33 @@ Niczego nie commituj.
 4. **E5-P4 Zarchiwizowana koperta w edytowanym wydatku:** do decyzji, np. pokazać ją w wyborze tylko dla tej części z dopiskiem „zarchiwizowana” (wymaga zmiany `ExpenseForm` i specyfikacji S-08) albo wymagać zmiany koperty przy edycji.
 5. **E5-P5 Szerokości:** proporcje (`w-full`, `w-1/3`) dozwolone, stałe szerokości tylko z tokenów.
 
+## Test agentem 2 (przygotowany, po scaleniu PR)
+
+**Cel:** sprawdzić, czy uzupełnienia po teście 1 (trasy, edycja, powroty, typy) wystarczają. Test 1 wykonał agent ze świeżym kontekstem uruchomiony z sesji budowy (2026-10-30); test 2 uruchamia właściciel w nowej sesji na `master` po scaleniu PR design systemu.
+
+**Ekran:** szczegóły przychodu (`/incomes/<id>`), US-15 (zadania S-04 #7 i S-08 #11). W pakiecie jest formularz przychodu i widok szczegółów wydatku, ale nie ma widoku szczegółów przychodu – agent musi go złożyć z gotowych komponentów albo uznać brak. Ekran nie zależy od otwartych decyzji produktowych.
+
+**Prompt do wklejenia w nowej sesji:**
+
+```
+Zbuduj w Storybooku ekran „Szczegóły przychodu” (US-15, /incomes/<id>) na podstawie
+wyłącznie docs/design-system.md, AGENTS.md, docs/prd.md, docs/architecture.md
+i Storybooka (vp -C packages/ui run storybook). Nie czytaj packages/ui/POSTEP.md,
+.ai/runs/ ani .ai/specs/implemented/2026-10-29-design-system-storybook.md.
+Dodaj stories na pełny ekran w packages/ui/docs/ekrany/funds-screens.stories.tsx
+i sekcję mapy stanów w packages/ui/docs/ekrany/przychody-i-przydzialy.mdx: ładowanie,
+przychód z opisem, przychód bez opisu, nie istnieje albo brak dostępu, błąd wczytania,
+potwierdzenie usunięcia, usuwanie, błąd usunięcia.
+Nie zmieniaj komponentów pakietu i nie dodawaj zależności; jeśli brakuje komponentu,
+złóż ekran z istniejących albo wpisz brak na stronę „Czego brakuje”.
+Na koniec uruchom vp check, vp run check:tokens i vp test --coverage.
+W raporcie wypisz każde miejsce, w którym musiałeś zgadywać albo szukać poza
+docs/design-system.md i Storybookiem: co, gdzie szukałeś, jaką decyzję podjąłeś.
+Niczego nie commituj.
+```
+
+**Ocena:** każde miejsce zgadywania uzupełniam w dokumentacji albo wpisuję na stronę „Czego brakuje”. Test zalicza, gdy agent nie zgadywał w sprawach, które dokumentacja powinna rozstrzygać (komponenty, stany, tokeny, treść, trasa i nawigacja, powrót po usunięciu).
+
 ## Zatwierdzone decyzje
 
 - 2026-10-29: Q1 – brak materiałów stylu; brief i tokeny powstają w warsztacie i wymagają zatwierdzenia.
@@ -775,6 +802,7 @@ Niczego nie commituj.
 - 2026-10-30: właściciel zapytał o skalę zmian (ok. 21 tys. linii); wybrał wariant 1 – zostawić całość i przejść do etapu 4. Propozycje 1–5 z partii E przyjęte wraz z przejściem (etap 3 zakończony).
 - 2026-10-30: propozycje 1–5 z etapu 4 zaakceptowane (zakładki zostają w pakiecie, przykład alertu, podgląd statyczny w katalogu, jedno źródło listy komponentów z testem, priorytety według backlogu); etap 4 zakończony.
 - 2026-10-30: propozycje E5-P1–E5-P5 z testu agentem zaakceptowane (trasy i nawigacja, zachowanie edycji, brak obiektu na edycji, szerokości); E5-P4 (zarchiwizowana koperta w edytowanym wydatku) zostaje otwarte na stronie „Czego brakuje” – wariant do wyboru przy specyfikacji S-08.
+- 2026-10-31: przegląd logu przebiegu (grilling) – nagłówek, „Status końcowy” i „Następne kroki” logów opisują stan bieżący (AGENTS.md), przebieg kończy się scaleniem PR, skrypt `vp run check:storybook`, `.claude/launch.json` w `.gitignore`, push protection GitHuba jako bramka sekretów, test agentem 2 po scaleniu (szczegóły przychodu).
 - 2026-10-30: partia D podzielona na D1 (formularz, lista z filtrem miesiąca, widok szczegółów, potwierdzenie usunięcia) i D2 (wzorce produktu).
 
 ## Uwagi i ryzyka
@@ -785,4 +813,4 @@ Niczego nie commituj.
 
 ## Następny krok
 
-Design system gotowy: etapy 0–5 i test agentem wykonane, specyfikacja T-03 `implemented` (po korekcie z audytu), zgłoszenie #25. Otwarte (decyzje właściciela): wpis `- [ ] #25` na liście #20 (ręcznie – konto `gh` nie ma uprawnień), PR z gałęzi `feat/design-system-storybook`, aktualizacja specyfikacji S-01, wariant E5-P4 przy S-08, sprawdzenie w Safari na iPhonie.
+Design system gotowy: etapy 0–5 i test agentem wykonane, specyfikacja T-03 `implemented` (po korekcie z audytu), zgłoszenie #25. Otwarte (decyzje właściciela): wpis `- [ ] #25` na liście #20 (ręcznie – konto `gh` nie ma uprawnień), PR z gałęzi `feat/design-system-storybook` i scalenie, test agentem 2 po scaleniu, aktualizacja specyfikacji S-01, wariant E5-P4 przy S-08, sprawdzenie w Safari na iPhonie.

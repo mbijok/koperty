@@ -98,7 +98,7 @@ Katalog `.ai/` to wspólna, wersjonowana pamięć projektu dla wszystkich agent�
 - Log zakładasz na początku przebiegu, nie po fakcie, i aktualizujesz go po każdym istotnym kroku. Jeśli przebieg zostanie przerwany, log musi pozwolić go wznowić.
 - Log zawiera: cel i link do specyfikacji, plan, kolejne kroki (co zrobiono, jakie komendy uruchomiono i z jakim wynikiem), podjęte decyzje i założenia, napotkane problemy, status końcowy (`completed`, `partial`, `failed` lub `aborted`) i proponowane następne kroki.
 - Log jest obowiązkowy także w trybach z automatyczną akceptacją zmian. Jeśli korzystasz z subagentów lub agentów działających równolegle, log prowadzi sesja główna i dopisuje do niego wyniki ich pracy.
-- Logi tylko uzupełniasz. Po zakończeniu przebiegu nie przepisujesz ich historii.
+- Logi tylko uzupełniasz. Po zakończeniu przebiegu nie przepisujesz ich historii. Wyjątek: nagłówek YAML (`status`, ścieżki), „Status końcowy” i „Następne kroki” opisują stan bieżący i aktualizujesz je; „Przebieg kroków”, „Decyzje i założenia” i „Problemy” tylko uzupełniasz. Przebieg kończy się scaleniem PR, który go zamyka.
 
 **Wnioski (`lessons.md` i `lessons/`)**
 
@@ -189,6 +189,7 @@ Wszystkie komendy uruchamiasz z katalogu głównego repozytorium. Komendy Supaba
 | Storybook (design system, `packages/ui`)                         | `vp -C packages/ui run storybook` / `vp -C packages/ui run build-storybook`                     |
 | Testy stories w obu motywach (Chromium)                          | `vp run test:storybook` (część `vp test`)                                                       |
 | Wartości spoza tokenów design systemu                            | `vp run check:tokens`                                                                           |
+| Kontrola Storybooka w przeglądarce (strony, 320 px, nakładki)    | `vp run check:storybook` przy działającym `vp -C packages/ui run storybook --ci`                |
 | Dodanie komponentu shadcn/ui do design systemu                   | `vp -C packages/ui dlx shadcn@latest add <komponent>`                                           |
 | Lokalny Supabase (start / stop / adresy i klucze)                | `vp exec supabase start` / `vp exec supabase stop` / `vp exec supabase status`                  |
 | Nowa migracja                                                    | `vp exec supabase migration new <nazwa>`                                                        |

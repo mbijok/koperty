@@ -38,6 +38,11 @@ export default defineConfig({
         rules: { "import/no-default-export": "off" },
       },
       {
+        // Browser checks drive one page step by step (keyboard, scrolling); a worker pool limits pages.
+        files: [".ai/scripts/**"],
+        rules: { "no-await-in-loop": "off" },
+      },
+      {
         files: ["apps/web/**", "packages/ui/**"],
         plugins: ["react", "typescript", "oxc"],
         rules: {

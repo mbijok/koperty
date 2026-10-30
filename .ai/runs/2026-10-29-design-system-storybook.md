@@ -1,8 +1,8 @@
 ---
 title: T-03 Design system z dokumentacją w Storybooku
 started: 2026-10-29
-spec: .ai/specs/2026-10-29-design-system-storybook.md
-status: in-progress
+spec: .ai/specs/implemented/2026-10-29-design-system-storybook.md
+status: partial
 ---
 
 # T-03 Design system z dokumentacją w Storybooku
@@ -142,11 +142,24 @@ Zbudować design system Koperty w pakiecie `packages/ui` z dokumentacją w Story
 - **Co zrobiono:** `om-pre-implement-spec` dla T-03 (raport `.ai/analysis/pre-implement-design-system-storybook.md`, werdykt `no-go` dla dokumentu: otwarte pytanie o zgłoszenie, 4 rozbieżności z kodem, zakres bez AC). Na decyzję właściciela utworzone zgłoszenie #25; edycja listy w #20 odrzucona przez GitHub (brak uprawnień konta `gh` do zmiany zgłoszenia) – do dopisania przez właściciela. Specyfikacja: `issue: 25`, opis skryptów i mechanizmu motywu zgodny z kodem, punkt odniesienia `radix-mira`, AC-13–AC-15 z wyroczniami, ryzyko S-01, E5-P4 przekazane do S-08; status `implemented` bez zmiany zakresu. Widoki oznaczone jako wstępne na stronach epików i w `docs/design-system.md`; DS-S10 w POSTEP.md poprawione.
 - **Komendy:** `vp check`; `vp run check:ai`; `vp test --coverage`; build Storybooka.
 
+### Krok 19. Przegląd logu z właścicielem (2026-10-31)
+
+- **Co zrobiono:** przegląd tego logu w dwóch rundach pytań (grilling); właściciel przyjął wszystkie rekomendacje. Nagłówek, „Status końcowy” i „Następne kroki” opisują stan bieżący – zasada dopisana w AGENTS.md („Logi przebiegów”) i we wniosku `2026-10-19-run-log-append-only-edits`; przebieg kończy się scaleniem PR, więc status wraca do `partial`. Nowy wniosek `2026-10-31-git-stats-and-counts` (statystyki bez ruszania indeksu, liczby z wyniku komendy – dotyczy kroków 9, 13 i 14). `.claude/launch.json` w `.gitignore`. Test agentem 2 (szczegóły przychodu) przygotowany w POSTEP.md, do uruchomienia przez właściciela po scaleniu.
+- **Założenie (bramka sekretów):** repozytorium jest publiczne, a GitHub ma włączone secret scanning i push protection (sprawdzone przez API 2026-10-31); push protection jest bramką sekretów przed PR. Lokalny skan zablokowany przez hook (krok 16) nie jest obchodzony.
+- **Test agentem 1:** wykonał go agent ze świeżym kontekstem uruchomiony z tej sesji (krok 16), nie nowa sesja właściciela; agent ładował AGENTS.md i `.ai/lessons.md`, nie znał rozmowy. Właściciel uznał test, a test 2 w nowej sesji sprawdzi uzupełnienia.
+
+### Krok 20. Skrypt kontrolny Storybooka (2026-10-31)
+
+- **Co zrobiono:** kontrole w przeglądarce z etapów 4–5, dotąd w skryptach w katalogu tymczasowym, zapisane jako `.ai/scripts/storybook-check.mjs` z komendą `vp run check:storybook` (tabela „Komendy” w AGENTS.md; reguła `no-await-in-loop` wyłączona dla `.ai/scripts/**`). Pierwszy przebieg zgłosił link „Przejdź do treści” na story z `play` (znany fałszywy alarm z partii C) – kontrola przeniesiona na story bez `play`.
+- **Komendy:** `vp -C packages/ui run storybook --ci`; `vp run check:storybook` – „Checked 79 docs pages × 3 widths, 341 stories at 320 px, 36 overlay runs, 4 skip-link runs. ✓ no problems” (ok. 3,5 min); `vp check`; `vp run check:ai`.
+- **Wynik:** zielone; twierdzenia o kontroli w przeglądarce z etapu 5 są teraz powtarzalne.
+
 ## Decyzje i założenia
 
 - Właściciel: pakiet `packages/ui`, Storybook 10.6, bez MSW, `sonner`, Oxanium, filtr listy tylko po miesiącu (POSTEP.md, „Zatwierdzone decyzje”).
 - Agent: kolory obu motywów w `light-dark()` zamiast zdublowanego bloku `.dark` (jedno miejsce definicji; zgodność przeglądarek do akceptacji, POSTEP.md, decyzja 7).
 - Agent: wyłączone domyślne skale Tailwinda (paleta, odstępy, tekst, promienie, cienie, fonty), żeby klasy spoza tokenów w ogóle nie istniały.
+- Właściciel (2026-10-31): push protection GitHuba jako bramka sekretów przed PR; przebieg kończy się scaleniem PR; skrypt kontroli Storybooka poza CI.
 - Agent: testy Node pakietu w projekcie `scripts`, stories w `ui` i `ui-dark`; stories wykluczone z pomiaru pokrycia (wymaga zgody, POSTEP.md, decyzja 1).
 
 ## Problemy
@@ -176,17 +189,13 @@ Zbudować design system Koperty w pakiecie `packages/ui` z dokumentacją w Story
 
 ## Status końcowy
 
-`partial` (2026-10-30): etapy 0–5 wykonane i sprawdzone (bramka zielona: `vp check`, `vp test --coverage` 786 testów i 100%, `vp build`, build Storybooka, `check:tokens`). Nie wykonano: testu agentem (zgodnie z poleceniem – nowa sesja), commitu i PR (czeka na decyzję), zmiany statusu specyfikacji T-03 na `implemented` (po teście agentem).
-
-Aktualizacja (2026-10-30, krok 16): commit `f994d2d` wykonany; test agentem wykonany na prośbę właściciela, braki uzupełnione. Status nadal `partial`: czekają decyzje E5-P1–E5-P5, PR i zmiana statusu specyfikacji T-03; zmiany po kroku 16 nie są scommitowane.
-
-Aktualizacja (2026-10-30, krok 17): `completed` – zakres specyfikacji T-03 zrealizowany i sprawdzony, specyfikacja `implemented`. Poza przebiegiem zostają decyzje właściciela: commit zmian po `f994d2d`, PR, zgłoszenie T-03, aktualizacja specyfikacji S-01, wariant E5-P4, Safari na iPhonie.
+`partial` (2026-10-31): zakres specyfikacji T-03 zrealizowany i sprawdzony (bramka zielona: `vp check`, `vp test --coverage` 800 testów i 100%, `vp build`, build Storybooka, `check:tokens`, `vp run check:storybook`); specyfikacja `implemented` po korekcie z audytu; zgłoszenie #25; commity `f994d2d`, `f5d3a07`, `a4007c9` i commit z kroków 19–20 na gałęzi lokalnej. Przebieg zakończy się (`completed`) po scaleniu PR.
 
 ## Następne kroki
 
-- Decyzje do propozycji 1–5 z partii C (POSTEP.md), potem partia D (wzorce).
-- Decyzje do propozycji 1–5 z partii D1 (POSTEP.md), potem partia D2 (wzorce produktu).
-- Decyzje do propozycji 1–5 z partii D2 (POSTEP.md), potem partia E (ekrany).
-- Decyzje do propozycji 1–5 z partii E (POSTEP.md), potem etap 4 (strony uczące, `docs/design-system.md`).
-- Decyzje do propozycji 1–5 z etapu 4 (POSTEP.md), potem etap 5 (sprawdzenie, raport, przygotowanie testu agentem).
-- Test agentem w nowej sesji (prompt w POSTEP.md), uzupełnienie braków, decyzje z raportu etapu 5 (commit i PR, zgłoszenie T-03, aktualizacja specyfikacji S-01), potem specyfikacja T-03 → `implemented`.
+- Właściciel: dopisać `- [ ] #25` nad `- [ ] #3` na liście zgłoszenia #20 (konto `gh` nie ma uprawnień).
+- Na polecenie właściciela: gałąź `feat/design-system-storybook` z commitów tej gałęzi, push, PR do `master` z `Closes #25`; kontrola jobów w zakładce Checks (AC-13).
+- Po scaleniu: `status: completed` w tym logu; test agentem 2 w nowej sesji (prompt w POSTEP.md, „Test agentem 2”).
+- Przed S-01: aktualizacja specyfikacji S-01 (komponenty z pakietu) i ponowna akceptacja.
+- Przy S-08: wariant E5-P4 (część wydatku na zarchiwizowanej kopercie).
+- Przed pierwszym ekranem w aplikacji: sprawdzenie w Safari na iPhonie.

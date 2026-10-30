@@ -49,6 +49,7 @@ logs/
 # and MUST be committed. Only personal local overrides are ignored.
 CLAUDE.local.md
 .claude/settings.local.json
+.claude/launch.json
 
 # =============================================================================
 # Editors and IDEs

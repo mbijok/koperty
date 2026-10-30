@@ -35,6 +35,7 @@ Przed dodaniem sprawdź, czy podobny wniosek już istnieje; jeśli tak, zaktuali
 ## Proces
 
 - Pracując w worktree, na starcie powiedz, gdzie trafiają zmiany i jak dotrą do `master`; sprawdzaj wartości wyprowadzane z nazwy katalogu i nieśledzone pliki w głównej kopii. ([szczegóły](lessons/2026-10-19-worktree-session-location.md))
-- Logi w `.ai/runs/` zmieniaj tylko przez dopisywanie; wykluczaj je z masowych zamian tekstu. ([szczegóły](lessons/2026-10-19-run-log-append-only-edits.md))
+- Logi w `.ai/runs/` zmieniaj tylko przez dopisywanie (poza nagłówkiem, „Statusem końcowym” i „Następnymi krokami”, które opisują stan bieżący); wykluczaj je z masowych zamian tekstu. ([szczegóły](lessons/2026-10-19-run-log-append-only-edits.md))
+- Statystyki zmian licz bez ruszania indeksu (`git diff --stat HEAD`, `git ls-files --others`), a liczby do logu przepisuj z wyniku komendy z tego samego kroku. ([szczegóły](lessons/2026-10-31-git-stats-and-counts.md))
 - Zamykaj zgłoszenie w opisie PR przez angielskie `Closes #<numer>`; polskie „Zamyka #N” nie zamyka go przy scaleniu. ([szczegóły](lessons/2026-10-24-github-close-keywords-english.md))
 - Nie zostawiaj w repozytorium znaczników z wtyczek i trybów narzędzi (np. `ponytail:`); komentarze pisz według konwencji projektu. ([szczegóły](lessons/2026-10-24-no-tool-specific-markers.md))
