@@ -813,4 +813,4 @@ Niczego nie commituj.
 
 ## Następny krok
 
-Design system gotowy: etapy 0–5 i test agentem wykonane, specyfikacja T-03 `implemented` (po korekcie z audytu), zgłoszenie #25. Otwarte (decyzje właściciela): wpis `- [ ] #25` na liście #20 (ręcznie – konto `gh` nie ma uprawnień), PR z gałęzi `feat/design-system-storybook` i scalenie, test agentem 2 po scaleniu, aktualizacja specyfikacji S-01, wariant E5-P4 przy S-08, sprawdzenie w Safari na iPhonie.
+Design system gotowy: etapy 0–5 i test agentem wykonane, specyfikacja T-03 `implemented`, zgłoszenie #25 (na liście #20), PR #26 po przeglądzie (approve, 3 × minor), CI zielone. Otwarte: ręczne QA PR #26 (`needs-qa`, `risk-high`), scalenie na prośbę właściciela, test agentem 2 po scaleniu, aktualizacja specyfikacji S-01, wariant E5-P4 przy S-08, sprawdzenie w Safari na iPhonie.

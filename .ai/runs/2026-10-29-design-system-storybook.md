@@ -154,6 +154,12 @@ Zbudować design system Koperty w pakiecie `packages/ui` z dokumentacją w Story
 - **Komendy:** `vp -C packages/ui run storybook --ci`; `vp run check:storybook` – „Checked 79 docs pages × 3 widths, 341 stories at 320 px, 36 overlay runs, 4 skip-link runs. ✓ no problems” (ok. 3,5 min); `vp check`; `vp run check:ai`.
 - **Wynik:** zielone; twierdzenia o kontroli w przeglądarce z etapu 5 są teraz powtarzalne.
 
+### Krok 21. PR, przegląd i backlog (2026-10-31)
+
+- **Co zrobiono:** na polecenie właściciela gałąź `feat/design-system-storybook` z commitów tej gałęzi, push i PR #26 do `master` (`Closes #25`). `om-auto-review-pr` dla #26: zajęcie PR, bramka walidacji w całości (z Supabase po uruchomieniu Dockera), werdykt approve z 3 uwagami minor (`AGENTS.md:156` – workspaces, standardy 4.5 – walidacja schematem, podgląd puli w `AllocationForm` jako E3-P9), etykiety `merge-queue`, `feature`, `priority-medium`, `risk-high`, `needs-qa`, instrukcja ręcznego QA, zwolnienie blokady. Formalnej akceptacji nie złożono: GitHub nie przyjmuje akceptacji własnego PR, a klasyfikator uprawnień zablokował próbę – raport opublikowany jako komentarz. Wpis `#25` na liście #20 dodany przez REST z konta `mbijok` (wcześniejsza edycja przez `gh issue edit` szła z innego konta i nie miała uprawnień).
+- **Komendy:** `vp run check:ai`; `vp check`; `vp test --coverage` (800 testów, 100%); `vp build`; `vp exec supabase db start`, `db reset`, `test db` (`Result: PASS`), `db advisors` (`No issues found`); porównanie `vp build` z `origin/master`; CI na `6c85d3c` zielone (3/3).
+- **Wynik:** PR #26 czeka na ręczne QA (`needs-qa`, `risk-high` – bez self-QA).
+
 ## Decyzje i założenia
 
 - Właściciel: pakiet `packages/ui`, Storybook 10.6, bez MSW, `sonner`, Oxanium, filtr listy tylko po miesiącu (POSTEP.md, „Zatwierdzone decyzje”).
@@ -189,13 +195,14 @@ Zbudować design system Koperty w pakiecie `packages/ui` z dokumentacją w Story
 
 ## Status końcowy
 
-`partial` (2026-10-31): zakres specyfikacji T-03 zrealizowany i sprawdzony (bramka zielona: `vp check`, `vp test --coverage` 800 testów i 100%, `vp build`, build Storybooka, `check:tokens`, `vp run check:storybook`); specyfikacja `implemented` po korekcie z audytu; zgłoszenie #25; commity `f994d2d`, `f5d3a07`, `a4007c9` i commit z kroków 19–20 na gałęzi lokalnej. Przebieg zakończy się (`completed`) po scaleniu PR.
+`partial` (2026-10-31): zakres specyfikacji T-03 zrealizowany i sprawdzony; PR #26 otwarty, przegląd zakończony werdyktem approve (3 × minor), CI zielone; zgłoszenie #25 na liście #20. Przebieg zakończy się (`completed`) po scaleniu PR #26.
 
 ## Następne kroki
 
-- Właściciel: dopisać `- [ ] #25` nad `- [ ] #3` na liście zgłoszenia #20 (konto `gh` nie ma uprawnień).
-- Na polecenie właściciela: gałąź `feat/design-system-storybook` z commitów tej gałęzi, push, PR do `master` z `Closes #25`; kontrola jobów w zakładce Checks (AC-13).
-- Po scaleniu: `status: completed` w tym logu; test agentem 2 w nowej sesji (prompt w POSTEP.md, „Test agentem 2”).
+- Ręczne QA PR #26 według komentarza z instrukcją (recenzent QA; `risk-high` wyklucza self-QA), potem `qa-approved`.
+- Opcjonalnie przed scaleniem: 3 uwagi minor z przeglądu (AGENTS.md:156, standardy 4.5, podgląd puli – po zmianie RPC).
+- Scalenie PR #26 (squash) na wyraźną prośbę właściciela; potem `status: completed` w tym logu.
+- Po scaleniu: test agentem 2 w nowej sesji (prompt w POSTEP.md, „Test agentem 2”).
 - Przed S-01: aktualizacja specyfikacji S-01 (komponenty z pakietu) i ponowna akceptacja.
 - Przy S-08: wariant E5-P4 (część wydatku na zarchiwizowanej kopercie).
 - Przed pierwszym ekranem w aplikacji: sprawdzenie w Safari na iPhonie.
