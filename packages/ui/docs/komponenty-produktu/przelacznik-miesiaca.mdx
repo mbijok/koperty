@@ -1,0 +1,107 @@
+import { Canvas, Meta } from "@storybook/addon-docs/blocks";
+import * as Stories from "../../src/product/funds/month-switcher.stories";
+
+<Meta of={Stories} name="Dokumentacja" />
+
+# Przełącznik miesiąca
+
+`import { MonthSwitcher } from "@koperty/ui/product/funds/month-switcher";` · daty: `@koperty/ui/lib/dates`
+
+## 1. Do czego służy
+
+Zmienia miesiąc, którego dotyczą dane na ekranie, także na przyszły, gdy planujesz przydziały.
+
+## 2. Kiedy używać
+
+| Sytuacja w produkcie                      | Źródło |
+| ----------------------------------------- | ------ |
+| Lista operacji miesiąca                   | US-20  |
+| Podsumowanie miesiąca                     | US-22  |
+| Przydziały na bieżący i przyszłe miesiące | US-16  |
+
+## 3. Kiedy nie używać
+
+| Sytuacja                         | Zamiast                         | Źródło |
+| -------------------------------- | ------------------------------- | ------ |
+| Data jednej operacji             | pole daty (`Input type="date"`) | US-17  |
+| Zakładki między częściami ekranu | zakładki                        | E2-P10 |
+
+## 4. Anatomia
+
+| Część               | Opcjonalna | Uwagi                                                  |
+| ------------------- | ---------- | ------------------------------------------------------ |
+| „Poprzedni miesiąc” | nie        | przycisk ikonowy z podpowiedzią                        |
+| Nazwa miesiąca      | nie        | „Październik 2026”, `text-section`, region `aria-live` |
+| „Następny miesiąc”  | nie        | przycisk ikonowy z podpowiedzią                        |
+
+## 5. Warianty
+
+Jeden wariant; bez ograniczeń w przód i w tył (przyszłe miesiące są dozwolone, US-16).
+
+## 6. Stany
+
+| Stan                      | Zachowanie                                               | Źródło        |
+| ------------------------- | -------------------------------------------------------- | ------------- |
+| Domyślny                  | bieżący miesiąc z adresu (`?month=2026-10`)              | standardy 4.3 |
+| Zmiana                    | nowa nazwa ogłoszona przez czytnik (sprawdza test)       | WCAG 4.1.3    |
+| Przejście roku            | grudzień → styczeń następnego roku (sprawdza test)       | –             |
+| Ładowanie danych miesiąca | szkielet w treści pod przełącznikiem, przełącznik działa | E2-P12        |
+| Zablokowany, błąd         | nie dotyczy                                              | –             |
+
+<Canvas of={Stories.PrzejscieRoku} />
+
+## 7. Zachowanie i dostępność
+
+| Zasada                                                                                     | Źródło                        |
+| ------------------------------------------------------------------------------------------ | ----------------------------- |
+| Przyciski z `aria-label` i podpowiedzią; Enter i Spacja zmieniają miesiąc (sprawdza test). | WCAG 4.1.2, WAI-ARIA (button) |
+| Nazwa miesiąca w `aria-live="polite"`.                                                     | WCAG 4.1.3                    |
+| Miesiąc trzymasz w adresie (`?month=`), więc da się wrócić przyciskiem „Wstecz”.           | standardy 4.3                 |
+
+## 8. Treść
+
+| Zasada                                              | Przykład           | Źródło |
+| --------------------------------------------------- | ------------------ | ------ |
+| Nazwa miesiąca w mianowniku z rokiem, wielką literą | „Październik 2026” | DS-S06 |
+
+## 9. Responsywność
+
+| Szerokość     | Zachowanie                                          |
+| ------------- | --------------------------------------------------- |
+| 320 px        | pełna szerokość, nazwa na środku między przyciskami |
+| 768 i 1440 px | szerokość treści                                    |
+
+<Canvas of={Stories.WaskiEkran} />
+
+## 10. API
+
+| Prop / funkcja                                         | Typ                       | Opis            |
+| ------------------------------------------------------ | ------------------------- | --------------- |
+| `month`                                                | `string` (`YYYY-MM`)      | wybrany miesiąc |
+| `onMonthChange`                                        | `(month: string) => void` | nowy miesiąc    |
+| `formatMonth`, `addMonths`, `monthOf`, `todayInWarsaw` | `@koperty/ui/lib/dates`   | daty na ciągach |
+
+## 11. Kod
+
+Minimalny i typowy w produkcie (lista operacji, US-20):
+
+```tsx
+const { month } = Route.useSearch();
+<MonthSwitcher month={month} onMonthChange={(next) => navigate({ search: { month: next } })} />;
+```
+
+<Canvas of={Stories.Playground} />
+
+## 12. Dobrze i źle
+
+| Dobrze                                             | Źle                                                                                  |
+| -------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| Miesiąc w adresie: „Wstecz” wraca do poprzedniego. | Miesiąc tylko w stanie komponentu: po odświeżeniu ekran wraca do bieżącego miesiąca. |
+| „Październik 2026”                                 | „10/2026” albo „paź 26”                                                              |
+
+Różnice dotyczą zachowania i treści, więc pary są tabelą.
+
+## 13. Powiązane
+
+- Mylony z: **zakładkami**, **polem daty**.
+- Występuje we wzorcach: lista z filtrem miesiąca, nawigacja po miesiącach, podsumowanie miesiąca.

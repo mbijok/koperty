@@ -1,0 +1,68 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Design system/Jak zmieniać system" />
+
+# Jak zmieniać system
+
+Design system to pakiet `packages/ui` (`@koperty/ui`) z tym Storybookiem (`docs/adr/0012-design-system-package-storybook.md`). Zasady projektu z AGENTS.md obowiązują także tu: specyfikacja przed zmianą nietrywialną, 100% pokrycia, bez nowych zależności bez zgody.
+
+## Komponent, wariant czy nic
+
+| Sytuacja                                                                  | Decyzja                                                              | Źródło           |
+| ------------------------------------------------------------------------- | -------------------------------------------------------------------- | ---------------- |
+| Ta sama potrzeba w co najmniej dwóch miejscach produktu                   | nowy komponent (bazowy albo produktu) albo wzorzec                   | polecenie budowy |
+| Potrzeba w jednym miejscu                                                 | złożenie istniejących komponentów na ekranie – bez nowego komponentu | polecenie budowy |
+| Istniejący komponent różni się tylko wyglądem w jednej, nazwanej sytuacji | wariant (z nazwą znaczeniową, np. `danger`, nie `red`)               | E2-P2            |
+| Różnica tylko w treści albo położeniu                                     | nic – props i układ ekranu                                           | –                |
+| Potrzeba spoza PRD i backlogu                                             | nic; wpis na stronę „Czego brakuje”                                  | AGENTS.md        |
+| Komponent shadcn, którego jeszcze nie ma                                  | `shadcn add` w pakiecie, potem dostosowanie do tokenów (niżej)       | AGENTS.md        |
+
+## Co musi mieć nowy komponent
+
+1. Kod w `src/primitives`, `src/product/<epik>`, `src/patterns` albo `src/views/<epik>`; tylko klasy z tokenów (`vp run check:tokens`).
+2. Stories ze wszystkimi stanami (dla danych: ładowanie, pusto, błąd, częściowe dane, dużo danych, długie teksty, wąski ekran) i testami interakcji w `play`; axe bez naruszeń w obu motywach.
+3. Strona MDX „Dokumentacja” z 13 sekcjami: do czego służy, kiedy używać, kiedy nie używać, anatomia, warianty, stany, zachowanie i dostępność, treść, responsywność, API, kod, dobrze i źle, powiązane. Każda reguła ma źródło albo oznaczenie „propozycja”.
+4. Wpis w katalogu (`docs/blocks/catalog-data.tsx`) i w `docs/design-system.md` – test `catalog.test.ts` nie przejdzie bez nich.
+5. 100% pokrycia pliku (`vp test --coverage`).
+
+## Zmiana tokenu
+
+1. Wartość zmieniasz w `src/tokens/tokens.css` (jedyne miejsce z kolorami) i w `packages/ui/tokeny.md` z uzasadnieniem.
+2. Kolor: sprawdź oba motywy (`light-dark()`) i tabelę kontrastu w Fundamenty → Kolor (`docs/blocks/foundations-data.ts`); test `Fundamenty/Bloki/Kontrast` liczy progi WCAG.
+3. Wymiar: sprawdź ekrany przy 320 px (stories „Wąski ekran” i sekcja Ekrany).
+4. Nowy token: najpierw warstwa znaczeniowa (przeznaczenie, nie wartość), potem mapowanie klasy w `src/styles.css` (`@theme`).
+5. Uruchom pełną bramkę (niżej).
+
+## Kto zatwierdza
+
+| Zmiana                                     | Zatwierdza                                 | Źródło               |
+| ------------------------------------------ | ------------------------------------------ | -------------------- |
+| Brief stylu, tokeny, nowe wartości         | właściciel produktu                        | `brief.md`, ADR 0012 |
+| Nowy komponent, wariant, zmiana zachowania | właściciel – przez specyfikację `approved` | AGENTS.md            |
+| Nowa zależność                             | właściciel – ADR                           | AGENTS.md            |
+| Literówki i poprawki dokumentacji          | bez specyfikacji, w przeglądzie PR         | AGENTS.md            |
+
+## Komendy
+
+| Cel                                     | Komenda                                               |
+| --------------------------------------- | ----------------------------------------------------- |
+| Storybook lokalnie                      | `vp -C packages/ui run storybook`                     |
+| Build Storybooka                        | `vp -C packages/ui run build-storybook`               |
+| Testy stories w obu motywach (Chromium) | `vp run test:storybook` (część `vp test`)             |
+| Wartości spoza tokenów                  | `vp run check:tokens`                                 |
+| Lint, formatowanie, typy                | `vp check`                                            |
+| Testy z progiem 100%                    | `vp test --coverage`                                  |
+| Nowy komponent shadcn                   | `vp -C packages/ui dlx shadcn@latest add <komponent>` |
+
+## Notatka techniczna: baza komponentów
+
+Bazą komponentów bazowych jest shadcn/ui (styl `radix-mira`, prymitywy Radix) z ikonami lucide. Wygląd bazy nie jest stylem produktu: każdy komponent po dodaniu jest dostosowany do tokenów (wysokości, promienie, kolory, odstępy z briefu). W interfejsie Storybooka widać tylko nazwę „Koperty”; checklista startowa i komunikaty o nowej wersji są wyłączone.
+
+Po `shadcn add` w pakiecie:
+
+1. Sprawdź `packages/ui/package.json` i usuń zależności spoza planu (CLI dodaje np. `next-themes`).
+2. Zamień import `cn` na `@koperty/ui/lib/utils` i `import * as React` na import typów (fałszywe gałęzie w pokryciu).
+3. Gdy komponent zależy od istniejącego pliku (np. `dialog` → `button`), CLI pyta o nadpisanie mimo `--yes` – odpowiedz „n” (`printf 'n\n' |`).
+4. Zastąp wartości domyślnego wyglądu tokenami i dopisz komponent zgodnie z listą „Co musi mieć nowy komponent”.
+
+Szczegóły: `.ai/lessons/2026-10-19-shadcn-init-noninteractive.md` i `.ai/lessons/2026-10-29-storybook-vite-plus-setup.md`.

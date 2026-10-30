@@ -1,0 +1,118 @@
+import { Canvas, Meta, Unstyled } from "@storybook/addon-docs/blocks";
+import { Avatar } from "@koperty/ui/primitives/avatar";
+import { DoDont } from "../blocks/frames";
+import * as Stories from "../../src/primitives/avatar.stories";
+
+<Meta of={Stories} name="Dokumentacja" />
+
+# Awatar
+
+`import { Avatar } from "@koperty/ui/primitives/avatar";`
+
+## 1. Do czego służy
+
+Pomaga szybko rozpoznać osobę na liście po inicjałach obok jej nazwy.
+
+## 2. Kiedy używać
+
+| Sytuacja w produkcie              | Źródło |
+| --------------------------------- | ------ |
+| Lista członków budżetu            | US-09  |
+| Autor operacji na liście operacji | US-20  |
+
+## 3. Kiedy nie używać
+
+| Sytuacja                       | Zamiast                             | Źródło     |
+| ------------------------------ | ----------------------------------- | ---------- |
+| Bez nazwy osoby obok           | nazwa osoby (awatar jest dekoracją) | WCAG 1.1.1 |
+| Zdjęcie profilowe              | brak w produkcie                    | PRD 4.11   |
+| Logo budżetu lub ikona koperty | tekst nazwy                         | PRD 3      |
+
+## 4. Anatomia
+
+| Część    | Opcjonalna | Uwagi                                                     |
+| -------- | ---------- | --------------------------------------------------------- |
+| Koło     | nie        | 32 px, jedyny okrągły element obok toru przełącznika (K6) |
+| Inicjały | nie        | do dwóch liter z nazwy wyświetlanej, `text-meta`          |
+
+## 5. Warianty
+
+Jeden wariant i rozmiar (32 px, `avatar-size`).
+
+## 6. Stany
+
+<Canvas of={Stories.Stany} />
+
+Awatar nie jest interaktywny. Przypadki brzegowe: jedno słowo daje jedną literę, pusta nazwa „?”, konto usunięte – inicjały „Usunięty użytkownik” (US-03).
+
+## 7. Zachowanie i dostępność
+
+| Zasada                                                                              | Źródło     |
+| ----------------------------------------------------------------------------------- | ---------- |
+| `aria-hidden="true"`: czytnik czyta nazwę osoby obok, nie inicjały (sprawdza test). | WCAG 1.1.1 |
+| Nie jest celem kliknięcia ani fokusu.                                               | –          |
+
+## 8. Treść
+
+| Zasada                                                                                                      | Źródło        |
+| ----------------------------------------------------------------------------------------------------------- | ------------- |
+| Inicjały liczy funkcja `initials(name)` z nazwy wyświetlanej (US-24), z polskimi literami („Łukasz” → „Ł”). | US-24, DS-S06 |
+| Długa nazwa obok awatara się zawija; awatar zostaje wyrównany do pierwszej linii.                           | WCAG 1.4.10   |
+
+## 9. Responsywność
+
+| Szerokość          | Zachowanie                                 |
+| ------------------ | ------------------------------------------ |
+| 320, 768 i 1440 px | stały rozmiar 32 px; nazwa obok zawija się |
+
+<Canvas of={Stories.WaskiEkran} />
+
+## 10. API
+
+| Prop / funkcja   | Typ                        | Opis                             |
+| ---------------- | -------------------------- | -------------------------------- |
+| `name`           | `string`                   | nazwa wyświetlana osoby          |
+| `initials(name)` | `(name: string) => string` | do dwóch wielkich liter albo „?” |
+
+## 11. Kod
+
+Minimalny:
+
+```tsx
+<Avatar name={member.display_name} />
+```
+
+Typowy w produkcie (lista członków, US-09):
+
+```tsx
+<li className="flex items-center gap-group">
+  <Avatar name={member.display_name} />
+  <span className="text-label">{member.display_name}</span>
+  <Badge>{member.role === "owner" ? "Właściciel" : "Członek"}</Badge>
+</li>
+```
+
+## 12. Dobrze i źle
+
+<Unstyled>
+  <DoDont
+    good={{
+      node: (
+        <span className="flex items-center gap-group">
+          <Avatar name="Ala Kowalska" />
+          <span className="text-label">Ala Kowalska</span>
+        </span>
+      ),
+      note: "inicjały obok pełnej nazwy.",
+    }}
+    bad={{
+      node: <Avatar name="Ala Kowalska" />,
+      note: "same inicjały: nie wiadomo, kto to jest, a czytnik nic nie przeczyta.",
+    }}
+  />
+</Unstyled>
+
+## 13. Powiązane
+
+- Mylony z: **znacznikiem** (status, nie osoba).
+- Występuje we wzorcach: lista członków, wiersz operacji.

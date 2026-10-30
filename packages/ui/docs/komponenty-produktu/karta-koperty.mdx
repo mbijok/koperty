@@ -1,0 +1,121 @@
+import { Canvas, Meta } from "@storybook/addon-docs/blocks";
+import * as Stories from "../../src/product/envelopes/envelope-card.stories";
+
+<Meta of={Stories} name="Dokumentacja" />
+
+# Karta koperty
+
+`import { EnvelopeCard, EnvelopeCardSkeleton } from "@koperty/ui/product/envelopes/envelope-card";`
+
+## 1. Do czego służy
+
+Pokazuje jedną kopertę: ile w niej zostało, i daje dostęp do jej akcji.
+
+## 2. Kiedy używać
+
+| Sytuacja w produkcie                          | Źródło       |
+| --------------------------------------------- | ------------ |
+| Lista kopert na widoku głównym                | US-21        |
+| Tryb zmiany kolejności kopert                 | US-12, E3-Q3 |
+| Lista zarchiwizowanych kopert z przywracaniem | US-13        |
+
+## 3. Kiedy nie używać
+
+| Sytuacja                        | Zamiast             | Źródło |
+| ------------------------------- | ------------------- | ------ |
+| Koperty w podsumowaniu miesiąca | tabela podsumowania | US-22  |
+| Wybór koperty w formularzu      | select              | US-17  |
+
+## 4. Anatomia
+
+| Część                     | Opcjonalna                   | Uwagi                                                            |
+| ------------------------- | ---------------------------- | ---------------------------------------------------------------- |
+| Karta kompaktowa          | nie                          | `Card size="compact"`                                            |
+| Nazwa                     | nie                          | nagłówek `h3`, zawija się                                        |
+| Znacznik „Zarchiwizowana” | tak                          | tylko w archiwum                                                 |
+| Saldo                     | nie                          | `Amount`, ujemne z „Debet”                                       |
+| Menu akcji                | nie (poza trybem kolejności) | „Przydziel środki”, „Zmień nazwę”, „Zarchiwizuj” albo „Przywróć” |
+| „Przesuń w górę / w dół”  | tylko w trybie kolejności    | zastępuje saldo i menu                                           |
+
+## 5. Warianty
+
+<Canvas of={Stories.ZmianaKolejnosci} />
+
+| Tryb                  | Kiedy                                   |
+| --------------------- | --------------------------------------- |
+| Zwykły                | lista kopert                            |
+| Kolejność (`reorder`) | po wybraniu „Zmień kolejność” na liście |
+| Archiwum (`archived`) | lista zarchiwizowanych                  |
+
+## 6. Stany
+
+<Canvas of={Stories.Stany} />
+
+| Stan                                    | Zachowanie                                                                             | Źródło           |
+| --------------------------------------- | -------------------------------------------------------------------------------------- | ---------------- |
+| Saldo dodatnie, zero                    | kwota                                                                                  | PRD 4.5          |
+| Debet                                   | minus i „Debet”                                                                        | K3               |
+| Archiwizacja przy saldzie różnym od 0   | pozycja menu zablokowana z wyjaśnieniem „(saldo musi wynosić 0,00 zł)” (sprawdza test) | US-13, Z4, E2-Q1 |
+| Zarchiwizowana                          | znacznik i tylko „Przywróć”                                                            | US-13            |
+| Ładowanie                               | `EnvelopeCardSkeleton`                                                                 | E2-P12           |
+| Pierwsza / ostatnia w trybie kolejności | „Przesuń w górę” / „w dół” zablokowane                                                 | E3-Q3            |
+| Błąd, pusto                             | na poziomie listy kopert                                                               | –                |
+
+## 7. Zachowanie i dostępność
+
+| Zasada                                                                                          | Źródło                 |
+| ----------------------------------------------------------------------------------------------- | ---------------------- |
+| Przyciski z nazwą koperty w `aria-label`: „Więcej akcji: Jedzenie”, „Przesuń w górę: Jedzenie”. | WCAG 2.4.6, 4.1.2      |
+| Menu jak w komponencie bazowym (klawiatura, Escape, powrót fokusu).                             | WAI-ARIA (menu button) |
+| Regułę „archiwizacja tylko przy saldzie 0” egzekwuje baza; karta tylko ją wyjaśnia.             | AGENTS.md, ADR 0003    |
+
+## 8. Treść
+
+| Zasada                                                         | Przykład                          | Źródło |
+| -------------------------------------------------------------- | --------------------------------- | ------ |
+| Nazwa koperty taka, jak wpisał ją użytkownik; długa się zawija | „Remont łazienki i kuchni…”       | US-11  |
+| Pozycje menu: czasownik                                        | „Przydziel środki”, „Zmień nazwę” | E2-P2  |
+
+<Canvas of={Stories.DlugaNazwa} />
+
+## 9. Responsywność
+
+Na 320 px nazwa zawija się, saldo i menu zostają po prawej; na 768 i 1440 px karta w `max-w-content`.
+
+## 10. API
+
+| Prop                                               | Typ                          | Opis                                           |
+| -------------------------------------------------- | ---------------------------- | ---------------------------------------------- |
+| `name`                                             | `string`                     | nazwa koperty                                  |
+| `balance`                                          | `number`                     | saldo w groszach                               |
+| `archived`                                         | `boolean`                    | zarchiwizowana                                 |
+| `onAllocate`, `onRename`, `onArchive`, `onRestore` | `() => void`                 | akcje menu                                     |
+| `reorder`                                          | `{ onMoveUp?, onMoveDown? }` | tryb kolejności; brak funkcji blokuje przycisk |
+
+## 11. Kod
+
+Typowy w produkcie – karta w liście kopert (najczęściej używasz `EnvelopeList`):
+
+```tsx
+<EnvelopeCard
+  name={envelope.name}
+  balance={envelope.balance}
+  onAllocate={() => openAllocation(envelope.id)}
+/>
+```
+
+<Canvas of={Stories.Playground} />
+
+## 12. Dobrze i źle
+
+| Dobrze                                                  | Źle                                                         |
+| ------------------------------------------------------- | ----------------------------------------------------------- |
+| Zablokowane „Zarchiwizuj (saldo musi wynosić 0,00 zł)”. | „Zarchiwizuj” klikalne i błąd z bazy dopiero po kliknięciu. |
+| Kolejność przyciskami z klawiatury.                     | Tylko przeciąganie myszą.                                   |
+
+Różnice dotyczą zachowania, więc pary są tabelą.
+
+## 13. Powiązane
+
+- Mylona z: **podsumowaniem puli**, **wierszem operacji**.
+- Występuje we wzorcach: widok kopert, kwota ujemna i debet, przydział.

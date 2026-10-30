@@ -1,0 +1,111 @@
+import { Canvas, Meta } from "@storybook/addon-docs/blocks";
+import * as Stories from "../../src/views/budgets/create-budget-form.stories";
+
+<Meta of={Stories} name="Dokumentacja" />
+
+# Pierwsze uruchomienie
+
+`import { CreateBudgetForm } from "@koperty/ui/views/budgets/create-budget-form";`
+
+## 1. Do czego służy
+
+Prowadzi nową osobę od pustego konta do pierwszego budżetu, a potem do dwóch pierwszych kroków: koperty i przychodu.
+
+## 2. Kiedy używać
+
+| Sytuacja w produkcie                   | Źródło       |
+| -------------------------------------- | ------------ |
+| Po pierwszym zalogowaniu, bez budżetów | US-04        |
+| „Utwórz budżet” z przełącznika budżetu | US-04, US-05 |
+| Nowy budżet bez kopert                 | US-21        |
+
+## 3. Kiedy nie używać
+
+| Sytuacja                      | Zamiast                        | Źródło |
+| ----------------------------- | ------------------------------ | ------ |
+| Dołączenie do cudzego budżetu | zaproszenie (karta dołączenia) | US-08  |
+| Zmiana nazwy budżetu          | ustawienia budżetu (ekrany)    | US-06  |
+
+## 4. Anatomia
+
+| Część                | Opcjonalna | Uwagi                                                         |
+| -------------------- | ---------- | ------------------------------------------------------------- |
+| Pole „Nazwa budżetu” | nie        | podpowiedź: kto zobaczy nazwę                                 |
+| „Utwórz budżet”      | nie        | przycisk główny                                               |
+| „Anuluj”             | tak        | tylko gdy osoba ma już inny budżet                            |
+| Pusty budżet         | –          | pula 0 zł z „Dodaj przychód” i lista kopert z „Dodaj kopertę” |
+
+## 5. Warianty
+
+Pierwszy budżet (bez „Anuluj”) i kolejny budżet (`KolejnyBudzet`, z „Anuluj”).
+
+## 6. Stany
+
+| Stan            | Story               | Zachowanie                                    | Źródło            |
+| --------------- | ------------------- | --------------------------------------------- | ----------------- |
+| Pusty formularz | `Playground`        | nazwa przycięta ze spacji                     | US-04             |
+| Pusta nazwa     | `PustaNazwa`        | błąd po opuszczeniu pola, nic nie wysłane     | US-04, WCAG 3.3.1 |
+| Tworzenie       | `Tworzenie`         | „Tworzenie…”, blokada podwójnego wysłania     | wzorzec Formularz |
+| Nazwa odrzucona | `BladNazwyZSerwera` | `BUDGET_NAME_INVALID` przy polu               | kontrakt błędów   |
+| Błąd serwera    | `BladSerwera`       | nazwa zostaje                                 | wzorzec Formularz |
+| Pusty budżet    | `PustyBudzet`       | pula 0 zł, „Dodaj przychód” i „Dodaj kopertę” | US-04, US-21      |
+
+<Canvas of={Stories.PustyBudzet} />
+
+## 7. Zachowanie i dostępność
+
+| Zasada                                                        | Źródło       |
+| ------------------------------------------------------------- | ------------ |
+| Jedno pole i jedna decyzja; reszta po utworzeniu budżetu.     | US-04        |
+| Pusty stan mówi, co zrobić, i daje akcję – nie „Brak danych”. | E2-Q5, US-21 |
+| Twórca zostaje właścicielem bez dodatkowego pytania (baza).   | PRD 4.9      |
+
+## 8. Treść
+
+| Zasada                                    | Przykład                                                           | Źródło              |
+| ----------------------------------------- | ------------------------------------------------------------------ | ------------------- |
+| Podpowiedź z przykładem i skutkiem        | „Np. Dom albo Wspólne wakacje. Zobaczą ją osoby, które zaprosisz.” | propozycja (E3-P10) |
+| Pusty budżet: cel kopert prostym językiem | „Koperty to cele wydatków, np. Jedzenie albo Rachunki.”            | lista kopert        |
+
+## 9. Responsywność
+
+Przyciski na telefonie na całą szerokość, jeden pod drugim.
+
+<Canvas of={Stories.WaskiEkran} />
+
+## 10. API
+
+| Prop        | Typ                                               | Opis                 |
+| ----------- | ------------------------------------------------- | -------------------- |
+| `submit`    | `(name: string) => Promise<SubmitResult<"name">>` | `create_budget`      |
+| `onSuccess` | `() => void`                                      | przejście do budżetu |
+| `onCancel`  | `() => void`                                      | kolejny budżet       |
+
+## 11. Kod
+
+```tsx
+<CreateBudgetForm
+  submit={async (name) => {
+    const { error } = await supabase.rpc("create_budget", { p_name: name });
+    if (!error) return { ok: true };
+    if (error.message === "BUDGET_NAME_INVALID")
+      return { ok: false, fieldErrors: { name: "Podaj inną nazwę." } };
+    throw error;
+  }}
+  onSuccess={() => navigate({ to: "/" })}
+/>
+```
+
+<Canvas of={Stories.Playground} />
+
+## 12. Dobrze i źle
+
+| Dobrze                                          | Źle                                                |
+| ----------------------------------------------- | -------------------------------------------------- |
+| Po utworzeniu: pula 0 zł i dwie akcje na start. | Pusta strona z tabelą zer.                         |
+| Jedno pole na start.                            | Kreator z kopertami, członkami i przychodem naraz. |
+
+## 13. Powiązane
+
+- Komponenty: podsumowanie puli, lista kopert, przełącznik budżetu.
+- Wzorce: formularz, zaproszenie.

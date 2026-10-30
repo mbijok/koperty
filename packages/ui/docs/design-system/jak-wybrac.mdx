@@ -1,0 +1,81 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Design system/Jak wybrać" />
+
+# Jak wybrać komponent
+
+Każda tabela odpowiada na pytanie „jeśli…, to użyj…” z przykładem z produktu. Gdy żaden wiersz nie pasuje, sprawdź „Czego brakuje” zamiast dodawać nowy wariant.
+
+## Przycisk, link, przycisk z ikoną, menu akcji
+
+| Jeśli…                                                      | to użyj…                                       | Przykład z produktu                             | Źródło                |
+| ----------------------------------------------------------- | ---------------------------------------------- | ----------------------------------------------- | --------------------- |
+| czynność na tym ekranie (zapis, wysłanie, otwarcie dialogu) | przycisk (`Button`), jeden `primary` na ekran  | „Zapisz wydatek”                                | przycisk              |
+| przejście w inne miejsce (zmienia się adres)                | link: `Button asChild` z linkiem routera       | „Operacje” w nawigacji                          | akcja tekstowa i link |
+| mała czynność w tekście                                     | `Button variant="link"`                        | „Wyślij nowy kod”, „Wróć do bieżącego miesiąca” | E2-P4                 |
+| czynność w wierszu listy, oczywista z ikony                 | przycisk ikonowy z `aria-label` i podpowiedzią | „Edytuj wydatek: Biedronka”                     | E2-P9, WCAG 4.1.2     |
+| trzy i więcej akcji obiektu                                 | menu (`DropdownMenu`)                          | akcje koperty                                   | menu                  |
+| jedna lub dwie akcje obiektu                                | widoczne przyciski w wierszu                   | „Unieważnij…” przy zaproszeniu                  | E2-P9                 |
+
+## Radio, select, pole z wyszukiwaniem
+
+| Jeśli…                                  | to użyj…                                   | Przykład z produktu | Źródło        |
+| --------------------------------------- | ------------------------------------------ | ------------------- | ------------- |
+| jedna wartość z krótkiej listy (do ~15) | select                                     | koperta wydatku     | E2-P6         |
+| dłuższa lista albo trzeba szukać        | pole z wyszukiwaniem – **brak** w systemie | –                   | Czego brakuje |
+| 2–4 opcje widoczne naraz                | grupa radio – **brak** w systemie          | –                   | Czego brakuje |
+
+## Przełącznik i checkbox
+
+| Jeśli…                                       | to użyj…                       | Przykład z produktu               | Źródło        |
+| -------------------------------------------- | ------------------------------ | --------------------------------- | ------------- |
+| ustawienie działa od razu, bez „Zapisz”      | przełącznik (`Switch`)         | „Podziel wydatek na kilka kopert” | WCAG 3.2.2    |
+| zgoda lub wybór wysyłany razem z formularzem | checkbox – **brak** w systemie | –                                 | Czego brakuje |
+
+## Dialog, dialog potwierdzenia, panel boczny, osobna strona, popover, podpowiedź
+
+| Jeśli…                                                       | to użyj…                                        | Przykład z produktu        | Źródło             |
+| ------------------------------------------------------------ | ----------------------------------------------- | -------------------------- | ------------------ |
+| krótka, wydzielona czynność bez opuszczania ekranu           | dialog                                          | zmiana nazwy koperty       | dialog             |
+| operacja nieodwracalna                                       | potwierdzenie usunięcia (`ConfirmDeleteDialog`) | usunięcie wydatku, budżetu | DS-S08, WCAG 3.3.4 |
+| formularz z kilkoma polami albo częsta czynność na telefonie | osobna strona                                   | nowy wydatek               | E3-Q4, E2-P8       |
+| szybki wydatek z dołu ekranu                                 | panel dolny – **brak** (do decyzji)             | –                          | Czego brakuje      |
+| treść obok elementu, z interakcją                            | popover – **brak** w systemie                   | –                          | Czego brakuje      |
+| nazwa przycisku z samą ikoną                                 | podpowiedź (`Tooltip`)                          | „Zmień nazwę koperty”      | podpowiedź         |
+| informacja potrzebna do działania                            | nigdy podpowiedź: tekst przy polu (`hint`)      | „W złotych, np. 120,50”    | Czego unikać       |
+
+## Błąd przy polu, alert, toast
+
+| Jeśli…                                               | to użyj…                          | Przykład z produktu                            | Źródło                  |
+| ---------------------------------------------------- | --------------------------------- | ---------------------------------------------- | ----------------------- |
+| błąd jednego pola                                    | błąd w `FormField`                | „Podaj kwotę większą od zera.”                 | WCAG 3.3.1              |
+| błąd całego formularza albo ekranu, wymaga działania | alert `danger`                    | „Nie udało się zapisać. Wpisane dane zostały…” | wzorzec Formularz       |
+| informacja o stanie, bez działania                   | alert `default`                   | „Brak połączenia z internetem”                 | US-23                   |
+| potwierdzenie udanej czynności, nic nie trzeba robić | toast (`showToast`)               | „Skopiowano link zaproszenia”                  | E2-P13                  |
+| błąd, który wymaga działania                         | **nigdy toast** – pole albo alert | –                                              | polecenie budowy, toast |
+| treść nie wczytała się wcale                         | stan błędu (`ErrorState`)         | „Nie udało się wczytać kopert”                 | stan błędu              |
+
+## Szkielet i wskaźnik ładowania
+
+| Jeśli…                                    | to użyj…                          | Przykład z produktu | Źródło   |
+| ----------------------------------------- | --------------------------------- | ------------------- | -------- |
+| wczytuje się lista, karta, tabela         | szkielet w kształcie treści       | widok kopert        | E2-P12   |
+| trwa zapis po kliknięciu                  | `Button loading` z „Zapisywanie…” | „Zapisz wydatek”    | E2-Q2    |
+| trwa czynność bez znanego kształtu wyniku | wskaźnik ładowania (`Spinner`)    | –                   | wskaźnik |
+
+## Tabela, lista, karty
+
+| Jeśli…                                                   | to użyj…          | Przykład z produktu   | Źródło        |
+| -------------------------------------------------------- | ----------------- | --------------------- | ------------- |
+| te same liczby dla wielu obiektów do porównania          | tabela            | podsumowanie miesiąca | US-22, E2-P11 |
+| rekordy z różnymi polami i akcjami, czytane na telefonie | lista z wierszami | lista operacji        | US-20         |
+| kilka obiektów, każdy z saldem i akcjami                 | karty             | lista kopert          | US-21         |
+| karta w karcie                                           | nigdy – spłaszcz  | –                     | Czego unikać  |
+
+## Zakładki i osobne strony
+
+| Jeśli…                                                   | to użyj…                | Przykład z produktu                                                     | Źródło |
+| -------------------------------------------------------- | ----------------------- | ----------------------------------------------------------------------- | ------ |
+| główna nawigacja (koperty, operacje, podsumowanie)       | osobne strony z adresem | nawigacja powłoki                                                       | E3-Q2  |
+| równorzędne części jednego ekranu, przełączane w miejscu | zakładki                | brak użycia w ekranach MVP (ustawienia budżetu są jedną stroną, E3-P16) | E2-P10 |
+| filtr listy                                              | przełącznik miesiąca    | lista operacji                                                          | Q5     |

@@ -1,0 +1,136 @@
+import { ArgTypes, Canvas, Meta, Unstyled } from "@storybook/addon-docs/blocks";
+import { Wallet } from "lucide-react";
+import { Button } from "@koperty/ui/primitives/button";
+import { EmptyState } from "@koperty/ui/primitives/empty";
+import { DoDont } from "../blocks/frames";
+import * as Stories from "../../src/primitives/empty.stories";
+
+<Meta of={Stories} name="Dokumentacja" />
+
+# Pusty stan
+
+`import { EmptyState } from "@koperty/ui/primitives/empty";`
+
+## 1. Do czego służy
+
+Mówi, dlaczego w miejscu listy nic nie ma, i proponuje jeden następny krok.
+
+## 2. Kiedy używać
+
+| Sytuacja w produkcie                                          | Akcja                                           | Źródło                          |
+| ------------------------------------------------------------- | ----------------------------------------------- | ------------------------------- |
+| Nowy budżet bez kopert                                        | „Dodaj kopertę”                                 | US-21                           |
+| Budżet bez żadnych operacji („jeszcze nic tu nie ma”)         | „Dodaj wydatek”                                 | US-20, polecenie budowy (lista) |
+| Brak operacji w wybranym miesiącu („brak wyników dla filtra”) | zmiana miesiąca, np. „Pokaż październik”        | Q5, polecenie budowy (lista)    |
+| Brak aktywnych zaproszeń                                      | bez akcji albo „Wygeneruj link” dla właściciela | US-07                           |
+
+## 3. Kiedy nie używać
+
+| Sytuacja                                  | Zamiast                           | Źródło     |
+| ----------------------------------------- | --------------------------------- | ---------- |
+| Dane się wczytują                         | szkielet ładowania                | E2-P12     |
+| Wczytanie się nie udało                   | stan błędu                        | WCAG 3.3.1 |
+| Pusta jedna kolumna tabeli albo pole      | „0,00 zł” albo „–” w komórce      | US-22      |
+| Ozdoba z ilustracją i kilkoma przyciskami | ikona, tytuł, zdanie, jedna akcja | E2-Q5, AC2 |
+
+## 4. Anatomia
+
+| Część | Opcjonalna | Uwagi                                                     |
+| ----- | ---------- | --------------------------------------------------------- |
+| Ikona | nie        | 20 px (`size-icon-standalone`), `text-muted`, dekoracyjna |
+| Tytuł | nie        | `text-section`: czego brakuje                             |
+| Opis  | tak        | jedno zdanie: dlaczego pusto i co zrobić                  |
+| Akcja | tak        | jeden przycisk albo link                                  |
+
+Wyrównanie do początku treści, bez obramowania (E2-Q5; „Czego unikać”: nie wszystko wyśrodkowane).
+
+## 5. Warianty
+
+Jeden wygląd. Treść różni się dla dwóch sytuacji z listy (polecenie budowy, Q5):
+
+| Sytuacja                   | Tytuł                          | Akcja                 |
+| -------------------------- | ------------------------------ | --------------------- |
+| Jeszcze nic tu nie ma      | „Brak operacji w tym budżecie” | utwórz pierwszą rzecz |
+| Nic dla wybranego miesiąca | „Brak operacji w listopadzie”  | zmień miesiąc         |
+
+## 6. Stany
+
+<Canvas of={Stories.Stany} />
+
+Pusty stan jest statyczny: najechanie, fokus, wciśnięcie, zablokowanie, ładowanie, wybór i błąd dotyczą tylko jego przycisku.
+
+## 7. Zachowanie i dostępność
+
+| Zasada                                                                                                       | Źródło            |
+| ------------------------------------------------------------------------------------------------------------ | ----------------- |
+| Tytuł i opis to zwykły tekst w kolejności czytania; ikona ma `aria-hidden`.                                  | WCAG 1.1.1, 1.3.2 |
+| Akcja jest przyciskiem albo linkiem z czasownikiem (sprawdza test w Playground).                             | WCAG 2.4.6        |
+| Gdy pusty stan pojawia się po zmianie miesiąca, przełącznik miesiąca ogłasza zmianę (wzorzec listy, etap 3). | WCAG 4.1.3        |
+
+## 8. Treść
+
+| Część | Zasada                                   | Przykład                                                                      | Źródło                   |
+| ----- | ---------------------------------------- | ----------------------------------------------------------------------------- | ------------------------ |
+| Tytuł | czego brakuje, bez wykrzyknika           | „Nie masz jeszcze kopert”                                                     | polecenie budowy (Treść) |
+| Opis  | dlaczego pusto i jaki jest następny krok | „Koperty to cele wydatków, np. Jedzenie albo Rachunki. Zacznij od pierwszej.” | polecenie budowy (Treść) |
+| Akcja | czasownik i obiekt                       | „Dodaj kopertę”                                                               | E2-P2                    |
+| Ton   | rzeczowo, bez maskotek i żartów          | –                                                                             | AC2                      |
+
+<Canvas of={Stories.DlugaTresc} />
+
+## 9. Responsywność
+
+| Szerokość     | Zachowanie                                            |
+| ------------- | ----------------------------------------------------- |
+| 320 px        | przycisk może zająć pełną szerokość; tekst się zawija |
+| 768 i 1440 px | najwyżej 65 znaków szerokości, w miejscu listy        |
+
+## 10. API
+
+<ArgTypes of={Stories} />
+
+| Prop          | Typ          | Opis                                  |
+| ------------- | ------------ | ------------------------------------- |
+| `icon`        | `LucideIcon` | ikona tematu, np. `Wallet`, `Receipt` |
+| `title`       | `string`     | czego brakuje                         |
+| `description` | `string`     | dlaczego pusto, co zrobić             |
+| `action`      | `ReactNode`  | jeden przycisk lub link               |
+
+## 11. Kod
+
+Minimalny:
+
+```tsx
+<EmptyState icon={Mail} title="Brak aktywnych zaproszeń" />
+```
+
+Typowy w produkcie (nowy budżet, US-21):
+
+<Canvas of={Stories.Playground} />
+
+## 12. Dobrze i źle
+
+<Unstyled>
+  <DoDont
+    good={{
+      node: (
+        <EmptyState
+          icon={Wallet}
+          title="Nie masz jeszcze kopert"
+          description="Zacznij od pierwszej koperty, np. Jedzenie."
+          action={<Button>Dodaj kopertę</Button>}
+        />
+      ),
+      note: "mówi, dlaczego pusto, i daje jeden krok.",
+    }}
+    bad={{
+      node: <EmptyState icon={Wallet} title="Brak danych" />,
+      note: "nie wiadomo, czego brakuje ani co zrobić.",
+    }}
+  />
+</Unstyled>
+
+## 13. Powiązane
+
+- Mylony z: **stanem błędu** (wczytanie się nie udało), **szkieletem** (dane w drodze).
+- Występuje we wzorcach: lista z filtrem miesiąca (dwa osobne stany), widok kopert, lista zaproszeń.

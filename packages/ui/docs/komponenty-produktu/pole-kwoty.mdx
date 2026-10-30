@@ -1,0 +1,120 @@
+import { Canvas, Meta } from "@storybook/addon-docs/blocks";
+import * as Stories from "../../src/product/funds/amount-input.stories";
+
+<Meta of={Stories} name="Dokumentacja" />
+
+# Pole kwoty
+
+`import { AmountInput } from "@koperty/ui/product/funds/amount-input";` · parsowanie: `import { parsePLN } from "@koperty/ui/lib/money";`
+
+## 1. Do czego służy
+
+Pozwala wpisać kwotę tak, jak ludzie ją piszą („120,50”, „1 234”), i zamienia ją na grosze bez błędów zaokrągleń.
+
+## 2. Kiedy używać
+
+| Sytuacja w produkcie                   | Źródło       |
+| -------------------------------------- | ------------ |
+| Kwota przychodu                        | US-14, US-15 |
+| Kwota przydziału (może być 0)          | US-16        |
+| Kwota wydatku i każdej części podziału | US-17, US-18 |
+
+## 3. Kiedy nie używać
+
+| Sytuacja                        | Zamiast                                                               | Źródło        |
+| ------------------------------- | --------------------------------------------------------------------- | ------------- |
+| Pokazanie kwoty                 | kwota (`Amount`)                                                      | –             |
+| Pole tekstowe z `type="number"` | `AmountInput` (`type="number"` nie przyjmuje przecinka i ma strzałki) | standardy 4.4 |
+| Liczba bez waluty               | pole tekstowe                                                         | –             |
+
+## 4. Anatomia
+
+| Część                      | Opcjonalna | Uwagi                                                                   |
+| -------------------------- | ---------- | ----------------------------------------------------------------------- |
+| Pole                       | nie        | `Input` z `inputMode="decimal"` (klawiatura z przecinkiem na telefonie) |
+| Dopisek „zł”               | nie        | dekoracyjny; jednostkę mówi podpowiedź pola                             |
+| Etykieta, podpowiedź, błąd | –          | z `FormField`                                                           |
+
+## 5. Warianty
+
+Jeden wariant.
+
+## 6. Stany
+
+<Canvas of={Stories.Stany} />
+
+| Stan                                   | Zachowanie                                                                                                                         | Źródło             |
+| -------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- | ------------------ |
+| Puste, z wartością, fokus, zablokowane | jak pole tekstowe                                                                                                                  | –                  |
+| Po opuszczeniu pola                    | poprawna kwota zostaje uporządkowana do „1 234,50”; niepoprawny tekst zostaje bez zmian, żeby dało się go poprawić (sprawdza test) | propozycja (E3-P2) |
+| Błąd                                   | komunikat z `FormField`, np. „Podaj kwotę większą od zera.”                                                                        | US-14, US-17       |
+| Ładowanie, wybrany                     | nie dotyczy                                                                                                                        | –                  |
+
+## 7. Zachowanie i dostępność
+
+| Zasada                                                                                                                                                  | Źródło                   |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------ |
+| Klawiatura dziesiętna na telefonie (`inputMode="decimal"`, sprawdza test).                                                                              | WCAG 1.3.5               |
+| `parsePLN` przyjmuje przecinek i kropkę, spacje i „zł”; zwraca grosze albo `null`. Walidacja w UI jest tylko pomocą – regułę „kwota > 0” sprawdza baza. | standardy 4.4, AGENTS.md |
+| Tekst 16 px (bez powiększania na iOS), 40 px wysokości.                                                                                                 | K1, W1                   |
+
+## 8. Treść
+
+| Część                             | Przykład                                                          | Źródło             |
+| --------------------------------- | ----------------------------------------------------------------- | ------------------ |
+| Podpowiedź                        | „W złotych, np. 120,50”                                           | polecenie budowy   |
+| Błąd: zero lub mniej              | „Podaj kwotę większą od zera.”                                    | US-14, US-17       |
+| Błąd: za dużo miejsc po przecinku | „Podaj kwotę z najwyżej dwoma miejscami po przecinku, np. 12,34.” | propozycja (E3-P2) |
+
+## 9. Responsywność
+
+| Szerokość     | Zachowanie                                         |
+| ------------- | -------------------------------------------------- |
+| 320 px        | pełna szerokość; długa kwota mieści się przed „zł” |
+| 768 i 1440 px | szerokość pola formularza                          |
+
+<Canvas of={Stories.DuzaKwota} />
+
+## 10. API
+
+| Prop / funkcja              | Typ                                          | Opis                                    |
+| --------------------------- | -------------------------------------------- | --------------------------------------- |
+| `value`                     | `string`                                     | tekst w polu                            |
+| `onValueChange`             | `(value: string) => void`                    | zmiana tekstu (także po uporządkowaniu) |
+| pozostałe                   | atrybuty `<input>` (bez `type`, `inputMode`) | `id`, `aria-*` z `FormField`, `onBlur`  |
+| `parsePLN(text)`            | `(text: string) => number \| null`           | grosze albo `null`                      |
+| `formatAmountInput(grosze)` | `(grosze: number) => string`                 | wartość pola, np. przy edycji           |
+
+## 11. Kod
+
+Minimalny:
+
+```tsx
+<FormField label="Kwota" hint="W złotych, np. 120,50" error={error}>
+  {(control) => <AmountInput {...control} value={amount} onValueChange={setAmount} />}
+</FormField>
+```
+
+Typowy w produkcie (wysłanie wydatku, US-17):
+
+```tsx
+const grosze = parsePLN(amount);
+if (grosze === null || grosze === 0) return setError("Podaj kwotę większą od zera.");
+createExpense.mutate({ p_amount: grosze, ... });
+```
+
+<Canvas of={Stories.Playground} />
+
+## 12. Dobrze i źle
+
+| Dobrze                                 | Źle                                                                                         |
+| -------------------------------------- | ------------------------------------------------------------------------------------------- |
+| `parsePLN("120,50")` → `12050`         | `Math.round(parseFloat("120,50") * 100)` – `parseFloat` przerywa na przecinku i daje 120 zł |
+| Pole z „zł” i podpowiedzią „W złotych” | `type="number"`: na części telefonów brak przecinka                                         |
+
+Różnice dotyczą kodu, więc pary są tabelą.
+
+## 13. Powiązane
+
+- Mylone z: **polem tekstowym**, **kwotą**.
+- Występuje we wzorcach: formularz, podział wydatku, przydział.

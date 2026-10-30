@@ -1,0 +1,86 @@
+import { Canvas, Meta } from "@storybook/addon-docs/blocks";
+import * as Stories from "../../src/product/app/offline-banner.stories";
+
+<Meta of={Stories} name="Dokumentacja" />
+
+# Komunikat braku sieci
+
+`import { OfflineBanner } from "@koperty/ui/product/app/offline-banner";`
+
+## 1. Do czego służy
+
+Informuje, że nie ma połączenia z internetem, i mówi, co to znaczy dla zapisu. Pojawia się i znika sam.
+
+## 2. Kiedy używać
+
+| Sytuacja w produkcie                  | Źródło |
+| ------------------------------------- | ------ |
+| Raz w układzie ekranów po zalogowaniu | US-23  |
+
+## 3. Kiedy nie używać
+
+| Sytuacja                     | Zamiast              | Źródło            |
+| ---------------------------- | -------------------- | ----------------- |
+| Nieudany zapis formularza    | komunikat formularza | wzorzec Formularz |
+| Kilka komunikatów na ekranie | jeden w układzie     | –                 |
+
+## 4. Anatomia
+
+| Część              | Opcjonalna | Uwagi                           |
+| ------------------ | ---------- | ------------------------------- |
+| Ikona „brak Wi-Fi” | nie        | dekoracyjna (`aria-hidden`)     |
+| Tytuł              | nie        | „Brak połączenia z internetem”  |
+| Opis               | nie        | co widać i kiedy zadziała zapis |
+
+## 5. Warianty
+
+Jeden wariant (alert informacyjny); nie jest błędem użytkownika, więc nie ma wariantu `danger`.
+
+## 6. Stany
+
+| Stan              | Story              | Zachowanie          | Źródło |
+| ----------------- | ------------------ | ------------------- | ------ |
+| Bez połączenia    | `Playground`       | komunikat           | US-23  |
+| Z połączeniem     | `ZPolaczeniem`     | nic                 | US-23  |
+| Powrót połączenia | `PowrotPolaczenia` | komunikat znika sam | US-23  |
+
+<Canvas of={Stories.Playground} />
+
+## 7. Zachowanie i dostępność
+
+| Zasada                                                                             | Źródło     |
+| ---------------------------------------------------------------------------------- | ---------- |
+| Stan z `navigator.onLine` i zdarzeń `online` / `offline` (`useSyncExternalStore`). | US-23      |
+| `role="status"`: ogłaszany grzecznie, bez przenoszenia fokusu.                     | WCAG 4.1.3 |
+
+## 8. Treść
+
+| Zasada                          | Przykład                                                                 | Źródło              |
+| ------------------------------- | ------------------------------------------------------------------------ | ------------------- |
+| Co widać i kiedy zadziała zapis | „Widzisz dane wczytane wcześniej. Zapis zadziała, gdy połączenie wróci.” | propozycja (E3-P11) |
+
+## 9. Responsywność
+
+Na całą szerokość treści; tekst zawija się.
+
+<Canvas of={Stories.WaskiEkran} />
+
+## 10. API
+
+Bez propów.
+
+## 11. Kod
+
+```tsx
+<OfflineBanner />
+```
+
+## 12. Dobrze i źle
+
+| Dobrze                       | Źle                                 |
+| ---------------------------- | ----------------------------------- |
+| Jeden komunikat nad treścią. | Toast przy każdej nieudanej próbie. |
+
+## 13. Powiązane
+
+- Wzorce: brak sieci i wygasła sesja.

@@ -1,0 +1,52 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Design system/Czego unikać" />
+
+# Czego unikać
+
+Trzy listy. Przy każdym punkcie: jak go rozpoznać (także w kodzie), dlaczego to problem i czym go zastąpić.
+
+## 1. Antywzorce Koperty (z briefu)
+
+| Czego unikać                        | Jak rozpoznać                                          | Dlaczego                                    | Zamiast                                      | Źródło     |
+| ----------------------------------- | ------------------------------------------------------ | ------------------------------------------- | -------------------------------------------- | ---------- |
+| Czerwone kwoty i alarm przy debecie | `text-danger` przy kwocie, ikona ostrzeżenia, „Uwaga!” | straszy i ocenia (AC4)                      | `Amount`: minus i znacznik „Debet”           | K3, W4     |
+| Krzykliwy fintech                   | neony, gradienty, duże animacje liczb                  | produkt jest „księgowy”, nie rozrywkowy     | neutralna baza, szmaragd tylko dla akcji     | AC1, R01.2 |
+| Grywalizacja                        | odznaki, konfetti, maskotki, „seria dni”               | budżet to nie gra                           | rzeczowy pusty stan z jednym krokiem         | AC2        |
+| Surowy arkusz                       | tabela wszędzie, wszystkie liczby tej samej wagi       | brak hierarchii                             | karty i listy; kwota główna `text-amount-lg` | AC3        |
+| Małe kontrolki z presetu bazowego   | `h-7`, tekst 12 px w polach                            | wydatek zapisuje się w sklepie na telefonie | `h-control` (40 px), tekst pól 16 px         | K1, W1     |
+| Rozmycie tła dialogu                | `backdrop-blur`                                        | efekt dla efektu                            | `bg-surface-scrim` bez rozmycia              | K5         |
+
+## 2. Generyczny wygląd AI
+
+| Czego unikać                          | Jak rozpoznać w kodzie                                    | Dlaczego                                         | Zamiast                                      |
+| ------------------------------------- | --------------------------------------------------------- | ------------------------------------------------ | -------------------------------------------- |
+| Gradienty w tle, tekście, przyciskach | `bg-gradient-*`, `bg-linear-*`, `bg-clip-text`            | nie mają tokenów; AC1                            | jednolite `bg-surface-*`, `bg-action-*`      |
+| Szkło i rozmycie                      | `backdrop-blur`, półprzezroczyste karty                   | czytelność, kontrast zależy od tła               | `bg-surface-card` z obramowaniem             |
+| Poświata                              | kolorowe `shadow-*`, `drop-shadow` z kolorem              | dekoracja bez znaczenia                          | `shadow-card`, `shadow-overlay`              |
+| Emoji zamiast ikon                    | emoji w JSX lub tekstach                                  | różne w systemach, czytane przez czytnik         | ikony lucide z `aria-hidden` i tekstem obok  |
+| Iskierki jako symbol AI               | `Sparkles` z lucide                                       | w MVP nie ma AI; obietnica bez pokrycia          | nic                                          |
+| Trzy identyczne karty z ikoną         | siatka `grid-cols-3` z ikoną, tytułem, opisem             | szablon bez treści                               | lista albo tekst                             |
+| Wszystko w pigułkach                  | `rounded-full` na znacznikach i przyciskach               | K6                                               | `rounded-control`; pigułka tylko w awatarze  |
+| Karta w karcie                        | `Card` wewnątrz `Card`                                    | podwójne obramowanie, mniej miejsca na telefonie | jedna karta, sekcje z odstępem `gap-group`   |
+| Cień jako jedyne oddzielenie treści   | `shadow-*` bez `border`                                   | znika w ciemnym motywie i przy słabym ekranie    | obramowanie + `shadow-card`                  |
+| Wszystko wyśrodkowane                 | `text-center`, `items-center` na treści i pustych stanach | trudniej czytać, „landing page”                  | wyrównanie do lewej; środek tylko w miesiącu |
+
+Źródło listy: polecenie budowy design systemu; K4–K6, AC1.
+
+## 3. Błędy implementacji
+
+| Czego unikać                           | Jak rozpoznać w kodzie                                                         | Dlaczego                             | Zamiast                                          | Źródło              |
+| -------------------------------------- | ------------------------------------------------------------------------------ | ------------------------------------ | ------------------------------------------------ | ------------------- |
+| Wartość spoza tokenów                  | `#hex`, `oklch()`, `p-[13px]`, `text-red-500`, `dark:` – `vp run check:tokens` | rozjeżdża się z motywami i systemem  | klasa tokenu (`p-panel`, `text-danger`)          | ADR 0012            |
+| Wariant dodany przy okazji             | nowy klucz w `variants` bez strony i decyzji                                   | system rośnie bez potrzeby           | „Jak zmieniać system”                            | polecenie budowy    |
+| `div` zamiast przycisku                | `<div onClick>`, `role="button"`                                               | brak klawiatury i nazwy              | `Button`                                         | WCAG 2.1.1, 4.1.2   |
+| Placeholder zamiast etykiety           | `<Input placeholder="Kwota">` bez `FormField`                                  | znika przy pisaniu, słaby kontrast   | `FormField label` + `hint`                       | WCAG 3.3.2          |
+| Status tylko kolorem                   | kolor jako jedyna różnica                                                      | niewidoczny dla części osób          | tekst lub znacznik                               | WCAG 1.4.1, K3      |
+| Zablokowany przycisk bez wyjaśnienia   | `disabled` bez tekstu obok                                                     | osoba nie wie, co zrobić             | wyjaśnienie pod przyciskiem (`aria-describedby`) | E2-Q1               |
+| Toast z błędem, który wymaga działania | `showToast` przy błędzie                                                       | znika, zanim się go przeczyta        | błąd pola, alert, stan błędu                     | toast, E2-P13       |
+| Podpowiedź z informacją niezbędną      | `Tooltip` z formatem kwoty lub powodem blokady                                 | niedostępna na dotyku i z klawiatury | `hint` pola albo tekst obok                      | podpowiedź          |
+| Reguła domenowa w komponencie          | liczenie salda, blokada przydziału w React                                     | rozjedzie się z bazą i aplikacją iOS | RPC; interfejs tylko pokazuje wynik              | AGENTS.md, ADR 0003 |
+| Liczby zmiennoprzecinkowe dla kwot     | `parseFloat`, `* 100`, `toFixed`                                               | błędy zaokrągleń                     | grosze; `parsePLN`, `formatPLN`                  | AGENTS.md, ADR 0004 |
+| Pobieranie danych w `useEffect`        | `useEffect(() => fetch…)`                                                      | wyścigi, brak cache                  | TanStack Query                                   | AGENTS.md           |
+| Sukces przed odpowiedzią serwera       | toast lub przejście przed `await`                                              | dane mogły się nie zapisać           | `useFormSubmit` (`onSuccess` po potwierdzeniu)   | polecenie budowy    |

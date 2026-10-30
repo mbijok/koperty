@@ -1,0 +1,151 @@
+import { ArgTypes, Canvas, Meta, Unstyled } from "@storybook/addon-docs/blocks";
+import { Card, CardContent, CardHeader, CardTitle } from "@koperty/ui/primitives/card";
+import { DoDont } from "../blocks/frames";
+import * as Stories from "../../src/primitives/card.stories";
+
+<Meta of={Stories} name="Dokumentacja" />
+
+# Karta
+
+`import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@koperty/ui/primitives/card";`
+
+## 1. Do czego służy
+
+Grupuje informacje i akcje jednego obiektu (pula, koperta, logowanie), żeby dało się je objąć wzrokiem jako całość.
+
+## 2. Kiedy używać
+
+| Sytuacja w produkcie                          | Rozmiar   | Źródło       |
+| --------------------------------------------- | --------- | ------------ |
+| Pula „Do rozdysponowania” na widoku kopert    | `default` | US-21        |
+| Koperta na widoku kopert: nazwa, saldo, akcje | `compact` | US-21, US-16 |
+| Ekran logowania                               | `default` | S-01         |
+
+## 3. Kiedy nie używać
+
+| Sytuacja                                     | Zamiast                                                          | Źródło                                 |
+| -------------------------------------------- | ---------------------------------------------------------------- | -------------------------------------- |
+| Długa lista operacji                         | lista operacji                                                   | R01.3                                  |
+| Karta w karcie                               | separatory i odstęp `space-between-groups` wewnątrz jednej karty | polecenie budowy, Fundamenty / Kształt |
+| Komunikat o stanie (błąd, brak sieci)        | alert (partia 2)                                                 | –                                      |
+| Trzy identyczne karty z ikoną jako dekoracja | treść bez kart                                                   | polecenie budowy („Czego unikać”)      |
+
+## 4. Anatomia
+
+| Część                    | Opcjonalna | Uwagi                                                                              |
+| ------------------------ | ---------- | ---------------------------------------------------------------------------------- |
+| Kontener                 | nie        | `border-subtle`, `shadow-card`, `rounded-card`, wnętrze `space-panel` (W5, K4, P4) |
+| Nagłówek (`CardHeader`)  | tak        | tytuł, opis i miejsce na akcję (`action`)                                          |
+| Tytuł (`CardTitle`)      | tak        | nagłówek `h3`, `text-section`; inny poziom przez `asChild`                         |
+| Opis (`CardDescription`) | tak        | `text-body text-muted`                                                             |
+| Treść (`CardContent`)    | tak        | odstęp `space-group`                                                               |
+| Stopka (`CardFooter`)    | tak        | przyciski, zawijają się na wąskim ekranie                                          |
+
+## 5. Warianty
+
+<Canvas of={Stories.Kompaktowa} />
+
+| Rozmiar                   | Kiedy wybrać                         |
+| ------------------------- | ------------------------------------ |
+| `default` (wnętrze 16 px) | pojedyncza karta z treścią i akcjami |
+| `compact` (wnętrze 12 px) | wiele kart jedna pod drugą (koperty) |
+
+## 6. Stany
+
+| Stan                                  | Dotyczy?                                                                                                                                      |
+| ------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| Domyślny                              | tak – jedyny stan karty                                                                                                                       |
+| Najechanie, fokus, wciśnięty, wybrany | nie: karta nie jest klikalna; akcje są przyciskami wewnątrz (karta-przycisk utrudnia czytnikom ekranu odczytanie treści) – propozycja (E2-P7) |
+| Ładowanie, błąd, pusto                | należą do komponentów produktu (karta koperty)                                                                                                |
+
+## 7. Zachowanie i dostępność
+
+| Zasada                                                                                                           | Źródło            |
+| ---------------------------------------------------------------------------------------------------------------- | ----------------- |
+| Tytuł jest nagłówkiem w strukturze strony; poziom dobierasz przez `asChild` (sprawdza test w „Poziom nagłówka”). | WCAG 1.3.1, 2.4.6 |
+| Kolejność fokusu: akcja w nagłówku, potem akcje w stopce – w kolejności kodu.                                    | WCAG 2.4.3        |
+| Karta nie ma roli ani fokusu; nie jest celem kliknięcia.                                                         | E2-P7             |
+
+<Canvas of={Stories.PoziomNaglowka} />
+
+## 8. Treść
+
+| Zasada                                                    | Przykład                         | Źródło             |
+| --------------------------------------------------------- | -------------------------------- | ------------------ |
+| Tytuł to nazwa obiektu, bez czasownika                    | „Jedzenie”, „Do rozdysponowania” | propozycja (E2-P2) |
+| Kwota główna w `text-amount-lg`, bez koloru znaczeniowego | „179,50 zł”                      | P3, W4             |
+| Długa nazwa się zawija; akcja zostaje po prawej           | –                                | WCAG 1.4.10        |
+
+<Canvas of={Stories.DlugaTresc} />
+
+## 9. Responsywność
+
+| Szerokość     | Zachowanie                                                |
+| ------------- | --------------------------------------------------------- |
+| 320 px        | pełna szerokość treści; przyciski w stopce się zawijają   |
+| 768 i 1440 px | szerokość `max-w-content` (640 px), karty jedna pod drugą |
+
+## 10. API
+
+<ArgTypes of={Stories} />
+
+| Komponent                                      | Propsy                                            |
+| ---------------------------------------------- | ------------------------------------------------- |
+| `Card`                                         | `size?: "default" \| "compact"`, atrybuty `<div>` |
+| `CardHeader`                                   | `action?: ReactNode`, atrybuty `<div>`            |
+| `CardTitle`                                    | `asChild?: boolean`, atrybuty `<h3>`              |
+| `CardDescription`, `CardContent`, `CardFooter` | atrybuty elementu                                 |
+
+## 11. Kod
+
+Minimalny:
+
+```tsx
+<Card>
+  <CardHeader>
+    <CardTitle>Do rozdysponowania</CardTitle>
+  </CardHeader>
+  <CardContent>
+    <p className="text-amount-lg">4 200,00 zł</p>
+  </CardContent>
+</Card>
+```
+
+Typowy w produkcie (koperta na widoku kopert, US-21):
+
+<Canvas of={Stories.ZAkcjaIStopka} />
+
+## 12. Dobrze i źle
+
+<Unstyled>
+  <DoDont
+    good={{
+      node: (
+        <Card className="w-full">
+          <CardHeader>
+            <CardTitle>Jedzenie</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-amount-lg">179,50 zł</p>
+          </CardContent>
+        </Card>
+      ),
+      note: "jedna karta, jeden obiekt.",
+    }}
+    bad={{
+      node: (
+        <Card className="w-full">
+          <Card size="compact">
+            <CardTitle>Jedzenie</CardTitle>
+          </Card>
+        </Card>
+      ),
+      note: "karta w karcie podwaja obramowania i cienie bez nowej informacji.",
+    }}
+  />
+</Unstyled>
+
+## 13. Powiązane
+
+- Mylona z: **alertem** (komunikat), **listą z separatorami** (wiele wierszy).
+- Występuje we wzorcach: widok kopert i puli, logowanie, widok szczegółów.

@@ -1,0 +1,148 @@
+import { ArgTypes, Canvas, Meta, Unstyled } from "@storybook/addon-docs/blocks";
+import { FormField } from "@koperty/ui/primitives/field";
+import { Input } from "@koperty/ui/primitives/input";
+import { DoDont } from "../blocks/frames";
+import * as Stories from "../../src/primitives/input.stories";
+
+<Meta of={Stories} name="Dokumentacja" />
+
+# Pole tekstowe
+
+`import { Input } from "@koperty/ui/primitives/input";` – zawsze wewnątrz `FormField` (strona „Pole formularza”).
+
+## 1. Do czego służy
+
+Pozwala wpisać krótką wartość: e-mail, kod, nazwę, opis, kwotę, datę.
+
+## 2. Kiedy używać
+
+| Sytuacja w produkcie                      | Ustawienia                                                                                                                        | Źródło                  |
+| ----------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | ----------------------- |
+| Adres e-mail przy logowaniu               | `type="email"`, `autoComplete="email"`                                                                                            | US-01                   |
+| Kod z wiadomości                          | `inputMode="numeric"`, `autoComplete="one-time-code"`, `maxLength={6}`                                                            | S-01 (AC-1)             |
+| Nazwa budżetu, koperty, nazwa wyświetlana | `type="text"`; limit długości z reguł bazy (np. 50 znaków nazwy)                                                                  | US-04, US-11, AC-9 S-01 |
+| Opis wydatku lub przychodu                | `type="text"`, pole opcjonalne                                                                                                    | US-17                   |
+| Data operacji                             | `type="date"` (natywny wybór daty, domyślnie dziś); format wyświetlania wynika z języka przeglądarki, wartość zawsze `RRRR-MM-DD` | US-17, DS-S06           |
+| Kwota                                     | `inputMode="decimal"`; docelowo komponent produktu „Pole kwoty”                                                                   | US-14, US-17            |
+
+## 3. Kiedy nie używać
+
+| Zamiast                                            | Użyj                                                     | Źródło                       |
+| -------------------------------------------------- | -------------------------------------------------------- | ---------------------------- |
+| Wybór z istniejących kopert                        | Select                                                   | US-17                        |
+| Włączenie ustawienia                               | Przełącznik                                              | WAI-ARIA (switch)            |
+| Długi tekst wielowierszowy                         | nie ma takiego pola w produkcie (strona „Czego brakuje”) | PRD 4.6                      |
+| Pole bez widocznej etykiety, z samym placeholderem | `FormField` z etykietą                                   | WCAG 3.3.2, polecenie budowy |
+
+## 4. Anatomia
+
+| Część                      | Opcjonalna | Uwagi                                                             |
+| -------------------------- | ---------- | ----------------------------------------------------------------- |
+| Granica pola               | nie        | `border-control`, 3,36 : 1 (K2)                                   |
+| Wpisana wartość            | –          | `text-input` 16 px (K1)                                           |
+| Placeholder                | tak        | tylko przykład wartości, w kolorze `text-muted`; nigdy nazwa pola |
+| Etykieta, podpowiedź, błąd | –          | dostarcza `FormField`                                             |
+
+## 5. Warianty
+
+Pole ma jeden wygląd; różni się typem i atrybutami klawiatury.
+
+<Canvas of={Stories.Typy} />
+
+## 6. Stany
+
+<Canvas of={Stories.Stany} />
+
+| Stan                          | Wygląd                                                   | Źródło             |
+| ----------------------------- | -------------------------------------------------------- | ------------------ |
+| Domyślny, z wartością         | tło `surface-card`, granica `border-control`             | K2                 |
+| Najechanie                    | bez zmiany (zmiana tła sugerowałaby przycisk)            | propozycja (E2-P4) |
+| Fokus                         | linia `focus-ring`                                       | W2                 |
+| Błąd                          | `border-invalid`, `aria-invalid`, tekst błędu pod polem  | WCAG 1.4.1, 3.3.1  |
+| Zablokowane                   | przezroczystość 50%; wyjaśnienie w podpowiedzi pola      | E2-Q1              |
+| Tylko do odczytu              | tło `surface-muted`, wartość można zaznaczyć i skopiować | propozycja (E2-P4) |
+| Ładowanie, wybrany, wciśnięty | nie dotyczy                                              | –                  |
+
+## 7. Zachowanie i dostępność
+
+| Zasada                                                                           | Źródło            |
+| -------------------------------------------------------------------------------- | ----------------- |
+| Pole ma etykietę powiązaną `for`/`id` (robi to `FormField`).                     | WCAG 1.3.1, 4.1.2 |
+| Błąd i podpowiedź są powiązane przez `aria-describedby`, błąd ma `aria-invalid`. | standardy 4.5     |
+| Właściwa klawiatura na telefonie: `inputMode`, `type`, `autoComplete`.           | WCAG 1.3.5        |
+| Tekst 16 px: iOS Safari nie powiększa strony przy fokusie.                       | K1                |
+| Cel dotyku: 40 px wysokości.                                                     | WCAG 2.5.8, W1    |
+
+## 8. Treść
+
+| Zasada                                                             | Przykład                                     | Źródło           |
+| ------------------------------------------------------------------ | -------------------------------------------- | ---------------- |
+| Placeholder to przykład, zaczyna się od „np.” albo pokazuje format | „np. Biedronka, zakupy na weekend”, „6 cyfr” | polecenie budowy |
+| Długa wartość przewija się w polu, nie rozpycha układu             | –                                            | WCAG 1.4.10      |
+| Kwoty i daty wpisuje się w formacie `pl-PL`                        | „120,50”, data z natywnego wyboru            | DS-S06           |
+
+<Canvas of={Stories.DlugaTresc} />
+
+## 9. Responsywność
+
+| Szerokość     | Zachowanie                                                                                             |
+| ------------- | ------------------------------------------------------------------------------------------------------ |
+| 320 px        | pole na pełną szerokość treści                                                                         |
+| 768 i 1440 px | pole na pełną szerokość formularza (`max-w-content`, 640 px), krótkie pola (kod, data) mogą być węższe |
+
+## 10. API
+
+<ArgTypes of={Stories} />
+
+Wszystkie atrybuty `<input>`; komponent dodaje tylko wygląd. Stan błędu ustawia `aria-invalid` (przekazuje go `FormField`).
+
+## 11. Kod
+
+Minimalny:
+
+```tsx
+<FormField label="Nazwa koperty">{(control) => <Input {...control} />}</FormField>
+```
+
+Typowy w produkcie (logowanie, S-01):
+
+```tsx
+<FormField label="Kod z wiadomości" hint="6 cyfr z e-maila od Koperty" error={codeError}>
+  {(control) => (
+    <Input
+      {...control}
+      inputMode="numeric"
+      autoComplete="one-time-code"
+      maxLength={6}
+      value={code}
+      onChange={onCodeChange}
+    />
+  )}
+</FormField>
+```
+
+## 12. Dobrze i źle
+
+<Unstyled>
+  <DoDont
+    good={{
+      node: (
+        <div className="w-full">
+          <FormField label="Opis" optional>
+            {(control) => <Input {...control} placeholder="np. Biedronka" />}
+          </FormField>
+        </div>
+      ),
+      note: "etykieta widoczna, placeholder jest przykładem.",
+    }}
+    bad={{
+      node: <Input aria-label="Opis" placeholder="Opis" />,
+      note: "placeholder zamiast etykiety znika po wpisaniu tekstu.",
+    }}
+  />
+</Unstyled>
+
+## 13. Powiązane
+
+- Mylone z: **selectem** (wybór z listy), **polem kwoty** (komponent produktu, etap 3).
+- Występuje we wzorcach: formularz, logowanie kodem w dwóch krokach.

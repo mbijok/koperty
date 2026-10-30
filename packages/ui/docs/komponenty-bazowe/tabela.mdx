@@ -1,0 +1,134 @@
+import { Canvas, Meta } from "@storybook/addon-docs/blocks";
+import * as Stories from "../../src/primitives/table.stories";
+
+<Meta of={Stories} name="Dokumentacja" />
+
+# Tabela
+
+`import { Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@koperty/ui/primitives/table";`
+
+## 1. Do czego służy
+
+Pozwala porównać te same liczby dla wielu kopert w kolumnach, np. salda na początek i koniec miesiąca.
+
+## 2. Kiedy używać
+
+| Sytuacja w produkcie                                                                             | Źródło |
+| ------------------------------------------------------------------------------------------------ | ------ |
+| Podsumowanie miesiąca: saldo na początek, przydział, wydatki, saldo na koniec dla każdej koperty | US-22  |
+
+## 3. Kiedy nie używać
+
+| Sytuacja                                                            | Zamiast                                                            | Źródło                     |
+| ------------------------------------------------------------------- | ------------------------------------------------------------------ | -------------------------- |
+| Lista operacji (różne pola, akcje w wierszu, czytanie na telefonie) | lista z wierszami operacji                                         | US-20, propozycja (E2-P11) |
+| Koperty z saldami na widoku głównym                                 | karty kopert                                                       | US-21                      |
+| Układ strony (kolumny formularza)                                   | układ CSS (`flex`, `grid`)                                         | WCAG 1.3.1                 |
+| Arkusz bez hierarchii                                               | tabela z nagłówkami, sumą w stopce i kwotami wyrównanymi do prawej | AC3                        |
+
+## 4. Anatomia
+
+| Część                                             | Opcjonalna | Uwagi                                                                         |
+| ------------------------------------------------- | ---------- | ----------------------------------------------------------------------------- |
+| Region przewijania                                | nie        | `<section>` z nazwą (`label`) i fokusem, przewija się w bok na wąskim ekranie |
+| Podpis (`TableCaption`)                           | tak        | czego dotyczy tabela i za jaki okres                                          |
+| Nagłówek (`TableHeader`, `TableHead scope="col"`) | nie        | tło `surface-muted`, `text-label`, 40 px                                      |
+| Nagłówek wiersza (`TableHead scope="row"`)        | tak        | nazwa koperty                                                                 |
+| Komórki (`TableCell`)                             | nie        | kwoty z `numeric` – do prawej, bez zawijania                                  |
+| Stopka (`TableFooter`)                            | tak        | suma, `text-label`, tło `surface-muted`                                       |
+
+## 5. Warianty
+
+Jeden wariant. Kolumny kwot oznaczasz `numeric` (P3, propozycja z etapu 1: kwoty do prawej).
+
+<Canvas of={Stories.DuzoDanych} />
+
+## 6. Stany
+
+| Stan                       | Zachowanie                                                                     | Źródło         |
+| -------------------------- | ------------------------------------------------------------------------------ | -------------- |
+| Dane                       | wiersze kopert używanych w miesiącu                                            | US-22          |
+| Ładowanie                  | ten sam układ kolumn ze szkieletami; kontener `aria-busy` i ukryty tekst stanu | P6, WCAG 4.1.3 |
+| Debet w kolumnie           | kwota ze znakiem minus i znacznikiem „Debet”                                   | K3             |
+| Pusto, błąd                | stan pusty i stan błędu (partia 4) zamiast tabeli                              | –              |
+| Najechanie, fokus, wybrany | wiersze nie są interaktywne; fokus dostaje tylko region przewijania            | WCAG 2.1.1     |
+
+<Canvas of={Stories.Ladowanie} />
+
+## 7. Zachowanie i dostępność
+
+| Zasada                                                                                                                            | Źródło         |
+| --------------------------------------------------------------------------------------------------------------------------------- | -------------- |
+| Prawdziwy `<table>` z `<th scope="col">` i `<th scope="row">`; czytnik ogłasza nagłówki przy każdej komórce (sprawdza test).      | WCAG 1.3.1     |
+| Region przewijania ma nazwę i przyjmuje fokus, więc da się go przewinąć strzałkami (wymaganie axe `scrollable-region-focusable`). | WCAG 2.1.1     |
+| Podpis tabeli w `<caption>`.                                                                                                      | WCAG 1.3.1     |
+| Debet ma znacznik ze słowem, nie kolor.                                                                                           | WCAG 1.4.1, K3 |
+
+## 8. Treść
+
+| Zasada                                                                                                     | Przykład                               | Źródło      |
+| ---------------------------------------------------------------------------------------------------------- | -------------------------------------- | ----------- |
+| Nagłówki kolumn: rzeczowniki, bez skrótów                                                                  | „Saldo na początek”, nie „Sald. pocz.” | E2-P2       |
+| Kwoty w formacie `pl-PL`, zawsze z „zł”, wyrównane do prawej; cyfry tabelaryczne Oxanium wyrównują kolumny | „1 250,00 zł”                          | DS-S06, W3  |
+| Długa nazwa koperty zawija się w pierwszej kolumnie                                                        | –                                      | WCAG 1.4.10 |
+
+## 9. Responsywność
+
+| Szerokość | Zachowanie                                                          |
+| --------- | ------------------------------------------------------------------- |
+| 320 px    | tabela przewija się w bok w swoim regionie; strona się nie przewija |
+| 768 px    | mieści się w większości przypadków                                  |
+| 1440 px   | szerokość `max-w-content-wide` (960 px)                             |
+
+<Canvas of={Stories.WaskiEkran} />
+
+## 10. API
+
+| Komponent                                                             | Propsy                                                        |
+| --------------------------------------------------------------------- | ------------------------------------------------------------- |
+| `Table`                                                               | `label: string` (wymagany, nazwa regionu), atrybuty `<table>` |
+| `TableHead`                                                           | `numeric?: boolean`, `scope`, atrybuty `<th>`                 |
+| `TableCell`                                                           | `numeric?: boolean`, atrybuty `<td>`                          |
+| `TableCaption`, `TableHeader`, `TableBody`, `TableFooter`, `TableRow` | atrybuty elementu                                             |
+
+## 11. Kod
+
+Minimalny:
+
+```tsx
+<Table label="Podsumowanie miesiąca">
+  <TableHeader>
+    <TableRow>
+      <TableHead scope="col">Koperta</TableHead>
+      <TableHead scope="col" numeric>
+        Saldo na koniec
+      </TableHead>
+    </TableRow>
+  </TableHeader>
+  <TableBody>
+    <TableRow>
+      <TableHead scope="row">Jedzenie</TableHead>
+      <TableCell numeric>179,50 zł</TableCell>
+    </TableRow>
+  </TableBody>
+</Table>
+```
+
+Typowy w produkcie (podsumowanie miesiąca, US-22):
+
+<Canvas of={Stories.Playground} />
+
+## 12. Dobrze i źle
+
+| Dobrze                                           | Źle                                                                          |
+| ------------------------------------------------ | ---------------------------------------------------------------------------- |
+| Kwoty wyrównane do prawej z „zł”, suma w stopce. | Kwoty wyrównane do lewej, bez waluty: trudno porównać rzędy wielkości (AC3). |
+| Tabela przewija się w swoim regionie na 320 px.  | Cała strona przewija się w bok (WCAG 1.4.10).                                |
+| „−30,00 zł” ze znacznikiem „Debet”.              | Ujemna kwota tylko na czerwono (AC4).                                        |
+
+Różnice dotyczą układu wielu wierszy; poprawny wygląd pokazują stories „Playground”, „Dużo danych” i „Wąski ekran”.
+
+## 13. Powiązane
+
+- Mylona z: **listą operacji** (wiersze z akcjami), **kartami kopert** (widok główny).
+- Występuje we wzorcach: podsumowanie miesiąca.

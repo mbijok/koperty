@@ -35,3 +35,7 @@ Uruchamiaj `vp dlx shadcn@latest init -t vite -b radix -p nova --no-monorepo --n
 - Specyfikacja: docs/prompts/00-bootstrap.md (faza 0)
 - Log przebiegu: .ai/runs/2026-10-19-project-bootstrap.md
 - Commit: etap 5 fazy 0
+
+## Aktualizacja 2026-10-29 (ADR 0012)
+
+Komponenty bazowe są w pakiecie `packages/ui` (`components.json` tam, styl `radix-mira`). Dodajesz je komendą `vp -C packages/ui dlx shadcn@latest add <komponent>`, import `cn` zamieniasz na `import { cn } from "@koperty/ui/lib/utils";` (tailwind-merge rozszerzony o tokeny), a komponenty są dostosowywane ręcznie do tokenów i mają stories z testami (wykluczenie z pokrycia dotyczy już tylko `apps/web/src/components/ui/**`).

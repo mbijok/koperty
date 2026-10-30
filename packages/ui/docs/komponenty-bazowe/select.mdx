@@ -1,0 +1,175 @@
+import { ArgTypes, Canvas, Meta, Unstyled } from "@storybook/addon-docs/blocks";
+import { FormField } from "@koperty/ui/primitives/field";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@koperty/ui/primitives/select";
+import { DoDont } from "../blocks/frames";
+import * as Stories from "../../src/primitives/select.stories";
+
+<Meta of={Stories} name="Dokumentacja" />
+
+# Select
+
+`import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@koperty/ui/primitives/select";`
+
+## 1. Do czego służy
+
+Pozwala wybrać jedną wartość z krótkiej, znanej listy bez wpisywania, np. kopertę wydatku.
+
+## 2. Kiedy używać
+
+| Sytuacja w produkcie                                       | Źródło                                                               |
+| ---------------------------------------------------------- | -------------------------------------------------------------------- |
+| Koperta wydatku (jedna koperta)                            | US-17                                                                |
+| Koperta w każdej części podziału wydatku                   | US-18                                                                |
+| Wybór budżetu na ekranie ustawień, jeśli lista jest krótka | US-05 (propozycja; przełącznik budżetu w nagłówku to menu, partia 2) |
+
+## 3. Kiedy nie używać
+
+| Sytuacja                                               | Zamiast                                                      | Źródło             |
+| ------------------------------------------------------ | ------------------------------------------------------------ | ------------------ |
+| Więcej niż około 15 pozycji albo potrzeba wyszukiwania | pole z wyszukiwaniem (brak w planie, strona „Czego brakuje”) | propozycja (E2-P6) |
+| Dwie wartości: tak/nie                                 | Przełącznik                                                  | WAI-ARIA (switch)  |
+| Akcje (edytuj, usuń)                                   | menu (partia 2)                                              | WAI-ARIA (menu)    |
+| Wartość wpisywana (kwota, nazwa)                       | Pole tekstowe                                                | –                  |
+
+## 4. Anatomia
+
+| Część                                   | Opcjonalna | Uwagi                                                   |
+| --------------------------------------- | ---------- | ------------------------------------------------------- |
+| Przycisk otwierający (`SelectTrigger`)  | nie        | wygląd pola tekstowego, 40 px, strzałka 16 px           |
+| Wartość lub placeholder (`SelectValue`) | nie        | placeholder: „Wybierz kopertę” w `text-muted`           |
+| Lista (`SelectContent`)                 | nie        | nakładka `surface-overlay`, `shadow-overlay`, w portalu |
+| Pozycja (`SelectItem`)                  | nie        | 40 px, znacznik wyboru na końcu                         |
+| Przyciski przewijania                   | tak        | pojawiają się, gdy lista się nie mieści                 |
+
+## 5. Warianty
+
+Jeden wariant; rozmiar jak pole tekstowe (W1).
+
+## 6. Stany
+
+<Canvas of={Stories.Stany} />
+<Canvas of={Stories.Otwarty} />
+
+| Stan                 | Wygląd                                                                         | Źródło             |
+| -------------------- | ------------------------------------------------------------------------------ | ------------------ |
+| Bez wyboru           | placeholder `text-muted`                                                       | K2                 |
+| Wybrana wartość      | `text-default`, w liście znacznik wyboru                                       | –                  |
+| Najechanie           | tło `surface-muted`                                                            | propozycja (E2-P4) |
+| Fokus                | linia `focus-ring` na przycisku; w liście podświetlenie pozycji i linia fokusu | W2, WCAG 2.4.7     |
+| Otwarty              | lista pod przyciskiem, z przenikaniem `duration-base`                          | P6                 |
+| Błąd                 | `border-invalid`, tekst błędu z `FormField`                                    | WCAG 1.4.1         |
+| Zablokowany          | przezroczystość 50%, powód w podpowiedzi                                       | E2-Q1              |
+| Ładowanie, wciśnięty | nie dotyczy: lista kopert jest już wczytana z ekranem                          | –                  |
+
+**Wyjątek dostępności (opisany):** story „Otwarty” wyłącza regułę axe `aria-hidden-focus`. Gdy lista jest otwarta, Radix ukrywa resztę strony (`aria-hidden`) i przenosi fokus do listy; statyczny zrzut nadal widzi fokusowalny przycisk pod `aria-hidden`, czego w działaniu nie ma. Test interakcji w Playground sprawdza, że fokus wraca na przycisk po wyborze.
+
+## 7. Zachowanie i dostępność
+
+| Zasada                                                                                                                                  | Źródło                          |
+| --------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------- |
+| Rola `combobox` (select-only) z listą `listbox`; Enter, Spacja i strzałki otwierają, strzałki przesuwają, Enter wybiera, Escape zamyka. | WAI-ARIA (select-only combobox) |
+| Po wyborze fokus wraca na przycisk (sprawdza test w Playground).                                                                        | WCAG 2.4.3                      |
+| Wpisanie liter przeskakuje do pozycji, np. „ch” → „Chemia”.                                                                             | WAI-ARIA                        |
+| Etykieta przez `FormField` (`id` trafia na przycisk).                                                                                   | WCAG 1.3.1                      |
+| Cel dotyku: przycisk i pozycje po 40 px.                                                                                                | WCAG 2.5.8, W1                  |
+
+## 8. Treść
+
+| Zasada                                                                   | Przykład                    | Źródło             |
+| ------------------------------------------------------------------------ | --------------------------- | ------------------ |
+| Placeholder: „Wybierz” i rzeczownik                                      | „Wybierz kopertę”           | propozycja (E2-P2) |
+| Pozycje w kolejności kopert ustawionej przez użytkownika                 | –                           | US-12              |
+| Długa nazwa w przycisku jest skracana wielokropkiem; w liście się zawija | „Remont łazienki i kuchni…” | WCAG 1.4.10        |
+
+<Canvas of={Stories.DlugaNazwa} />
+<Canvas of={Stories.DlugaLista} />
+
+## 9. Responsywność
+
+| Szerokość     | Zachowanie                                                                                    |
+| ------------- | --------------------------------------------------------------------------------------------- |
+| 320 px        | przycisk na pełną szerokość; lista co najmniej tak szeroka jak przycisk, mieści się w ekranie |
+| 768 i 1440 px | szerokość pola formularza (`max-w-content`)                                                   |
+
+## 10. API
+
+<ArgTypes of={Stories} />
+
+`Select` przyjmuje propsy `Select.Root` z Radix (`value`, `defaultValue`, `onValueChange`, `disabled`, `name`); `SelectTrigger` – `id`, `aria-invalid`; `SelectItem` – `value`, `disabled`.
+
+## 11. Kod
+
+Minimalny:
+
+```tsx
+<FormField label="Koperta">
+  {(control) => (
+    <Select value={envelopeId} onValueChange={setEnvelopeId}>
+      <SelectTrigger {...control}>
+        <SelectValue placeholder="Wybierz kopertę" />
+      </SelectTrigger>
+      <SelectContent>
+        {envelopes.map((envelope) => (
+          <SelectItem key={envelope.id} value={envelope.id}>
+            {envelope.name}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  )}
+</FormField>
+```
+
+Typowy w produkcie: ten sam kod w formularzu wydatku (US-17); zarchiwizowanych kopert nie ma na liście (US-13).
+
+## 12. Dobrze i źle
+
+<Unstyled>
+  <DoDont
+    good={{
+      node: (
+        <div className="w-full">
+          <FormField label="Koperta">
+            {(control) => (
+              <Select>
+                <SelectTrigger {...control}>
+                  <SelectValue placeholder="Wybierz kopertę" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="jedzenie">Jedzenie</SelectItem>
+                </SelectContent>
+              </Select>
+            )}
+          </FormField>
+        </div>
+      ),
+      note: "etykieta zostaje widoczna po wyborze.",
+    }}
+    bad={{
+      node: (
+        <Select>
+          <SelectTrigger aria-label="Koperta">
+            <SelectValue placeholder="Koperta" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="jedzenie">Jedzenie</SelectItem>
+          </SelectContent>
+        </Select>
+      ),
+      note: "nazwa pola w placeholderze znika po wyborze wartości.",
+    }}
+  />
+</Unstyled>
+
+Zarchiwizowanych kopert nie pokazuj na liście: wydatek do takiej koperty baza odrzuci (US-13).
+
+## 13. Powiązane
+
+- Mylony z: **menu** (lista akcji), **przełącznikiem** (dwie wartości), **polem z wyszukiwaniem** (brak w planie).
+- Występuje we wzorcach: formularz, podział wydatku.

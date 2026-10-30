@@ -1,0 +1,30 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Fundamenty/Motywy" />
+
+# Motywy
+
+Produkt ma jasny i ciemny motyw. Domyślnie obowiązuje ustawienie systemu, a użytkownik może je nadpisać przełącznikiem (T1).
+
+## Jak to działa
+
+| Mechanizm                   | Opis                                                                                                                                                  |
+| --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Tokeny                      | Każdy token koloru ma wartość dla obu motywów zapisaną funkcją CSS `light-dark()` w `src/tokens/tokens.css`. Komponent nie wie, w jakim motywie jest. |
+| Wybór motywu                | Właściwość `color-scheme` na elemencie `<html>`: bez klasy `light dark` (system), z klasą `.light` albo `.dark` – wymuszony motyw.                    |
+| Nakładki                    | Motyw jest ustawiany na `<html>`, więc dialogi, menu i podpowiedzi renderowane w portalu poza drzewem komponentu dostają ten sam motyw.               |
+| Storybook                   | Przełącznik „Motyw” w pasku narzędzi (Systemowy, Jasny, Ciemny) ustawia te same klasy na `<html>` podglądu.                                           |
+| Testy                       | Każda story jest testowana w obu motywach: projekty Vitest `ui` (jasny) i `ui-dark` (ciemny) w głównym `vite.config.ts`.                              |
+| Próbka w obu motywach naraz | Klasy `scheme-light` i `scheme-dark` ustawiają `color-scheme` na kontenerze; tak strona „Kolor” pokazuje oba motywy obok siebie.                      |
+
+## Zasady
+
+| Zasada                                                                                                                                                                                    | Źródło             |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------ |
+| Nie używaj wariantu `dark:` w komponentach. Motyw zmieniają tokeny, a `dark:` reaguje tylko na ustawienie systemu, nie na przełącznik w aplikacji. `vp run check:tokens` odrzuca `dark:`. | T1, ADR 0012       |
+| Każdy nowy token koloru ma wartość dla obu motywów i parę w tabeli kontrastu na stronie „Kolor”.                                                                                          | WCAG 1.4.3, 1.4.11 |
+| Cienie w ciemnym motywie są mocniejsze, ale karta zawsze ma też obramowanie.                                                                                                              | W5, K4             |
+
+## Zgodność przeglądarek
+
+`light-dark()` działa w Chrome i Edge od 123, Firefox od 120 i Safari od 17.5 (także iOS). W starszej przeglądarce kolory z tokenów nie zadziałają i strona pokaże domyślne kolory przeglądarki (czarny tekst na białym tle), więc pozostanie czytelna.

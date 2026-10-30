@@ -1,0 +1,46 @@
+import { Meta, Unstyled } from "@storybook/addon-docs/blocks";
+import { CircleAlert, Pencil, Plus, Trash2 } from "lucide-react";
+import { Button } from "@koperty/ui/primitives/button";
+
+<Meta title="Fundamenty/Ikony" />
+
+# Ikony
+
+Biblioteka: [lucide](https://lucide.dev) (`lucide-react`), jak w R01. Ikony importujesz pojedynczo: `import { Plus } from "lucide-react"`.
+
+<Unstyled>
+  <div className="flex flex-wrap items-center gap-between-groups">
+    <Button>
+      <Plus aria-hidden="true" />
+      Dodaj wydatek
+    </Button>
+    <Button variant="secondary">
+      <Pencil aria-hidden="true" />
+      Zmień nazwę
+    </Button>
+    <Button variant="ghost" size="icon" aria-label="Usuń wydatek">
+      <Trash2 aria-hidden="true" />
+    </Button>
+    <span className="flex items-center gap-inline text-danger">
+      <CircleAlert aria-hidden="true" className="size-icon" />
+      Podaj kwotę większą od zera
+    </span>
+  </div>
+</Unstyled>
+
+## Rozmiary
+
+| Token                          | Klasa                  | Gdzie                                                          | Źródło  |
+| ------------------------------ | ---------------------- | -------------------------------------------------------------- | ------- |
+| `icon-size` (16 px)            | `size-icon`            | w przycisku, polu, menu, komunikacie (przycisk ustawia go sam) | R01, W1 |
+| `icon-size-standalone` (20 px) | `size-icon-standalone` | ikona bez tekstu, np. w pustym stanie                          | R01, W1 |
+
+## Kiedy ikona potrzebuje podpisu
+
+| Sytuacja                                    | Zasada                                                                                                                                                       | Źródło                    |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------- |
+| Ikona obok tekstu                           | ikona jest dekoracją: `aria-hidden="true"`                                                                                                                   | WCAG 1.1.1                |
+| Przycisk z samą ikoną                       | `aria-label` z czasownikiem i obiektem („Usuń wydatek”) oraz podpowiedź z tym samym tekstem; cel kliknięcia co najmniej 24 × 24 px (`size-control` ma 40 px) | WCAG 4.1.2, 2.5.8         |
+| Ikona niesie znaczenie (błąd, ostrzeżenie)  | zawsze z tekstem obok; sama ikona i kolor nie wystarczą                                                                                                      | WCAG 1.4.1                |
+| Akcja główna ekranu                         | zawsze z tekstem, nie sama ikona                                                                                                                             | propozycja (C1: precyzja) |
+| Emoji zamiast ikon, iskierki jako symbol AI | nie używamy                                                                                                                                                  | AC1, polecenie budowy     |

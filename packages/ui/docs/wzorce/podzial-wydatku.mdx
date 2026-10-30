@@ -1,0 +1,184 @@
+import { Canvas, Meta } from "@storybook/addon-docs/blocks";
+import * as Stories from "../../src/views/expenses/expense-form.stories";
+
+<Meta of={Stories} name="Dokumentacja" />
+
+# Podział wydatku
+
+`import { ExpenseForm } from "@koperty/ui/views/expenses/expense-form";`
+
+## 1. Do czego służy
+
+Zapisuje wydatek szybko na telefonie: kwota, koperta, data i opcjonalny opis. Jeden paragon można podzielić na kilka kopert.
+
+## 2. Kiedy używać
+
+| Sytuacja w produkcie          | Źródło       |
+| ----------------------------- | ------------ |
+| Nowy wydatek (osobna strona)  | US-17, E3-Q4 |
+| Wydatek z podziałem           | US-18        |
+| Edycja wydatku, także cudzego | US-19        |
+
+## 3. Kiedy nie używać
+
+| Sytuacja                | Zamiast              | Źródło |
+| ----------------------- | -------------------- | ------ |
+| Przychód                | formularz przychodu  | US-14  |
+| Przesunięcie do koperty | formularz przydziału | US-16  |
+
+## 4. Anatomia
+
+| Część                             | Opcjonalna | Uwagi                                                          |
+| --------------------------------- | ---------- | -------------------------------------------------------------- |
+| Kwota                             | nie        | pierwsza, z fokusem przy otwarciu ekranu (`focusAmountOnOpen`) |
+| Koperta                           | nie        | select aktywnych kopert; znika przy podziale                   |
+| „Podziel wydatek na kilka kopert” | nie        | przełącznik; włączony pokazuje edytor podziału                 |
+| Edytor podziału                   | tak        | części, „Do podziału”, „Podziel po równo”                      |
+| Data                              | nie        | domyślnie dziś (`Europe/Warsaw`)                               |
+| Opis                              | tak        | „opcjonalne”                                                   |
+
+## 5. Warianty
+
+Nowy wydatek i edycja (`initial`, `submitLabel="Zapisz zmiany"`, „Anuluj”). Edycja wydatku z kilkoma częściami otwiera się z włączonym podziałem.
+
+## 6. Stany
+
+| Stan                        | Story                         | Zachowanie                                                        | Źródło                 |
+| --------------------------- | ----------------------------- | ----------------------------------------------------------------- | ---------------------- |
+| Jedna koperta               | `Playground`                  | fokus na kwocie, data dzisiejsza, jedna część z całą kwotą        | US-17, E3-Q4           |
+| Podział na dwie koperty     | `PodzialNaDwieKoperty`        | wybrana koperta staje się pierwszą częścią                        | US-18                  |
+| Suma części się nie zgadza  | `SumaCzesciSieNieZgadza`      | komunikat i „Do podziału: 0,01 zł”, nic nie wysłane               | US-18                  |
+| Błędy części                | `BledyCzesci`                 | błąd przy każdej części, fokus na pierwszym błędzie               | US-18, WCAG 3.3.1      |
+| Błędy bez podziału          | `BledyPrzyWyslaniu`           | kwota, koperta, data                                              | US-17                  |
+| Edycja podziału             | `EdycjaPodzialu`              | „Podziel po równo”, wyłączenie podziału zostawia pierwszą kopertę | US-19, US-18           |
+| Edycja jednej koperty       | `EdycjaJednejKoperty`         | zmiana daty                                                       | US-19                  |
+| Wyłączenie pustego podziału | `WylaczeniePodzialu`          | wraca „Wybierz kopertę”                                           | –                      |
+| Koperta zarchiwizowana      | `KopertaZarchiwizowana`       | `ENVELOPE_ARCHIVED` przy kopercie, fokus na niej                  | US-13, kontrakt błędów |
+| Podział odrzucony           | `PodzialOdrzuconyPrzezSerwer` | `SPLITS_INVALID` nad przyciskami                                  | US-18, kontrakt błędów |
+| Błąd serwera                | `BladSerwera`                 | dane zostają                                                      | wzorzec Formularz      |
+
+<Canvas of={Stories.SumaCzesciSieNieZgadza} />
+
+## 7. Zachowanie i dostępność
+
+| Zasada                                                                                             | Źródło             |
+| -------------------------------------------------------------------------------------------------- | ------------------ |
+| Suma części musi równać się kwocie; formularz podpowiada resztę, decyduje baza.                    | PRD 4.6, AGENTS.md |
+| „Po równo”: niepodzielna reszta groszy w pierwszej części (100,00 zł / 3 → 33,34 + 33,33 + 33,33). | US-18, PRD 4.6     |
+| Koperta użyta w innej części jest zablokowana w liście, więc nie powtórzy się.                     | US-18              |
+| Części to grupy z nazwą „Część N”; błąd sumy ogłaszany od razu (`role="alert"`).                   | WCAG 1.3.1, 4.1.3  |
+| Fokus na kwocie tylko przy otwarciu ekranu, nie w dokumentacji z wieloma przykładami.              | E3-Q4              |
+| Tylko aktywne koperty na liście.                                                                   | US-13              |
+
+### Edycja wydatku z częścią na zarchiwizowanej kopercie
+
+`update_expense` pozwala zostawić istniejącą część na kopercie zarchiwizowanej po zapisaniu wydatku (do nowych części tylko aktywne koperty, `docs/architecture.md`), ale `ExpenseForm` dostaje listę `envelopes` i select nie pokaże koperty spoza niej. Sposób prezentacji czeka na decyzję – strona „Czego brakuje”.
+
+## 8. Treść
+
+| Zasada                        | Przykład                                                         | Źródło              |
+| ----------------------------- | ---------------------------------------------------------------- | ------------------- |
+| Przełącznik z przykładem      | „Np. jeden paragon za jedzenie i chemię.”                        | E3-Q4               |
+| Błąd sumy mówi, czego brakuje | „Części muszą dać razem kwotę wydatku.” + „Do podziału: 0,01 zł” | propozycja (E3-P12) |
+| Błąd części                   | „Podaj kwotę części większą od zera.”                            | US-18               |
+
+## 9. Responsywność
+
+Na telefonie pola części stoją jedno pod drugim; od 768 px koperta i kwota części w jednym rzędzie.
+
+<Canvas of={Stories.WaskiEkran} />
+
+## 10. API
+
+| Prop                                   | Typ                                                   | Opis                               |
+| -------------------------------------- | ----------------------------------------------------- | ---------------------------------- |
+| `envelopes`                            | `{ id: string; name: string }[]`                      | aktywne koperty                    |
+| `initial`                              | `{ amount?, date?, description?, parts? }`            | edycja                             |
+| `submit`                               | `(values: ExpenseValues) => Promise<SubmitResult<…>>` | `parts` zawsze co najmniej jedna   |
+| `onSuccess`, `onCancel`, `submitLabel` | –                                                     | jak w formularzu                   |
+| `focusAmountOnOpen`                    | `boolean` (domyślnie `false`)                         | fokus na kwocie po otwarciu ekranu |
+| `createPartId`                         | `() => string`                                        | identyfikatory części (testy)      |
+
+Błędy części mają klucze `<id części>.envelope` i `<id części>.amount`.
+
+## 11. Kod
+
+```tsx
+<ExpenseForm
+  envelopes={envelopes.data ?? []}
+  focusAmountOnOpen
+  submit={async ({ amount, date, description, parts }) => {
+    const { error } = await supabase.rpc("create_expense", {
+      p_budget_id: budgetId,
+      p_amount: amount,
+      p_occurred_on: date,
+      p_description: description,
+      p_splits: parts.map((part) => ({ envelope_id: part.envelopeId, amount: part.amount })),
+    });
+    if (!error) return { ok: true };
+    if (error.message === "ENVELOPE_ARCHIVED")
+      return {
+        ok: false,
+        fieldErrors: { envelope: "Ta koperta została zarchiwizowana. Wybierz inną." },
+      };
+    throw error;
+  }}
+  onSuccess={() => navigate({ to: "/" })}
+/>
+```
+
+Edycja (US-19): dane z API zamień na `initial` – identyfikatory kopert i kwoty jako tekst (`formatAmountInput`); formularz wyświetl dopiero z danymi:
+
+```tsx
+import { formatAmountInput } from "@koperty/ui/lib/money";
+import type { ExpenseFormProps } from "@koperty/ui/views/expenses/expense-form";
+
+const expense = useQuery(expenseQuery(expenseId)); // null przy PT404
+if (expense.isPending) return <EditExpenseSkeleton />; // szkielet pól, wzorzec Formularz
+if (!expense.data) return <ExpenseDetails onBack={() => navigate({ to: "/operations" })} />;
+
+const initial: ExpenseFormProps["initial"] = {
+  amount: formatAmountInput(expense.data.amount),
+  date: expense.data.occurred_on,
+  description: expense.data.description ?? "",
+  parts: expense.data.splits.map((split) => ({
+    envelopeId: split.envelope_id,
+    amount: formatAmountInput(split.amount),
+  })),
+};
+
+<ExpenseForm
+  envelopes={envelopes.data ?? []}
+  initial={initial}
+  submitLabel="Zapisz zmiany"
+  submit={async ({ amount, date, description, parts }) => {
+    const { error } = await supabase.rpc("update_expense", {
+      p_expense_id: expenseId,
+      p_amount: amount,
+      p_occurred_on: date,
+      p_description: description,
+      p_splits: parts.map((part) => ({ envelope_id: part.envelopeId, amount: part.amount })),
+    });
+    if (error) throw error;
+    return { ok: true };
+  }}
+  onSuccess={() => navigate({ to: "/expenses/$id", params: { id: expenseId } })}
+  onCancel={() => navigate({ to: "/expenses/$id", params: { id: expenseId } })}
+/>;
+```
+
+Ekran: Ekrany → Wydatki, „Edycja wydatku”.
+
+<Canvas of={Stories.Playground} />
+
+## 12. Dobrze i źle
+
+| Dobrze                                       | Źle                                          |
+| -------------------------------------------- | -------------------------------------------- |
+| Kwota na górze, reszta w kolejności decyzji. | Opis jako pierwsze pole.                     |
+| „Do podziału: 0,01 zł” przy błędzie sumy.    | „Niepoprawny podział” bez wskazania różnicy. |
+
+## 13. Powiązane
+
+- Komponenty: edytor podziału, pole kwoty, select, przełącznik.
+- Wzorce: formularz, widok szczegółów, kwota ujemna i debet.

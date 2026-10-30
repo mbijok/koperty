@@ -1,0 +1,11 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+import { CATALOG } from "../blocks/catalog-data";
+import { ComponentCatalog } from "../blocks/catalog";
+
+<Meta title="Design system/Komponenty" />
+
+# Komponenty
+
+Katalog wszystkiego, co eksportuje pakiet `@koperty/ui`. Małe komponenty mają działający podgląd; duże (formularze, listy, powłoka) są pokazane jako prawdziwy komponent bez interakcji, przycięty do karty – pełne stany są na ich stronach.
+
+<ComponentCatalog entries={CATALOG} />

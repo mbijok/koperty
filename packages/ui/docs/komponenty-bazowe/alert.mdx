@@ -1,0 +1,154 @@
+import { ArgTypes, Canvas, Meta, Unstyled } from "@storybook/addon-docs/blocks";
+import { Alert, AlertDescription, AlertTitle } from "@koperty/ui/primitives/alert";
+import { DoDont } from "../blocks/frames";
+import * as Stories from "../../src/primitives/alert.stories";
+
+<Meta of={Stories} name="Dokumentacja" />
+
+# Alert
+
+`import { Alert, AlertDescription, AlertTitle } from "@koperty/ui/primitives/alert";`
+
+## 1. Do czego służy
+
+Mówi o stanie całego ekranu lub formularza i o tym, co zrobić dalej, w miejscu, gdzie użytkownik patrzy.
+
+## 2. Kiedy używać
+
+| Sytuacja w produkcie                                                                      | Wariant   | Źródło            |
+| ----------------------------------------------------------------------------------------- | --------- | ----------------- |
+| Powód wejścia na logowanie (wygasły link, wygasła sesja); akcją jest formularz pod spodem | `default` | S-01 AC-3b, AC-6b |
+| Brak połączenia z internetem                                                              | `default` | US-23             |
+| Ujemna pula „Do rozdysponowania” z podpowiedzią, co zrobić                                | `default` | US-16, AC4        |
+| Jedyny właściciel próbuje opuścić budżet                                                  | `danger`  | US-10             |
+| Błąd serwera po wysłaniu formularza (nad formularzem)                                     | `danger`  | WCAG 3.3.1        |
+
+## 3. Kiedy nie używać
+
+| Sytuacja                                               | Zamiast                            | Źródło     |
+| ------------------------------------------------------ | ---------------------------------- | ---------- |
+| Błąd jednego pola                                      | błąd w `FormField`                 | WCAG 3.3.1 |
+| Potwierdzenie, które nie wymaga działania („Zapisano”) | toast (partia 4)                   | E2-Q4      |
+| Decyzja przed operacją nieodwracalną                   | dialog potwierdzenia               | US-06      |
+| Ujemna pula jako czerwony alarm                        | wariant `default` i rzeczowy tekst | AC4        |
+
+## 4. Anatomia
+
+| Część                     | Opcjonalna | Uwagi                                                                                    |
+| ------------------------- | ---------- | ---------------------------------------------------------------------------------------- |
+| Kontener                  | nie        | `rounded-card`, obramowanie (`border-subtle` lub `border-invalid` dla błędu), bez cienia |
+| Ikona                     | nie        | `Info` (`text-muted`) albo `CircleAlert` (`text-danger`), 16 px, dekoracyjna             |
+| Tytuł (`AlertTitle`)      | nie        | co się stało, `text-label`                                                               |
+| Opis (`AlertDescription`) | tak        | co zrobić, `text-body text-muted`, do 65 znaków w linii                                  |
+| Akcja (`action`)          | tak        | przycisk `secondary` `sm` albo akcja tekstowa                                            |
+
+## 5. Warianty
+
+| Wariant   | Kiedy wybrać                                          | Rola                           |
+| --------- | ----------------------------------------------------- | ------------------------------ |
+| `default` | informacja o stanie, także ujemna pula i brak sieci   | `status` (ogłaszany grzecznie) |
+| `danger`  | błąd, który blokuje dalszą pracę lub wymaga działania | `alert` (ogłaszany od razu)    |
+
+<Canvas of={Stories.Stany} />
+
+## 6. Stany
+
+| Stan                                                          | Dotyczy?                                                        |
+| ------------------------------------------------------------- | --------------------------------------------------------------- |
+| Domyślny                                                      | tak; alert pojawia się i znika razem ze stanem, którego dotyczy |
+| Najechanie, fokus, wciśnięty, zablokowany, ładowanie, wybrany | nie: alert nie jest kontrolką; stany ma jego przycisk akcji     |
+| Błąd                                                          | wariant `danger`                                                |
+
+<Canvas of={Stories.BladZAkcja} />
+
+## 7. Zachowanie i dostępność
+
+| Zasada                                                                                                               | Źródło        |
+| -------------------------------------------------------------------------------------------------------------------- | ------------- |
+| `danger` ma `role="alert"` (czytnik ogłasza od razu), `default` – `role="status"` (grzecznie); sprawdzają testy.     | WCAG 4.1.3    |
+| Znaczenie niesie tytuł i ikona, a obramowanie błędu jest dodatkiem.                                                  | WCAG 1.4.1    |
+| Alert nie przejmuje fokusu; po nieudanym wysłaniu formularza fokus idzie do pierwszego pola z błędem, nie do alertu. | standardy 4.5 |
+| Alert nie znika sam po czasie.                                                                                       | WCAG 2.2.1    |
+
+## 8. Treść
+
+| Część | Zasada                                  | Przykład                                 | Źródło                   |
+| ----- | --------------------------------------- | ---------------------------------------- | ------------------------ |
+| Tytuł | co się stało, jedno zdanie bez kropki   | „Link wygasł lub został już użyty”       | polecenie budowy (Treść) |
+| Opis  | co zrobić, w trybie rozkazującym        | „Sprawdź połączenie i spróbuj ponownie.” | WCAG 3.3.3               |
+| Akcja | czasownik i obiekt                      | „Spróbuj ponownie”                       | E2-P2                    |
+| Ton   | rzeczowo, bez straszenia i wykrzykników | „Pula jest ujemna: −200,00 zł”           | AC4                      |
+
+<Canvas of={Stories.DlugaTresc} />
+
+## 9. Responsywność
+
+| Szerokość     | Zachowanie                                                          |
+| ------------- | ------------------------------------------------------------------- |
+| 320 px        | akcja przechodzi pod tekst                                          |
+| 768 i 1440 px | akcja na końcu wiersza; alert w szerokości treści (`max-w-content`) |
+
+## 10. API
+
+<ArgTypes of={Stories} />
+
+| Prop       | Typ                     | Domyślnie   | Opis                              |
+| ---------- | ----------------------- | ----------- | --------------------------------- |
+| `variant`  | `"default" \| "danger"` | `"default"` | rodzaj i rola komunikatu          |
+| `action`   | `ReactNode`             | –           | przyciski na końcu alertu         |
+| `children` | `ReactNode`             | –           | `AlertTitle` i `AlertDescription` |
+
+## 11. Kod
+
+Minimalny:
+
+```tsx
+<Alert>
+  <AlertTitle>Brak połączenia z internetem</AlertTitle>
+</Alert>
+```
+
+Typowy w produkcie (błąd wczytania puli, podsumowanie puli):
+
+```tsx
+<Alert
+  variant="danger"
+  action={
+    <Button variant="secondary" size="sm" onClick={() => pool.refetch()}>
+      Spróbuj ponownie
+    </Button>
+  }
+>
+  <AlertTitle>Nie udało się wczytać puli</AlertTitle>
+  <AlertDescription>Sprawdź połączenie i spróbuj ponownie.</AlertDescription>
+</Alert>
+```
+
+## 12. Dobrze i źle
+
+<Unstyled>
+  <DoDont
+    good={{
+      node: (
+        <Alert>
+          <AlertTitle>Pula jest ujemna: −200,00 zł</AlertTitle>
+          <AlertDescription>Dodaj przychód albo zmniejsz przydział.</AlertDescription>
+        </Alert>
+      ),
+      note: "mówi, co się stało i co zrobić.",
+    }}
+    bad={{
+      node: (
+        <Alert variant="danger">
+          <AlertTitle>Uwaga! Błąd!</AlertTitle>
+        </Alert>
+      ),
+      note: "straszy i nie mówi, co zrobić.",
+    }}
+  />
+</Unstyled>
+
+## 13. Powiązane
+
+- Mylony z: **toastem** (potwierdzenie bez działania), **błędem pola** (jedno pole), **dialogiem potwierdzenia** (decyzja).
+- Występuje we wzorcach: formularz (błąd serwera, brak sieci), logowanie kodem, kwota ujemna.

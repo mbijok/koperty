@@ -1,0 +1,25 @@
+import { Canvas, Meta } from "@storybook/addon-docs/blocks";
+import * as Stories from "./overview-screens.stories";
+
+<Meta of={Stories} name="Mapa stanów" />
+
+# Ekrany: Przegląd budżetu
+
+Podsumowanie wybranego miesiąca: saldo początkowe, przydział, wydatki i saldo końcowe każdej koperty oraz sumy miesiąca i pula (US-22). Ekran ma szeroką treść (P5).
+
+## Podsumowanie miesiąca (`/summary?month=…`)
+
+| Stan               | Story                              | Co widać                                         | Źródło       |
+| ------------------ | ---------------------------------- | ------------------------------------------------ | ------------ |
+| Bieżący miesiąc    | `Podsumowanie miesiąca`            | tabela kopert, sumy, debet w saldzie końcowym    | US-22        |
+| Przyszły miesiąc   | `Podsumowanie: przyszły miesiąc`   | same przydziały, saldo początkowe z poprzedniego | US-16, US-22 |
+| Miesiąc bez kopert | `Podsumowanie: miesiąc bez kopert` | pusty stan tabeli                                | US-22        |
+| Ładowanie          | `Podsumowanie: ładowanie`          | szkielety wierszy                                | E2-P12       |
+| Błąd               | `Podsumowanie: błąd`               | stan błędu z „Spróbuj ponownie”                  | WCAG 3.3.1   |
+
+<Canvas of={Stories.Podsumowanie} />
+
+## Użyte elementy
+
+- Komponenty: przełącznik miesiąca, tabela podsumowania miesiąca, powłoka aplikacji (`width="wide"`).
+- Wzorce: nawigacja po miesiącach, kwota ujemna i debet.

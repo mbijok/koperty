@@ -1,0 +1,112 @@
+import { Canvas, Meta } from "@storybook/addon-docs/blocks";
+import * as Stories from "../../src/product/overview/month-summary-table.stories";
+
+<Meta of={Stories} name="Dokumentacja" />
+
+# Tabela podsumowania miesiąca
+
+`import { MonthSummaryTable } from "@koperty/ui/product/overview/month-summary-table";`
+
+## 1. Do czego służy
+
+Pokazuje dla każdej koperty, z czym zaczęła miesiąc, ile dostała, ile wydano i ile zostało, oraz przychody i pulę.
+
+## 2. Kiedy używać
+
+| Sytuacja w produkcie                    | Źródło |
+| --------------------------------------- | ------ |
+| Ekran „Podsumowanie” wybranego miesiąca | US-22  |
+
+## 3. Kiedy nie używać
+
+| Sytuacja       | Zamiast        | Źródło |
+| -------------- | -------------- | ------ |
+| Bieżące salda  | lista kopert   | US-21  |
+| Lista operacji | lista operacji | US-20  |
+| Wykresy        | brak w MVP     | PRD 3  |
+
+## 4. Anatomia
+
+| Część          | Opcjonalna | Uwagi                                                                        |
+| -------------- | ---------- | ---------------------------------------------------------------------------- |
+| Sumy miesiąca  | tak        | „Przychody w miesiącu”, „Przydziały w miesiącu”, „Do rozdysponowania” (`dl`) |
+| Tabela         | nie        | `Table` z nazwą „Podsumowanie: Październik 2026”, kolumny kwot do prawej     |
+| Wiersze kopert | nie        | tylko koperty używane w miesiącu, nazwa jako nagłówek wiersza                |
+
+## 5. Warianty
+
+Jeden wariant. Kwoty wylicza baza (saldo początkowe + przydział − wydatki = saldo końcowe); komponent ich nie przelicza.
+
+## 6. Stany
+
+<Canvas of={Stories.Ladowanie} />
+<Canvas of={Stories.Pusto} />
+<Canvas of={Stories.Blad} />
+
+| Stan danych    | Zachowanie                                                    | Źródło             |
+| -------------- | ------------------------------------------------------------- | ------------------ |
+| Ładowanie      | szkielety wierszy w układzie tabeli                           | E2-P12             |
+| Pusto          | „Brak kopert używanych w tym miesiącu”                        | US-22              |
+| Błąd           | stan błędu z „Spróbuj ponownie”                               | WCAG 3.3.1         |
+| Częściowe dane | bez sum miesiąca, gdy nie przyszły (story „Bez sum miesiąca”) | propozycja (E3-P4) |
+| Dużo danych    | 12 kopert; tabela rośnie w dół                                | E2-P11             |
+| Debet          | saldo na początek lub koniec ze znakiem minus i „Debet”       | K3                 |
+
+<Canvas of={Stories.DuzoDanych} />
+
+## 7. Zachowanie i dostępność
+
+| Zasada                                                                                         | Źródło            |
+| ---------------------------------------------------------------------------------------------- | ----------------- |
+| Tabela z nagłówkami kolumn i wierszy, region przewijania z nazwą i fokusem (sprawdza test).    | WCAG 1.3.1, 2.1.1 |
+| Sumy jako lista definicji `dl`.                                                                | WCAG 1.3.1        |
+| Saldo przechodzi na kolejny miesiąc: saldo na koniec M = saldo na początek M+1 (wylicza baza). | US-22, PRD 4.5    |
+
+## 8. Treść
+
+| Zasada                      | Przykład                         | Źródło |
+| --------------------------- | -------------------------------- | ------ |
+| Nagłówki kolumn bez skrótów | „Saldo na początek”              | E2-P2  |
+| Tytuł z nazwą miesiąca      | „Podsumowanie: Październik 2026” | DS-S06 |
+
+## 9. Responsywność
+
+| Szerokość | Zachowanie                                                       |
+| --------- | ---------------------------------------------------------------- |
+| 320 px    | sumy jedna pod drugą; tabela przewija się w bok w swoim regionie |
+| 768 px    | sumy w trzech kolumnach                                          |
+| 1440 px   | szerokość `max-w-content-wide`                                   |
+
+<Canvas of={Stories.WaskiEkran} />
+
+## 10. API
+
+| Prop                          | Typ                                                                        | Opis                               |
+| ----------------------------- | -------------------------------------------------------------------------- | ---------------------------------- |
+| `month`                       | `string`                                                                   | `RRRR-MM`                          |
+| `rows`                        | `EnvelopeMonth[]` (`id`, `name`, `start`, `allocation`, `expenses`, `end`) | koperty używane w miesiącu, grosze |
+| `totals`                      | `{ incomes, allocations, pool }`                                           | sumy miesiąca, grosze              |
+| `loading`, `error`, `onRetry` | –                                                                          | stany wczytywania                  |
+
+## 11. Kod
+
+Typowy w produkcie (ekran Podsumowanie, US-22):
+
+```tsx
+<MonthSwitcher month={month} onMonthChange={setMonth} />
+<MonthSummaryTable month={month} rows={summary.data?.envelopes} totals={summary.data?.totals} loading={summary.isPending} />
+```
+
+<Canvas of={Stories.Playground} />
+
+## 12. Dobrze i źle
+
+| Dobrze                      | Źle                                                                  |
+| --------------------------- | -------------------------------------------------------------------- |
+| Kwoty wyliczone przez bazę. | Przeliczanie salda w komponencie React (reguła domenowa w kliencie). |
+| „−30,00 zł” z „Debet”.      | Ujemna kwota na czerwono.                                            |
+
+## 13. Powiązane
+
+- Mylona z: **tabelą** (komponent bazowy), **listą kopert**.
+- Występuje we wzorcach: nawigacja po miesiącach, kwota ujemna i debet.

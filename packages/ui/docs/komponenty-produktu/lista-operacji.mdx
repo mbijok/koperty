@@ -1,0 +1,120 @@
+import { Canvas, Meta } from "@storybook/addon-docs/blocks";
+import * as Stories from "../../src/product/expenses/operation-list.stories";
+
+<Meta of={Stories} name="Dokumentacja" />
+
+# Lista operacji
+
+`import { OperationList } from "@koperty/ui/product/expenses/operation-list";`
+
+## 1. Do czego służy
+
+Pokazuje przychody i wydatki wybranego miesiąca od najnowszych, pogrupowane dniami, żeby łatwo je sprawdzić i poprawić.
+
+## 2. Kiedy używać
+
+| Sytuacja w produkcie                       | Źródło |
+| ------------------------------------------ | ------ |
+| Ekran „Operacje” z przełącznikiem miesiąca | US-20  |
+
+## 3. Kiedy nie używać
+
+| Sytuacja                      | Zamiast             | Źródło        |
+| ----------------------------- | ------------------- | ------------- |
+| Porównanie kopert w miesiącu  | tabela podsumowania | US-22, E2-P11 |
+| Historia wielu miesięcy naraz | brak w MVP          | PRD 3         |
+
+## 4. Anatomia
+
+| Część                        | Opcjonalna | Uwagi                                                   |
+| ---------------------------- | ---------- | ------------------------------------------------------- |
+| Sekcja dnia                  | nie        | nagłówek `h3` „czwartek, 29 października”, lista `<ul>` |
+| Wiersz operacji              | nie        | `OperationRow`                                          |
+| Stan ładowania, pusty, błędu | –          | zamiast listy                                           |
+
+## 5. Warianty
+
+Jeden wariant. Kolejność operacji pochodzi z API (od najnowszych); lista tylko grupuje kolejne operacje z tą samą datą.
+
+## 6. Stany
+
+<Canvas of={Stories.PustyMiesiac} />
+<Canvas of={Stories.PustyBudzet} />
+<Canvas of={Stories.Ladowanie} />
+
+| Stan danych                     | Zachowanie                                                      | Źródło                          |
+| ------------------------------- | --------------------------------------------------------------- | ------------------------------- |
+| Ładowanie                       | szkielety wierszy, ukryty „Ładowanie operacji…”                 | E2-P12                          |
+| Pusto: brak operacji w miesiącu | „Brak operacji w wybranym miesiącu” z „Pokaż poprzedni miesiąc” | polecenie budowy (lista), Q5    |
+| Pusto: brak operacji w budżecie | „Brak operacji w tym budżecie” z „Dodaj wydatek”                | polecenie budowy (lista), US-21 |
+| Błąd                            | stan błędu z „Spróbuj ponownie”                                 | WCAG 3.3.1                      |
+| Częściowe dane                  | wiersz bez opisu, autor usunięty (wiersz operacji)              | US-03, US-17                    |
+| Dużo danych                     | 30 operacji, bez stronicowania w MVP                            | propozycja (E3-P3)              |
+
+<Canvas of={Stories.DuzoDanych} />
+
+## 7. Zachowanie i dostępność
+
+| Zasada                                                                                           | Źródło     |
+| ------------------------------------------------------------------------------------------------ | ---------- |
+| Każdy dzień to sekcja z nagłówkiem `h3`, wiersze w liście `<ul>` (sprawdza test kolejności dni). | WCAG 1.3.1 |
+| Akcje przekazują identyfikator operacji (sprawdza test).                                         | –          |
+| Stan ładowania ogłaszany ukrytym tekstem, kontener `aria-busy`.                                  | WCAG 4.1.3 |
+
+## 8. Treść
+
+| Zasada                                                          | Przykład                                       | Źródło             |
+| --------------------------------------------------------------- | ---------------------------------------------- | ------------------ |
+| Nagłówek dnia: dzień tygodnia, dzień i miesiąc                  | „czwartek, 29 października”                    | DS-S06             |
+| Pusty miesiąc: nazwa miesiąca w opisie (mianownik, bez odmiany) | „Listopad 2026: nikt jeszcze nic nie zapisał.” | propozycja (E3-P4) |
+
+## 9. Responsywność
+
+Jedna kolumna na każdej szerokości; na 320 px wiersze zawijają opis.
+
+<Canvas of={Stories.WaskiEkran} />
+
+## 10. API
+
+| Prop                          | Typ                          | Opis                             |
+| ----------------------------- | ---------------------------- | -------------------------------- |
+| `operations`                  | `Operation[]`                | operacje miesiąca od najnowszych |
+| `month`                       | `string`                     | `RRRR-MM`                        |
+| `budgetHasOperations`         | `boolean` (domyślnie `true`) | wybiera pusty stan               |
+| `loading`, `error`, `onRetry` | –                            | stany wczytywania                |
+| `onCreate`                    | `() => void`                 | akcja pustego budżetu            |
+| `onPreviousMonth`             | `() => void`                 | akcja pustego miesiąca           |
+| `onEdit`, `onDelete`          | `(id: string) => void`       | akcje wierszy                    |
+
+## 11. Kod
+
+Typowy w produkcie (ekran Operacje, US-20):
+
+```tsx
+<OperationList
+  month={month}
+  operations={operations.data}
+  budgetHasOperations={budget.data?.hasOperations}
+  loading={operations.isPending}
+  error={operations.isError ? "Nie udało się wczytać operacji" : undefined}
+  onRetry={() => operations.refetch()}
+  onPreviousMonth={() => navigate({ search: { month: addMonths(month, -1) } })}
+  onCreate={() => navigate({ to: "/expenses/new" })}
+  onEdit={openEdit}
+  onDelete={confirmDelete}
+/>
+```
+
+<Canvas of={Stories.Playground} />
+
+## 12. Dobrze i źle
+
+| Dobrze                                                                                      | Źle                                             |
+| ------------------------------------------------------------------------------------------- | ----------------------------------------------- |
+| Dwa różne puste stany: „brak w miesiącu” (zmień miesiąc) i „jeszcze nic tu nie ma” (dodaj). | Jeden komunikat „Brak danych” w obu sytuacjach. |
+| Dni jako nagłówki.                                                                          | Data powtórzona w każdym wierszu.               |
+
+## 13. Powiązane
+
+- Mylona z: **tabelą podsumowania miesiąca**.
+- Występuje we wzorcach: lista z filtrem miesiąca, nawigacja po miesiącach.

@@ -1,0 +1,49 @@
+import { Meta, Unstyled } from "@storybook/addon-docs/blocks";
+import { ColorRoles, ContrastTable } from "../blocks/foundations";
+import { colorRoles, contrastPairs } from "../blocks/foundations-data";
+
+<Meta title="Fundamenty/Kolor" />
+
+# Kolor
+
+Interfejs jest neutralny, a szmaragd oznacza akcję (R01.2). Kwoty nie mają koloru znaczeniowego, ani dodatnie, ani ujemne (W4). Kolory pochodzą wyłącznie z tokenów znaczeniowych w `src/tokens/tokens.css`; w komponentach używasz klas Tailwinda zbudowanych z tych tokenów.
+
+## Zasady
+
+| Zasada                                                                                                                                                                                                                    | Źródło                       |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------- |
+| Kolor nigdy nie jest jedynym nośnikiem znaczenia: błąd ma tekst i ikonę, debet ma znak minus i znacznik „Debet”.                                                                                                          | WCAG 1.4.1, K3               |
+| Szmaragd (`action-primary`, `text-link`, `focus-ring`) oznacza tylko akcję, link i fokus, nigdy status ani kwotę.                                                                                                         | R01.2, W4                    |
+| Czerwień (`action-danger`, `text-danger`) oznacza tylko błąd i usuwanie, nigdy debet.                                                                                                                                     | AC4, K3                      |
+| Tekst ma kontrast co najmniej 4,5 : 1, granice kontrolek i fokus co najmniej 3 : 1, w obu motywach.                                                                                                                       | WCAG 1.4.3, 1.4.11, W2       |
+| Komponenty używają tokenów znaczeniowych (`bg-surface-card`, `text-muted`), nigdy surowych (`--raw-*`) ani palety Tailwinda. Paleta Tailwinda jest wyłączona, a `vp run check:tokens` odrzuca kolory spoza pliku tokenów. | zasada 3 polecenia, ADR 0012 |
+| Brak gradientów, poświaty i neonów.                                                                                                                                                                                       | AC1                          |
+
+## Role
+
+Każda próbka renderuje prawdziwą zmienną CSS w obu motywach.
+
+<Unstyled>
+  <ColorRoles roles={colorRoles} />
+</Unstyled>
+
+## Klasy
+
+| Token                   | Klasa Tailwinda                                                            |
+| ----------------------- | -------------------------------------------------------------------------- |
+| `surface-*`, `action-*` | `bg-surface-card`, `bg-action-primary`, `hover:bg-action-primary-hover`    |
+| `text-*`                | `text-default`, `text-muted`, `text-link`, `text-danger`, `text-on-action` |
+| `border-*`              | `border-subtle`, `border-control`, `border-invalid`                        |
+| `focus-ring`            | globalny styl `:focus-visible` (nie trzeba dodawać klasy)                  |
+
+## Kontrast
+
+Tabela mierzy kontrast w przeglądarce z kolorów, które faktycznie wyliczyła, osobno dla jasnego i ciemnego motywu. Para poniżej progu dostaje ikonę ostrzeżenia i opis „poniżej progu”. Test w `docs/blocks/foundations.stories.tsx` kończy się błędem, jeśli którakolwiek para spadnie poniżej progu.
+
+<Unstyled>
+  <ContrastTable pairs={contrastPairs} />
+</Unstyled>
+
+**Pary poniżej progu:** brak. Pary z presetu R01, które nie spełniały progów (obramowanie pola 1,26 : 1, fokus 2,59 : 1, szary tekst na szarym tle 4,34 : 1, szmaragdowy link w ciemnym motywie 2,61 : 1), poprawiono w K2.
+
+`border-subtle` (separator) nie jest granicą kontrolki i nie musi mieć 3 : 1. Nie używaj go jako obramowania pola – do tego służy `border-control`.

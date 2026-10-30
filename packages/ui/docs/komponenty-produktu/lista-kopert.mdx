@@ -1,0 +1,115 @@
+import { Canvas, Meta } from "@storybook/addon-docs/blocks";
+import * as Stories from "../../src/product/envelopes/envelope-list.stories";
+
+<Meta of={Stories} name="Dokumentacja" />
+
+# Lista kopert
+
+`import { EnvelopeList } from "@koperty/ui/product/envelopes/envelope-list";`
+
+## 1. Do czego służy
+
+Pokazuje wszystkie aktywne koperty budżetu w kolejności ustalonej przez członków, razem ze stanami wczytywania.
+
+## 2. Kiedy używać
+
+| Sytuacja w produkcie               | Źródło       |
+| ---------------------------------- | ------------ |
+| Widok kopert po otwarciu aplikacji | US-21        |
+| Zmiana kolejności kopert           | US-12, E3-Q3 |
+| Archiwum kopert                    | US-13        |
+
+## 3. Kiedy nie używać
+
+| Sytuacja                         | Zamiast             | Źródło |
+| -------------------------------- | ------------------- | ------ |
+| Jedna koperta w innym kontekście | karta koperty       | –      |
+| Porównanie miesięcy              | tabela podsumowania | US-22  |
+
+## 4. Anatomia
+
+| Część                        | Opcjonalna | Uwagi                                   |
+| ---------------------------- | ---------- | --------------------------------------- |
+| Lista `<ul>`                 | nie        | karty z odstępem `space-between-groups` |
+| Karta koperty                | nie        | w trybie zwykłym albo kolejności        |
+| Stan ładowania, pusty, błędu | –          | zamiast listy                           |
+
+## 5. Warianty
+
+| Tryb      | Jak włączyć    |
+| --------- | -------------- |
+| Zwykły    | domyślnie      |
+| Kolejność | podaj `onMove` |
+
+## 6. Stany
+
+<Canvas of={Stories.Ladowanie} />
+<Canvas of={Stories.Pusto} />
+<Canvas of={Stories.Blad} />
+<Canvas of={Stories.DuzoKopert} />
+
+| Stan danych    | Zachowanie                                                          | Źródło             |
+| -------------- | ------------------------------------------------------------------- | ------------------ |
+| Ładowanie      | trzy szkielety kart, ukryty tekst „Ładowanie kopert…”, `aria-busy`  | E2-P12             |
+| Pusto          | „Nie masz jeszcze kopert” z „Dodaj kopertę”                         | US-21              |
+| Błąd           | stan błędu z „Spróbuj ponownie”                                     | WCAG 3.3.1         |
+| Częściowe dane | nie dotyczy: każda koperta ma nazwę i saldo (pola wymagane w bazie) | architektura       |
+| Dużo danych    | 15 kopert jedna pod drugą, bez stronicowania (gospodarstwo domowe)  | propozycja (E3-P3) |
+| Długie teksty  | nazwy się zawijają                                                  | WCAG 1.4.10        |
+
+## 7. Zachowanie i dostępność
+
+| Zasada                                                                                            | Źródło     |
+| ------------------------------------------------------------------------------------------------- | ---------- |
+| Lista semantyczna `<ul>`: czytnik ogłasza liczbę kopert.                                          | WCAG 1.3.1 |
+| Po przesunięciu koperty fokus zostaje na przycisku przesuniętej karty (sprawdza test kolejności). | WCAG 2.4.3 |
+| Akcje karty przekazują identyfikator koperty (sprawdza test).                                     | –          |
+
+## 8. Treść
+
+Teksty stanów jak w pustym stanie i stanie błędu; kolejność kopert zgodna z ustawieniem członków (US-12).
+
+## 9. Responsywność
+
+Jedna kolumna na każdej szerokości (320, 768, 1440 px), w `max-w-content`.
+
+<Canvas of={Stories.WaskiEkran} />
+
+## 10. API
+
+| Prop                                               | Typ                                                        | Opis                   |
+| -------------------------------------------------- | ---------------------------------------------------------- | ---------------------- |
+| `envelopes`                                        | `EnvelopeSummary[]` (`id`, `name`, `balance`, `archived?`) | koperty w kolejności   |
+| `loading`, `error`, `onRetry`                      | `boolean`, `string`, `() => void`                          | stany wczytywania      |
+| `onCreate`                                         | `() => void`                                               | akcja pustego stanu    |
+| `onMove`                                           | `(id, "up" \| "down") => void`                             | włącza tryb kolejności |
+| `onAllocate`, `onRename`, `onArchive`, `onRestore` | `(id: string) => void`                                     | akcje kart             |
+
+## 11. Kod
+
+Typowy w produkcie (widok kopert, US-21):
+
+```tsx
+<EnvelopeList
+  envelopes={envelopes.data}
+  loading={envelopes.isPending}
+  error={envelopes.isError ? "Nie udało się wczytać kopert" : undefined}
+  onRetry={() => envelopes.refetch()}
+  onCreate={openCreateEnvelope}
+  onAllocate={openAllocation}
+/>
+```
+
+<Canvas of={Stories.Playground} />
+
+## 12. Dobrze i źle
+
+| Dobrze                             | Źle                                                   |
+| ---------------------------------- | ----------------------------------------------------- |
+| Szkielety kart w miejscu listy.    | Pusty ekran albo „Brak kopert” w trakcie wczytywania. |
+| „Nie masz jeszcze kopert” z akcją. | Pusta lista bez wyjaśnienia.                          |
+
+## 13. Powiązane
+
+- Mylona z: **tabelą podsumowania**.
+- Występuje we wzorcach: widok kopert, pierwsze uruchomienie, zmiana kolejności.

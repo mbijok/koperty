@@ -1,0 +1,115 @@
+import { Canvas, Meta } from "@storybook/addon-docs/blocks";
+import * as Stories from "../../src/views/expenses/expense-details.stories";
+
+<Meta of={Stories} name="Dokumentacja" />
+
+# Widok szczegółów
+
+`import { ExpenseDetails } from "@koperty/ui/views/expenses/expense-details";`
+
+## 1. Do czego służy
+
+Pokazuje jeden obiekt (tu: wydatek) tak, że najważniejsza informacja i główna akcja są widoczne bez przewijania, a szczegóły leżą niżej.
+
+## 2. Kiedy używać
+
+| Sytuacja w produkcie                         | Źródło       |
+| -------------------------------------------- | ------------ |
+| Wydatek otwarty z listy operacji             | US-19, US-20 |
+| Wydatek otwarty z linku (np. po odświeżeniu) | US-19        |
+
+## 3. Kiedy nie używać
+
+| Sytuacja                            | Zamiast           | Źródło |
+| ----------------------------------- | ----------------- | ------ |
+| Szybka edycja kwoty w liście        | formularz wydatku | E3-Q4  |
+| Obiekt bez szczegółów poza wierszem | sam wiersz listy  | –      |
+
+## 4. Anatomia
+
+| Część                    | Opcjonalna | Uwagi                                                 |
+| ------------------------ | ---------- | ----------------------------------------------------- |
+| Nagłówek `h1`            | nie        | opis albo „Wydatek bez opisu”                         |
+| Kwota                    | nie        | `Amount` `size="lg"`                                  |
+| Data i autor             | nie        | `text-meta`                                           |
+| Akcje „Edytuj” i „Usuń…” | tak        | od razu pod kwotą; tylko te, które osoba może wykonać |
+| Podział na koperty       | nie        | lista `dl`; nagłówek „Koperta” przy jednej            |
+
+## 5. Warianty
+
+Jeden wariant. Przy jednej kopercie sekcja nazywa się „Koperta”, przy kilku „Podział na koperty”.
+
+## 6. Stany
+
+| Stan                           | Story                        | Zachowanie                                   | Źródło                                    |
+| ------------------------------ | ---------------------------- | -------------------------------------------- | ----------------------------------------- |
+| Pełne dane                     | `Playground`                 | kwota, akcje, podział                        | US-19                                     |
+| Częściowe dane                 | `BezOpisuJednaKoperta`       | „Wydatek bez opisu”, jedna koperta           | US-17                                     |
+| Ładowanie                      | `Ladowanie`                  | szkielety, ukryty „Ładowanie wydatku…”       | E2-P12                                    |
+| Nie istnieje albo brak dostępu | `NieIstniejeAlboBrakDostepu` | jeden komunikat dla obu i „Wróć do operacji” | polecenie budowy, kontrakt błędów (PT404) |
+| Błąd                           | `Blad`, `BladBezPonowienia`  | stan błędu z „Spróbuj ponownie”              | WCAG 3.3.1                                |
+| Bez uprawnień do akcji         | `TylkoUsuwanie`, `BezAkcji`  | ukryte akcje, których nie ma                 | polecenie budowy                          |
+
+<Canvas of={Stories.NieIstniejeAlboBrakDostepu} />
+
+## 7. Zachowanie i dostępność
+
+| Zasada                                                                                        | Źródło                 |
+| --------------------------------------------------------------------------------------------- | ---------------------- |
+| Kwota i główna akcja w pierwszym ekranie na 320 px (sprawdzane w `WaskiEkran`).               | polecenie budowy       |
+| „Nie istnieje” i „brak dostępu” mają ten sam komunikat, bo API też ich nie rozróżnia (PT404). | kontrakt błędów, PRD 6 |
+| Nagłówek `h1` z nazwą obiektu, sekcja podziału z `h2`.                                        | WCAG 1.3.1, 2.4.6      |
+| „Usuń wydatek…” z wielokropkiem: otwiera potwierdzenie.                                       | E2-P9                  |
+
+Na ekranie edycji (`/expenses/<id>/edit`) brak wydatku pokazujesz tym samym widokiem: `ExpenseDetails` bez `expense` pod `h1` ekranu „Edycja wydatku” (propozycja E5-P3).
+
+## 8. Treść
+
+| Zasada                                    | Przykład                                               | Źródło           |
+| ----------------------------------------- | ------------------------------------------------------ | ---------------- |
+| Brak obiektu: co się stało i dokąd wrócić | „Wydatek nie istnieje albo nie masz do niego dostępu.” | polecenie budowy |
+| Brak opisu nazwany wprost                 | „Wydatek bez opisu”                                    | wiersz operacji  |
+
+## 9. Responsywność
+
+Jedna kolumna; akcje zawijają się pod kwotą.
+
+<Canvas of={Stories.WaskiEkran} />
+
+## 10. API
+
+| Prop                          | Typ             | Opis                                               |
+| ----------------------------- | --------------- | -------------------------------------------------- |
+| `expense`                     | `ExpenseDetail` | brak po wczytaniu = nie istnieje albo brak dostępu |
+| `loading`, `error`, `onRetry` | –               | stany wczytywania                                  |
+| `onBack`                      | `() => void`    | powrót z pustego stanu                             |
+| `onEdit`, `onDelete`          | `() => void`    | akcje; pominięta = ukryta                          |
+
+## 11. Kod
+
+```tsx
+const expense = useQuery(expenseQuery(expenseId)); // null przy PT404
+<ExpenseDetails
+  expense={expense.data ?? undefined}
+  loading={expense.isPending}
+  error={expense.isError ? "Nie udało się wczytać wydatku" : undefined}
+  onRetry={() => expense.refetch()}
+  onBack={() => navigate({ to: "/operations" })}
+  onEdit={() => navigate({ to: "/expenses/$id/edit", params: { id: expenseId } })}
+  onDelete={() => setConfirmOpen(true)}
+/>;
+```
+
+<Canvas of={Stories.Playground} />
+
+## 12. Dobrze i źle
+
+| Dobrze                                            | Źle                                                    |
+| ------------------------------------------------- | ------------------------------------------------------ |
+| Kwota i „Edytuj” na górze.                        | Akcje na dole, pod długim podziałem.                   |
+| Jeden komunikat „nie istnieje albo brak dostępu”. | „Ten wydatek należy do innego budżetu” – zdradza dane. |
+
+## 13. Powiązane
+
+- Wzorce: potwierdzenie usunięcia, formularz.
+- Komponenty: kwota, stan błędu, szkielet ładowania.

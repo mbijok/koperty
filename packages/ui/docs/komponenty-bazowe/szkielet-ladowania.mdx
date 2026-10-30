@@ -1,0 +1,108 @@
+import { Canvas, Meta } from "@storybook/addon-docs/blocks";
+import * as Stories from "../../src/primitives/skeleton.stories";
+
+<Meta of={Stories} name="Dokumentacja" />
+
+# Szkielet ładowania
+
+`import { Skeleton } from "@koperty/ui/primitives/skeleton";`
+
+## 1. Do czego służy
+
+Pokazuje kształt treści, która się wczytuje, żeby ekran nie skakał i było wiadomo, co się pojawi.
+
+## 2. Kiedy używać
+
+| Sytuacja w produkcie                                   | Źródło                           |
+| ------------------------------------------------------ | -------------------------------- |
+| Pierwsze wczytanie widoku kopert i puli                | US-21                            |
+| Wczytanie listy operacji miesiąca                      | US-20                            |
+| Wczytanie podsumowania miesiąca                        | US-22                            |
+| Domyślny komponent ładowania tras (ekran przed danymi) | S-01 (`defaultPendingComponent`) |
+
+## 3. Kiedy nie używać
+
+| Sytuacja                                            | Zamiast                      | Źródło              |
+| --------------------------------------------------- | ---------------------------- | ------------------- |
+| Wysyłanie formularza, zapis                         | przycisk z `loading`         | E2-Q2               |
+| Krótka czynność w miejscu (sprawdzanie zaproszenia) | wskaźnik ładowania z tekstem | –                   |
+| Ponowne pobranie danych, które już są na ekranie    | zostaw dane; bez szkieletu   | propozycja (E2-P12) |
+
+## 4. Anatomia
+
+| Część                    | Opcjonalna | Uwagi                                                         |
+| ------------------------ | ---------- | ------------------------------------------------------------- |
+| Prostokąty szkieletu     | nie        | `surface-muted`, promień kontrolki, pulsowanie; `aria-hidden` |
+| Kontener z `aria-busy`   | nie        | element, który się wczytuje                                   |
+| Tekst stanu dla czytnika | nie        | `<output className="sr-only">Ładowanie kopert…</output>`      |
+
+## 5. Warianty
+
+Brak wariantów: kształt nadajesz klasami tokenów (`h-badge` dla linii tekstu, `h-control` dla kwoty głównej, `size-avatar rounded-full` dla awatara).
+
+<Canvas of={Stories.Stany} />
+
+## 6. Stany
+
+| Stan                                          | Zachowanie                                                                                 | Źródło              |
+| --------------------------------------------- | ------------------------------------------------------------------------------------------ | ------------------- |
+| Ładowanie                                     | pulsowanie; przy `prefers-reduced-motion` bez animacji                                     | P6, WCAG 2.3.3      |
+| Po wczytaniu                                  | szkielet zastępuje prawdziwa treść tego samego kształtu                                    | propozycja (E2-P12) |
+| Najechanie, fokus, zablokowany, błąd, wybrany | nie dotyczy: szkielet nie jest interaktywny; błąd wczytania pokazuje stan błędu (partia 4) | –                   |
+
+## 7. Zachowanie i dostępność
+
+| Zasada                                                                          | Źródło            |
+| ------------------------------------------------------------------------------- | ----------------- |
+| Szkielety mają `aria-hidden`; czytnik słyszy tylko tekst stanu (sprawdza test). | WCAG 1.1.1, 4.1.3 |
+| Kontener ma `aria-busy="true"` do końca wczytywania.                            | WAI-ARIA          |
+| Pulsowanie zatrzymuje się przy ograniczonym ruchu.                              | WCAG 2.3.3, P6    |
+
+## 8. Treść
+
+| Zasada                                                           | Przykład            | Źródło              |
+| ---------------------------------------------------------------- | ------------------- | ------------------- |
+| Tekst stanu: „Ładowanie” i co się wczytuje, z wielokropkiem      | „Ładowanie kopert…” | E2-P2               |
+| Liczba szkieletów zbliżona do spodziewanej (np. 3 karty), nie 20 | –                   | propozycja (E2-P12) |
+
+## 9. Responsywność
+
+| Szerokość     | Zachowanie                                             |
+| ------------- | ------------------------------------------------------ |
+| 320 px        | szkielety w układzie prawdziwej treści (jedna kolumna) |
+| 768 i 1440 px | jak prawdziwa treść w `max-w-content`                  |
+
+<Canvas of={Stories.WaskiEkran} />
+
+## 10. API
+
+| Prop        | Typ              | Opis                                       |
+| ----------- | ---------------- | ------------------------------------------ |
+| `className` | `string`         | wymiary z tokenów (`h-*`, `w-*`, `size-*`) |
+| pozostałe   | atrybuty `<div>` | –                                          |
+
+## 11. Kod
+
+Minimalny:
+
+```tsx
+<Skeleton className="h-badge w-content" />
+```
+
+Typowy w produkcie (widok kopert, US-21):
+
+<Canvas of={Stories.Playground} />
+
+## 12. Dobrze i źle
+
+| Dobrze                                         | Źle                                                                           |
+| ---------------------------------------------- | ----------------------------------------------------------------------------- |
+| Trzy szkielety kart kopert w miejscu listy.    | Kręcący się wskaźnik na środku pustego ekranu: ekran przeskoczy po wczytaniu. |
+| Ukryty tekst „Ładowanie kopert…” dla czytnika. | Same szkielety: czytnik nic nie ogłasza.                                      |
+
+Szkielet różni się od poprawnej treści tylko kształtem i czasem, więc pary są tabelą; wygląd pokazują stories.
+
+## 13. Powiązane
+
+- Mylony z: **wskaźnikiem ładowania** (czynność w toku), **pustym stanem** (brak danych).
+- Występuje we wzorcach: widok kopert, lista operacji, podsumowanie miesiąca.

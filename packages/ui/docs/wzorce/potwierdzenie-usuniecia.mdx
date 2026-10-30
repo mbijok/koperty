@@ -1,0 +1,115 @@
+import { Canvas, Meta } from "@storybook/addon-docs/blocks";
+import * as Stories from "../../src/patterns/confirm-delete-dialog.stories";
+
+<Meta of={Stories} name="Dokumentacja" />
+
+# Potwierdzenie usunięcia
+
+`import { ConfirmDeleteDialog } from "@koperty/ui/patterns/confirm-delete-dialog";`
+
+## 1. Do czego służy
+
+Pyta o usunięcie obiektu z jego nazwą, czeka na serwer i zamyka się dopiero po potwierdzeniu usunięcia. Rezygnacja jest łatwiejsza niż usunięcie.
+
+## 2. Kiedy używać
+
+| Sytuacja w produkcie                                  | Źródło              |
+| ----------------------------------------------------- | ------------------- |
+| Usunięcie przychodu, wydatku                          | US-15, US-19        |
+| Usunięcie budżetu, członka, unieważnienie zaproszenia | US-06, US-09, US-07 |
+
+## 3. Kiedy nie używać
+
+| Sytuacja                          | Zamiast                      | Źródło |
+| --------------------------------- | ---------------------------- | ------ |
+| Archiwizacja koperty (odwracalna) | akcja bez pytania + przywróć | US-13  |
+| Zapis zmian w formularzu          | formularz                    | –      |
+
+## 4. Anatomia
+
+| Część        | Opcjonalna | Uwagi                                                            |
+| ------------ | ---------- | ---------------------------------------------------------------- |
+| Pytanie      | nie        | z nazwą obiektu: „Usunąć wydatek „Biedronka” z 29 października?” |
+| Opis skutków | nie        | co się stanie z saldami i że nie da się cofnąć                   |
+| Błąd         | tak        | `Alert` w dialogu; dialog zostaje otwarty                        |
+| „Anuluj”     | nie        | fokus startowy                                                   |
+| Akcja        | nie        | `danger`, czasownik i obiekt, w trakcie „Usuwanie…”              |
+
+## 5. Warianty
+
+Jeden wariant; treść podaje ekran.
+
+## 6. Stany
+
+| Stan                | Story           | Zachowanie                                                          | Źródło                         |
+| ------------------- | --------------- | ------------------------------------------------------------------- | ------------------------------ |
+| Usunięcie           | `Playground`    | dialog zamyka się po odpowiedzi serwera                             | polecenie budowy               |
+| Rezygnacja          | `Rezygnacja`    | Escape albo „Anuluj”, fokus wraca na przycisk, nic nie znika        | polecenie budowy, WAI-ARIA APG |
+| Oczekiwanie         | `Oczekiwanie`   | „Usuwanie…”, `aria-busy`, „Anuluj” nieaktywne                       | polecenie budowy               |
+| Błąd serwera        | `BladSerwera`   | komunikat w dialogu; zamknięcie czyści komunikat                    | WCAG 3.3.1                     |
+| Brak sieci          | `BrakSieci`     | „Brak połączenia z internetem…”                                     | polecenie budowy               |
+| Otwarty przez ekran | `OtwartyOdRazu` | bez przycisku wyzwalającego; po zamknięciu fokus zostaje na stronie | WAI-ARIA APG                   |
+
+<Canvas of={Stories.Rezygnacja} />
+
+## 7. Zachowanie i dostępność
+
+| Zasada                                                                                   | Źródło                     |
+| ---------------------------------------------------------------------------------------- | -------------------------- |
+| Rola `alertdialog`, fokus startowy na „Anuluj” – bezpieczny wybór.                       | WAI-ARIA APG (alertdialog) |
+| Po zamknięciu fokus wraca na element, który otworzył dialog (zapamiętany przy otwarciu). | WAI-ARIA APG (dialog)      |
+| Usunięcie danych finansowych jest potwierdzane przed wysłaniem.                          | WCAG 3.3.4                 |
+| Dialog nie zamyka się przy błędzie; osoba widzi, że nic nie zostało usunięte.            | polecenie budowy           |
+
+## 8. Treść
+
+| Zasada                                 | Przykład                                        | Źródło           |
+| -------------------------------------- | ----------------------------------------------- | ---------------- |
+| Pytanie z nazwą obiektu                | „Usunąć wydatek „Biedronka” z 29 października?” | polecenie budowy |
+| Przycisk: czasownik i obiekt, nie „OK” | „Usuń wydatek”                                  | polecenie budowy |
+| Skutki prostym językiem                | „Kwota 120,50 zł wróci do koperty Jedzenie.”    | US-19            |
+
+## 9. Responsywność
+
+Na telefonie przyciski stoją jeden pod drugim, „Anuluj” na dole w zasięgu kciuka (dialog potwierdzenia).
+
+## 10. API
+
+| Prop                   | Typ                   | Opis                                |
+| ---------------------- | --------------------- | ----------------------------------- |
+| `open`, `onOpenChange` | –                     | sterowanie przez ekran              |
+| `title`                | `string`              | pytanie z nazwą obiektu             |
+| `description`          | `string`              | skutki                              |
+| `confirmLabel`         | `string`              | czasownik i obiekt                  |
+| `onConfirm`            | `() => Promise<void>` | usunięcie; wyjątek = błąd w dialogu |
+
+## 11. Kod
+
+```tsx
+const remove = useMutation({ mutationFn: () => deleteExpense(expense.id) });
+<ConfirmDeleteDialog
+  open={confirmOpen}
+  onOpenChange={setConfirmOpen}
+  title={`Usunąć wydatek „${expense.description}” z ${formatDate(expense.date)}?`}
+  description="Kwoty wrócą do kopert. Tej operacji nie można cofnąć."
+  confirmLabel="Usuń wydatek"
+  onConfirm={async () => {
+    await remove.mutateAsync();
+    showToast("Wydatek usunięty");
+  }}
+/>;
+```
+
+<Canvas of={Stories.Playground} />
+
+## 12. Dobrze i źle
+
+| Dobrze                                           | Źle                              |
+| ------------------------------------------------ | -------------------------------- |
+| „Usunąć wydatek „Biedronka”…?” i „Usuń wydatek”. | „Czy na pewno?” i „OK”.          |
+| Dialog otwarty do odpowiedzi serwera.            | Zamknięcie od razu i cichy błąd. |
+
+## 13. Powiązane
+
+- Komponenty bazowe: dialog potwierdzenia (`AlertDialog`), alert.
+- Wzorce: widok szczegółów, lista z filtrem miesiąca.

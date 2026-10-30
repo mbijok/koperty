@@ -1,0 +1,43 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+import { DocsLink } from "../blocks/catalog";
+
+<Meta title="Design system/Epik: Przychody i przydziały" />
+
+# Epik: Przychody i przydziały
+
+Przychody zwiększają pulę, przydziały przenoszą środki z puli do kopert w danym miesiącu (US-14–US-16).
+
+## Kroki przepływu
+
+1. Członek zapisuje przychód (kwota, data, opis); pula rośnie.
+2. Poprawia lub usuwa przychód (z potwierdzeniem).
+3. Przydziela środki kopercie na miesiąc, także przyszły; widzi pulę po zapisie, także ujemną.
+4. Zmniejszenie przydziału zwraca różnicę do puli; debet koperty pokrywa się zwiększeniem przydziału.
+
+## Ekrany i stories
+
+**Widoki wstępne:** ekrany tego epiku powstały przed specyfikacjami zadań z backlogu. Specyfikacja zadania może je zmienić; różnice trafiają na stronę „Czego brakuje”, a widok w pakiecie poprawia zadanie, które go podpina.
+
+Wszystkie stany na pełny ekran i co w każdym widać: <DocsLink id="ekrany-przychody-i-przydziały--mapa-stanów">Ekrany → Przychody i przydziały (mapa stanów)</DocsLink>.
+
+| Ekran     | Stories (stany)                                                            |
+| --------- | -------------------------------------------------------------------------- |
+| Przychód  | `Przychód: nowy`, `Przychód: edycja`                                       |
+| Przydział | `Przydział`, `Przydział: pula poniżej zera`, `Przydział: przyszły miesiąc` |
+
+## Pliki źródłowe
+
+- `src/views/funds/income-form.tsx`
+- `src/views/funds/allocation-form.tsx`
+- `src/product/funds/*.tsx` (kwota, pole kwoty, przełącznik miesiąca, podsumowanie puli)
+- `src/patterns/use-form-submit.ts`
+- `docs/ekrany/funds-screens.stories.tsx`
+
+## Praca, która zostaje w produkcie
+
+Design system daje interfejs ze stanami; każde zadanie dostarcza resztę jako vertical slice (migracja, RLS, RPC, testy pgTAP, trasa, zapytania TanStack Query, podpięcie widoku) według zatwierdzonej specyfikacji. Nazwy funkcji z `docs/architecture.md`.
+
+| Zadanie z backlogu                  | Do zrobienia w produkcie                                             |
+| ----------------------------------- | -------------------------------------------------------------------- |
+| S-04 Przychody i pula (#7)          | `create_income`, `update_income`, `delete_income`, `get_unallocated` |
+| S-05 Przydziały i salda kopert (#8) | `set_allocation` (`p_period` – pierwszy dzień miesiąca)              |

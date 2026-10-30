@@ -1,0 +1,118 @@
+import { Canvas, Meta } from "@storybook/addon-docs/blocks";
+import * as Stories from "../../src/patterns/name-form.stories";
+
+<Meta of={Stories} name="Dokumentacja" />
+
+# Formularz nazwy
+
+`import { NameForm } from "@koperty/ui/patterns/name-form";`
+
+## 1. Do czego służy
+
+Jedno pole na każdą nazwę w produkcie: budżetu, koperty i nazwę wyświetlaną. Zachowanie wzorca „Formularz” (walidacja, fokus, dane zostają, blokada podwójnego wysłania) bez pisania go od nowa.
+
+## 2. Kiedy używać
+
+| Sytuacja w produkcie               | Źródło       |
+| ---------------------------------- | ------------ |
+| Nowa koperta, zmiana nazwy koperty | US-11, US-12 |
+| Nazwa budżetu (nowy, zmiana)       | US-04, US-06 |
+| Nazwa wyświetlana w profilu        | US-24        |
+
+## 3. Kiedy nie używać
+
+| Sytuacja                   | Zamiast         | Źródło            |
+| -------------------------- | --------------- | ----------------- |
+| Formularz z kilkoma polami | `useFormSubmit` | wzorzec Formularz |
+| Wyszukiwanie               | brak w MVP      | „Czego brakuje”   |
+
+## 4. Anatomia
+
+| Część           | Opcjonalna | Uwagi                                  |
+| --------------- | ---------- | -------------------------------------- |
+| Pole nazwy      | nie        | etykieta, podpowiedź, błąd             |
+| Błąd formularza | tak        | `Alert` `danger`                       |
+| Przycisk główny | nie        | czasownik i obiekt                     |
+| „Anuluj”        | tak        | przy zmianie nazwy i kolejnym budżecie |
+
+## 5. Warianty
+
+Nowa nazwa (puste pole) i zmiana nazwy (`initial`). `CreateBudgetForm` to `NameForm` z treściami dla budżetu.
+
+## 6. Stany
+
+| Stan              | Story              | Zachowanie                      | Źródło     |
+| ----------------- | ------------------ | ------------------------------- | ---------- |
+| Nowa nazwa        | `Playground`       | nazwa przycięta ze spacji       | US-11      |
+| Zmiana nazwy      | `ZmianaNazwy`      | obecna nazwa w polu, „Anuluj”   | US-12      |
+| Nazwa zajęta      | `NazwaZajeta`      | `ENVELOPE_NAME_TAKEN` przy polu | US-11 [Z3] |
+| Nazwa wyświetlana | `NazwaWyswietlana` | treści profilu                  | US-24      |
+
+Pusta nazwa, oczekiwanie i błąd serwera: wzorzec „Pierwsze uruchomienie” (te same stany).
+
+<Canvas of={Stories.NazwaZajeta} />
+
+## 7. Zachowanie i dostępność
+
+| Zasada                                                                                          | Źródło             |
+| ----------------------------------------------------------------------------------------------- | ------------------ |
+| Zachowanie z `useFormSubmit` (walidacja po opuszczeniu pola i przy wysłaniu, fokus na błędzie). | wzorzec Formularz  |
+| Unikalność i długość sprawdza baza; formularz sprawdza tylko pustą nazwę.                       | AGENTS.md, PRD 4.8 |
+
+## 8. Treść
+
+| Zasada                 | Przykład                         | Źródło     |
+| ---------------------- | -------------------------------- | ---------- |
+| Pusta nazwa: co podać  | „Podaj nazwę koperty.”           | WCAG 3.3.3 |
+| Nazwa zajęta: dlaczego | „Masz już kopertę o tej nazwie.” | US-11 [Z3] |
+
+## 9. Responsywność
+
+Przyciski na telefonie na całą szerokość.
+
+<Canvas of={Stories.WaskiEkran} />
+
+## 10. API
+
+| Prop                         | Typ                                               | Opis                                |
+| ---------------------------- | ------------------------------------------------- | ----------------------------------- |
+| `label`, `hint`              | `string`                                          | pole                                |
+| `emptyMessage`               | `string`                                          | błąd pustej nazwy                   |
+| `submitLabel`, `loadingText` | `string`                                          | przycisk (domyślnie „Zapisywanie…”) |
+| `initial`                    | `string`                                          | zmiana nazwy                        |
+| `submit`                     | `(name: string) => Promise<SubmitResult<"name">>` | RPC z przyciętą nazwą               |
+| `onSuccess`, `onCancel`      | –                                                 | jak w formularzu                    |
+
+## 11. Kod
+
+```tsx
+<NameForm
+  label="Nazwa koperty"
+  emptyMessage="Podaj nazwę koperty."
+  submitLabel="Dodaj kopertę"
+  submit={async (name) => {
+    const { error } = await supabase.rpc("create_envelope", {
+      p_budget_id: budgetId,
+      p_name: name,
+    });
+    if (!error) return { ok: true };
+    if (error.message === "ENVELOPE_NAME_TAKEN")
+      return { ok: false, fieldErrors: { name: "Masz już kopertę o tej nazwie." } };
+    throw error;
+  }}
+  onSuccess={() => navigate({ to: "/" })}
+/>
+```
+
+<Canvas of={Stories.Playground} />
+
+## 12. Dobrze i źle
+
+| Dobrze                               | Źle                                |
+| ------------------------------------ | ---------------------------------- |
+| Jeden `NameForm` z treściami ekranu. | Kopia formularza dla każdej nazwy. |
+
+## 13. Powiązane
+
+- Wzorce: formularz, pierwsze uruchomienie.
+- Ekrany: profil, zarządzanie kopertami, ustawienia budżetu.

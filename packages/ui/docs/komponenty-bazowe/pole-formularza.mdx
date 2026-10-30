@@ -1,0 +1,162 @@
+import { ArgTypes, Canvas, Meta, Unstyled } from "@storybook/addon-docs/blocks";
+import { FormField } from "@koperty/ui/primitives/field";
+import { Input } from "@koperty/ui/primitives/input";
+import { DoDont } from "../blocks/frames";
+import * as Stories from "../../src/primitives/field.stories";
+
+<Meta of={Stories} name="Dokumentacja" />
+
+# Etykieta i pole formularza
+
+`import { FieldGroup, FormField } from "@koperty/ui/primitives/field";`
+
+## 1. Do czego służy
+
+Łączy kontrolkę z etykietą, podpowiedzią i błędem, żeby użytkownik (także z czytnikiem ekranu) wiedział, co wpisać i co poprawić.
+
+## 2. Kiedy używać
+
+Zawsze, gdy na ekranie jest pole tekstowe, select albo przełącznik ustawienia: logowanie (US-01), nazwa wyświetlana (US-24), budżet (US-04), koperta (US-11), przychód (US-14), przydział (US-16), wydatek (US-17).
+
+## 3. Kiedy nie używać
+
+| Sytuacja                                                    | Zamiast                          | Źródło                       |
+| ----------------------------------------------------------- | -------------------------------- | ---------------------------- |
+| Pojedynczy przycisk bez wartości                            | Przycisk                         | –                            |
+| Etykieta przekazana tylko w `placeholder` albo `aria-label` | `FormField` z widoczną etykietą  | WCAG 3.3.2, polecenie budowy |
+| Komunikat dotyczący całego formularza (np. brak sieci)      | alert nad formularzem (partia 2) | WCAG 3.3.1                   |
+
+## 4. Anatomia
+
+| Część                      | Opcjonalna | Uwagi                                                                   |
+| -------------------------- | ---------- | ----------------------------------------------------------------------- |
+| Etykieta                   | nie        | `text-label`, zawsze widoczna                                           |
+| Oznaczenie „(opcjonalnie)” | tak        | tylko pola opcjonalne; wymagane bez znaku, z `aria-required` (E2-P1)    |
+| Podpowiedź                 | tak        | `text-meta text-muted`, przykład lub format, najwyżej 65 znaków w linii |
+| Kontrolka                  | nie        | otrzymuje `id`, `aria-describedby`, `aria-invalid`, `aria-required`     |
+| Błąd                       | tak        | ikona i tekst `text-danger` pod kontrolką, `role="alert"`               |
+
+## 5. Warianty
+
+| Wariant                             | Kiedy wybrać                                                |
+| ----------------------------------- | ----------------------------------------------------------- |
+| `orientation="vertical"` (domyślny) | pola tekstowe i select                                      |
+| `orientation="horizontal"`          | przełącznik: etykieta po lewej, kontrolka na końcu wiersza  |
+| `FieldGroup`                        | kilka pól jednego formularza; odstęp `space-between-groups` |
+
+<Canvas of={Stories.GrupaPol} />
+<Canvas of={Stories.Poziome} />
+
+## 6. Stany
+
+| Stan                         | Wygląd                                                        | Źródło            |
+| ---------------------------- | ------------------------------------------------------------- | ----------------- |
+| Wymagane                     | bez oznaczenia, `aria-required`                               | E2-P1             |
+| Opcjonalne                   | „(opcjonalnie)” po etykiecie                                  | E2-P1, US-17      |
+| Z podpowiedzią / bez         | podpowiedź pod etykietą                                       | standardy 4.5     |
+| Błąd                         | `aria-invalid`, granica `border-invalid`, ikona i tekst błędu | WCAG 1.4.1, 3.3.1 |
+| Zablokowane                  | wygląd kontrolki; powód w podpowiedzi                         | E2-Q1             |
+| Fokus, najechanie, ładowanie | należą do kontrolki (strony kontrolek)                        | –                 |
+
+<Canvas of={Stories.Opcjonalne} />
+<Canvas of={Stories.ZBledem} />
+
+**Kiedy pokazać błąd:** po opuszczeniu pola i przy wysłaniu formularza; po nieudanym wysłaniu fokus trafia na pierwsze pole z błędem, a wpisane dane zostają (standardy 4.5, wzorzec formularza w etapie 3).
+
+## 7. Zachowanie i dostępność
+
+| Zasada                                                                                           | Źródło                    |
+| ------------------------------------------------------------------------------------------------ | ------------------------- |
+| Kliknięcie etykiety przenosi fokus do kontrolki (sprawdza test w Playground).                    | WCAG 1.3.1                |
+| Czytnik ogłasza: etykietę, „wymagane”, podpowiedź, a przy błędzie „nieprawidłowe” i treść błędu. | WCAG 4.1.2, 3.3.1         |
+| Błąd pojawia się w regionie `role="alert"`, więc czytnik ogłasza go od razu.                     | standardy 4.5, WCAG 4.1.3 |
+| Identyfikatory tworzy `useId`; nie nadawaj ich ręcznie.                                          | –                         |
+
+## 8. Treść
+
+| Część      | Zasada                                                                      | Przykład                       | Źródło                               |
+| ---------- | --------------------------------------------------------------------------- | ------------------------------ | ------------------------------------ |
+| Etykieta   | rzeczownik, 1–3 słowa, bez dwukropka                                        | „Kwota”, „Nazwa koperty”       | propozycja (E2-P2)                   |
+| Podpowiedź | format albo przykład, jedno zdanie                                          | „W złotych, np. 120,50”        | polecenie budowy                     |
+| Błąd       | co jest źle i jak to poprawić                                               | „Podaj kwotę większą od zera.” | polecenie budowy (Treść), WCAG 3.3.3 |
+| Długość    | długa etykieta i błąd się zawijają; tekst ciągły najwyżej 65 znaków w linii | –                              | P3                                   |
+
+<Canvas of={Stories.DlugaTresc} />
+
+## 9. Responsywność
+
+| Szerokość     | Zachowanie                                                                                        |
+| ------------- | ------------------------------------------------------------------------------------------------- |
+| 320 px        | etykieta nad kontrolką; w wariancie poziomym tekst zawija się, kontrolka zostaje na końcu wiersza |
+| 768 i 1440 px | formularz w `max-w-content` (640 px), układ bez zmian                                             |
+
+## 10. API
+
+<ArgTypes of={Stories} />
+
+| Prop          | Typ                                         | Domyślnie    | Opis                                              |
+| ------------- | ------------------------------------------- | ------------ | ------------------------------------------------- |
+| `label`       | `string`                                    | –            | widoczna etykieta                                 |
+| `hint`        | `string`                                    | –            | podpowiedź pod etykietą                           |
+| `error`       | `string`                                    | –            | komunikat błędu; ustawia `aria-invalid`           |
+| `optional`    | `boolean`                                   | `false`      | dopisuje „(opcjonalnie)”, wyłącza `aria-required` |
+| `orientation` | `"vertical" \| "horizontal"`                | `"vertical"` | układ                                             |
+| `children`    | `(control: FieldControlProps) => ReactNode` | –            | renderuje kontrolkę z przekazanymi atrybutami     |
+
+## 11. Kod
+
+Minimalny:
+
+```tsx
+<FormField label="Nazwa koperty">{(control) => <Input {...control} />}</FormField>
+```
+
+Typowy w produkcie (wydatek, US-17):
+
+```tsx
+<FieldGroup>
+  <FormField label="Kwota" hint="W złotych, np. 120,50" error={errors.amount}>
+    {(control) => (
+      <Input {...control} inputMode="decimal" value={amount} onChange={onAmountChange} />
+    )}
+  </FormField>
+  <FormField label="Data">
+    {(control) => <Input {...control} type="date" value={date} onChange={onDateChange} />}
+  </FormField>
+  <FormField label="Opis" optional>
+    {(control) => <Input {...control} value={note} onChange={onNoteChange} />}
+  </FormField>
+</FieldGroup>
+```
+
+## 12. Dobrze i źle
+
+<Unstyled>
+  <DoDont
+    good={{
+      node: (
+        <div className="w-full">
+          <FormField label="Kwota" error="Podaj kwotę większą od zera.">
+            {(control) => <Input {...control} defaultValue="0" />}
+          </FormField>
+        </div>
+      ),
+      note: "błąd mówi, co poprawić, i jest przy polu.",
+    }}
+    bad={{
+      node: (
+        <div className="w-full">
+          <FormField label="Kwota" error="Błędna wartość.">
+            {(control) => <Input {...control} defaultValue="0" />}
+          </FormField>
+        </div>
+      ),
+      note: "„Błędna wartość” nie mówi, jak to naprawić.",
+    }}
+  />
+</Unstyled>
+
+## 13. Powiązane
+
+- Mylone z: **alertem** (komunikat całego formularza lub ekranu), **toastem** (potwierdzenie bez działania).
+- Występuje we wzorcach: formularz, logowanie kodem, podział wydatku.

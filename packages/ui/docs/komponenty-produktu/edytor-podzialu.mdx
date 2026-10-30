@@ -1,0 +1,122 @@
+import { Canvas, Meta } from "@storybook/addon-docs/blocks";
+import * as Stories from "../../src/product/expenses/split-editor.stories";
+
+<Meta of={Stories} name="Dokumentacja" />
+
+# Edytor podziału
+
+`import { SplitEditor, type SplitPart } from "@koperty/ui/product/expenses/split-editor";` · podpowiedzi: `import { splitEvenly, remainingToSplit } from "@koperty/ui/lib/split";`
+
+## 1. Do czego służy
+
+Pozwala rozdzielić jeden paragon na kilka kopert i od razu widać, ile jeszcze zostało do podziału.
+
+## 2. Kiedy używać
+
+| Sytuacja w produkcie                                             | Źródło       |
+| ---------------------------------------------------------------- | ------------ |
+| Formularz wydatku po włączeniu „Podziel wydatek na kilka kopert” | US-18, E3-Q4 |
+| Edycja wydatku z podziałem                                       | US-19        |
+
+## 3. Kiedy nie używać
+
+| Sytuacja                              | Zamiast                     | Źródło |
+| ------------------------------------- | --------------------------- | ------ |
+| Wydatek na jedną kopertę              | select koperty w formularzu | US-17  |
+| Przesunięcie środków między kopertami | brak w MVP                  | PRD 3  |
+
+## 4. Anatomia
+
+| Część                             | Opcjonalna | Uwagi                                                                                                             |
+| --------------------------------- | ---------- | ----------------------------------------------------------------------------------------------------------------- |
+| Grupa „Podział wydatku”           | nie        | `fieldset` z legendą                                                                                              |
+| Część N                           | nie        | `fieldset` z nazwą „Część N”: koperta (select) i kwota (pole kwoty); „Usuń część N” od dwóch części               |
+| Podsumowanie                      | nie        | „Do podziału: … zł”, „Podzielono całą kwotę.” albo „Części przekraczają kwotę wydatku o … zł”, region `aria-live` |
+| „Dodaj część”, „Podziel po równo” | nie        | przyciski `secondary`                                                                                             |
+
+## 5. Warianty
+
+Jeden wariant.
+
+## 6. Stany
+
+<Canvas of={Stories.PrzekroczonaKwota} />
+<Canvas of={Stories.BezKwotyWydatku} />
+<Canvas of={Stories.ZBledami} />
+
+| Stan                   | Zachowanie                                                                    | Źródło             |
+| ---------------------- | ----------------------------------------------------------------------------- | ------------------ |
+| Do podziału            | kwota pozostała do rozdzielenia                                               | US-18              |
+| Podzielono             | „Podzielono całą kwotę.”                                                      | US-18              |
+| Przekroczono           | o ile części przekraczają kwotę; zapisu i tak nie przyjmie baza               | US-18, PRD 4.6     |
+| Bez kwoty wydatku      | „Podziel po równo” zablokowane z wyjaśnieniem pod przyciskiem (sprawdza test) | E2-Q1              |
+| Koperta raz na wydatek | koperty wybrane w innych częściach są zablokowane w liście (sprawdza test)    | PRD 4.6            |
+| Błędy części           | błąd pod polem z `FormField`                                                  | WCAG 3.3.1         |
+| Jedna część            | bez przycisku „Usuń”                                                          | propozycja (E3-P5) |
+
+## 7. Zachowanie i dostępność
+
+| Zasada                                                                                                                                                      | Źródło              |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------- |
+| „Podziel po równo”: reszta groszy trafia do pierwszej części – 100,00 zł na 3: 33,34, 33,33, 33,33 zł (sprawdza test).                                      | PRD 4.6, US-18      |
+| Podsumowanie w `aria-live="polite"`: czytnik ogłasza zmianę po wpisaniu kwoty (sprawdza test).                                                              | WCAG 4.1.3          |
+| Części to `fieldset` nazwany przez `aria-labelledby` („Część 1”; legenda nazywa grupę tylko jako pierwsze dziecko), pola mają etykiety „Koperta” i „Kwota”. | WCAG 1.3.1          |
+| Sumę części sprawdza baza; edytor tylko podpowiada.                                                                                                         | AGENTS.md, ADR 0003 |
+
+## 8. Treść
+
+| Element             | Tekst                                                    | Źródło             |
+| ------------------- | -------------------------------------------------------- | ------------------ |
+| Podsumowanie        | „Do podziału: 30,00 zł”                                  | US-18              |
+| Błąd koperty        | „Wybierz kopertę.”                                       | propozycja (E3-P5) |
+| Wyjaśnienie blokady | „Podział po równo zadziała, gdy wpiszesz kwotę wydatku.” | E2-Q1              |
+
+## 9. Responsywność
+
+| Szerokość     | Zachowanie                                                    |
+| ------------- | ------------------------------------------------------------- |
+| 320 px        | koperta i kwota jedna pod drugą; przyciski na pełną szerokość |
+| 768 i 1440 px | koperta i kwota obok siebie, przyciski w wierszu              |
+
+<Canvas of={Stories.WaskiEkran} />
+
+## 10. API
+
+| Prop / funkcja                     | Typ                                          | Opis                                           |
+| ---------------------------------- | -------------------------------------------- | ---------------------------------------------- |
+| `total`                            | `number \| null`                             | kwota wydatku w groszach (z `parsePLN`)        |
+| `parts`                            | `SplitPart[]` (`id`, `envelopeId`, `amount`) | części; `amount` to tekst pola                 |
+| `envelopes`                        | `{ id, name }[]`                             | aktywne koperty                                |
+| `onPartsChange`                    | `(parts: SplitPart[]) => void`               | zmiana części                                  |
+| `errors`                           | `Record<id, { envelope?, amount? }>`         | błędy części                                   |
+| `createPartId`                     | `() => string`                               | identyfikator nowej części (domyślnie UUID)    |
+| `splitEvenly(total, parts)`        | `[part, grosze][]`                           | równy podział z resztą w pierwszej części      |
+| `remainingToSplit(total, amounts)` | `number`                                     | ile zostało (niepoprawne kwoty liczone jako 0) |
+
+## 11. Kod
+
+Typowy w produkcie (formularz wydatku, US-18):
+
+```tsx
+<SplitEditor
+  total={parsePLN(amount)}
+  parts={parts}
+  envelopes={activeEnvelopes}
+  onPartsChange={setParts}
+  errors={partErrors}
+/>
+```
+
+<Canvas of={Stories.Playground} />
+
+## 12. Dobrze i źle
+
+| Dobrze                                        | Źle                                                           |
+| --------------------------------------------- | ------------------------------------------------------------- |
+| „Do podziału: 0,01 zł” widać przed wysłaniem. | Błąd „suma się nie zgadza” dopiero po wysłaniu.               |
+| Reszta groszy w pierwszej części (33,34 zł).  | Zaokrąglenie wszystkich części do 33,33 zł i brakujący grosz. |
+
+## 13. Powiązane
+
+- Mylony z: **selectem koperty** (wydatek na jedną kopertę).
+- Występuje we wzorcach: podział wydatku, formularz.

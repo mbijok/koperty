@@ -36,12 +36,23 @@ jobs:
       - name: Format, lint, types
         run: vp check
 
+      # Colour literals, Tailwind palette classes and arbitrary values outside the design tokens (ADR 0012).
+      - name: Design tokens
+        run: vp run check:tokens
+
+      # Story tests run in Chromium (ADR 0011, ADR 0012). Playwright is a dependency of packages/ui.
+      - name: Install Chromium
+        run: vp -C packages/ui exec playwright install --with-deps chromium
+
       # Fails when any measured file is below 100% coverage (thresholds in vite.config.ts).
       - name: Unit tests with coverage
         run: vp test --coverage
 
       - name: Build
         run: vp build
+
+      - name: Build Storybook
+        run: vp -C packages/ui run build-storybook
 
   db:
     name: Database tests (pgTAP)

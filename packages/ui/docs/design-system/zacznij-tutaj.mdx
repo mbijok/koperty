@@ -1,0 +1,52 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+import { CATALOG } from "../blocks/catalog-data";
+import { ComponentTable, DocsLink } from "../blocks/catalog";
+
+<Meta title="Design system/Zacznij tutaj" />
+
+# Zacznij tutaj
+
+Koperty to narzędzie do pilnowania pieniędzy domu metodą kopertową, a nie rozrywka. Interfejs jest precyzyjny i zwarty: dużo informacji na ekranie, czytelna hierarchia, liczby wyrównane jak w księdze. Nie ocenia i nie straszy – debet to stan do uporządkowania, a nie alarm.
+
+**Słowa charakteru:** precyzyjny, zwarty, „księgowy” (C1). **Czym nie jest:** krzykliwym fintechem, grywalizacją, surowym arkuszem, alarmem (AC1–AC4). Źródło: `packages/ui/brief.md`.
+
+## Jak zbudować ekran w pięciu krokach
+
+1. **Znajdź wzorzec.** Sprawdź sekcję Wzorce i ekrany epiku (Design system → Epik). Ekran z formularzem zaczyna się od wzorca „Formularz”, lista od „Listy z filtrem miesiąca”, usunięcie od „Potwierdzenia usunięcia”.
+2. **Wybierz komponenty** według strony <DocsLink id="design-system-jak-wybrać--docs">Jak wybrać</DocsLink>. Najpierw widoki i komponenty produktu, dopiero potem komponenty bazowe.
+3. **Używaj tokenów znaczeniowych** (`bg-surface-card`, `text-muted`, `gap-group`, `h-control`…), nigdy wartości wprost. Paleta, skala odstępów i arbitralne wartości Tailwinda są wyłączone; `vp run check:tokens` wskaże każdą wartość spoza tokenów.
+4. **Zaprojektuj stany danych:** ładowanie, pusto (dwa rodzaje: brak wyników i „jeszcze nic tu nie ma”), błąd, częściowe dane, dużo danych, długie teksty; w formularzu także oczekiwanie, błąd pola, błąd serwera i brak sieci.
+5. **Sprawdź** <DocsLink id="design-system-czego-unikać--docs">Czego unikać</DocsLink> i ekran przy 320 px w obu motywach.
+
+## Ekrany: trasy, tytuły, nawigacja
+
+| Ekran                      | Trasa                                    | `h1`                                             | Aktywna pozycja nawigacji | Story                  | Źródło trasy         |
+| -------------------------- | ---------------------------------------- | ------------------------------------------------ | ------------------------- | ---------------------- | -------------------- |
+| Logowanie                  | `/login?redirect=…`                      | „Zaloguj się”                                    | bez powłoki               | Konto                  | S-01                 |
+| Profil                     | `/profile`                               | „Profil”                                         | żadna                     | Konto                  | S-01                 |
+| Pierwszy budżet            | `/budgets/new`                           | „Utwórz pierwszy budżet”                         | bez powłoki               | Budżety                | propozycja (E5-P1)   |
+| Nowy budżet                | `/budgets/new`                           | „Nowy budżet”                                    | żadna                     | Budżety                | propozycja (E5-P1)   |
+| Ustawienia budżetu         | `/settings`                              | „Ustawienia budżetu”                             | żadna                     | Budżety                | propozycja (E5-P1)   |
+| Dołączenie                 | `/join/<token>`                          | z karty dołączenia albo „Zaproszenie do budżetu” | bez powłoki               | Budżety                | propozycja (E5-P1)   |
+| Widok kopert               | `/`                                      | „Koperty”                                        | Koperty                   | Koperty                | S-01 (strona główna) |
+| Nowa koperta, zmiana nazwy | `/envelopes/new`, `/envelopes/<id>/edit` | „Nowa koperta”, „Zmień nazwę koperty”            | Koperty                   | Koperty                | propozycja (E5-P1)   |
+| Kolejność kopert           | `/envelopes/order`                       | „Kolejność kopert”                               | Koperty                   | Koperty                | propozycja (E5-P1)   |
+| Przydział                  | `/envelopes/<id>/allocate?month=RRRR-MM` | „Przydziel środki”                               | Koperty                   | Przychody i przydziały | propozycja (E5-P1)   |
+| Nowy przychód, edycja      | `/incomes/new`, `/incomes/<id>/edit`     | „Nowy przychód”, „Edycja przychodu”              | Operacje                  | Przychody i przydziały | propozycja (E5-P1)   |
+| Nowy wydatek               | `/expenses/new`                          | „Nowy wydatek”                                   | żadna (akcja główna)      | Wydatki                | propozycja (E5-P1)   |
+| Operacje                   | `/operations?month=RRRR-MM`              | „Operacje”                                       | Operacje                  | Wydatki                | propozycja (E5-P1)   |
+| Szczegóły wydatku          | `/expenses/<id>`                         | opis wydatku (z widoku)                          | Operacje                  | Wydatki                | propozycja (E5-P1)   |
+| Edycja wydatku             | `/expenses/<id>/edit`                    | „Edycja wydatku”                                 | Operacje                  | Wydatki                | propozycja (E5-P1)   |
+| Podsumowanie miesiąca      | `/summary?month=RRRR-MM`                 | „Podsumowanie miesiąca”                          | Podsumowanie              | Przegląd budżetu       | propozycja (E5-P1)   |
+
+Trasy poza S-01 ustala specyfikacja zadania z backlogu; po wdrożeniu trasa jest kontraktem (`BACKWARD_COMPATIBILITY.md`).
+
+## Wszystkie komponenty
+
+Nazwa prowadzi do strony z 13 sekcjami (do czego służy, kiedy używać i kiedy nie, anatomia, warianty, stany, dostępność, treść, responsywność, API, kod, dobrze i źle, powiązane). Podglądy: <DocsLink id="design-system-komponenty--docs">Komponenty</DocsLink>.
+
+<ComponentTable entries={CATALOG} />
+
+## Dla agentów
+
+Skrót design systemu jest w `docs/design-system.md` w repozytorium; agent budujący ekran czyta go jako pierwszy (odwołanie w AGENTS.md).

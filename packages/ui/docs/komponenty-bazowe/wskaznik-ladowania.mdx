@@ -1,0 +1,109 @@
+import { Canvas, Meta } from "@storybook/addon-docs/blocks";
+import * as Stories from "../../src/primitives/spinner.stories";
+
+<Meta of={Stories} name="Dokumentacja" />
+
+# Wskaźnik ładowania
+
+`import { Spinner } from "@koperty/ui/primitives/spinner";`
+
+## 1. Do czego służy
+
+Pokazuje, że czynność trwa i trzeba chwilę poczekać, gdy nie da się pokazać kształtu wyniku.
+
+## 2. Kiedy używać
+
+| Sytuacja w produkcie                                                                | Źródło    |
+| ----------------------------------------------------------------------------------- | --------- |
+| W przycisku podczas zapisu („Zapisywanie…”) – przycisk sam go dodaje przy `loading` | E2-Q2     |
+| Sprawdzanie zaproszenia po otwarciu linku                                           | US-08     |
+| Wymiana kodu z linku logowania na sesję                                             | S-01 AC-2 |
+
+## 3. Kiedy nie używać
+
+| Sytuacja                   | Zamiast                                             | Źródło              |
+| -------------------------- | --------------------------------------------------- | ------------------- |
+| Wczytywanie listy lub kart | szkielet ładowania                                  | propozycja (E2-P12) |
+| Bez tekstu i bez kontekstu | zawsze tekst czynności (widoczny albo dla czytnika) | WCAG 4.1.3          |
+
+## 4. Anatomia
+
+| Część                | Opcjonalna | Uwagi                                                                           |
+| -------------------- | ---------- | ------------------------------------------------------------------------------- |
+| Ikona `LoaderCircle` | nie        | 16 px (`size-icon`), 20 px samodzielnie (`size-icon-standalone`), `aria-hidden` |
+| Tekst stanu          | nie        | prop `label` (dla czytnika) albo widoczny tekst obok                            |
+
+## 5. Warianty
+
+| Sposób      | Kiedy wybrać                                                                        |
+| ----------- | ----------------------------------------------------------------------------------- |
+| `label="…"` | sam wskaźnik: ogłasza tekst przez `<output aria-live="polite">`                     |
+| bez `label` | dekoracja: stan ogłasza otoczenie (przycisk z `aria-busy` albo widoczny tekst obok) |
+
+## 6. Stany
+
+<Canvas of={Stories.Stany} />
+
+| Stan                                          | Zachowanie                                                           | Źródło         |
+| --------------------------------------------- | -------------------------------------------------------------------- | -------------- |
+| Trwa                                          | obrót; przy `prefers-reduced-motion` ikona stoi, a stan niesie tekst | P6, WCAG 2.3.3 |
+| Najechanie, fokus, zablokowany, błąd, wybrany | nie dotyczy                                                          | –              |
+
+## 7. Zachowanie i dostępność
+
+| Zasada                                                                                            | Źródło            |
+| ------------------------------------------------------------------------------------------------- | ----------------- |
+| Z `label`: `<output>` z `aria-live="polite"` – czytnik ogłasza „Wysyłanie kodu…” (sprawdza test). | WCAG 4.1.3        |
+| Bez `label`: ikona `aria-hidden` (sprawdza test).                                                 | WCAG 1.1.1        |
+| Jedyna ciągła animacja w produkcie; zatrzymuje się przy ograniczonym ruchu.                       | WCAG 2.2.2, 2.3.3 |
+
+## 8. Treść
+
+| Zasada                           | Przykład                                      | Źródło |
+| -------------------------------- | --------------------------------------------- | ------ |
+| Czynność w toku, z wielokropkiem | „Sprawdzanie zaproszenia…”, „Wysyłanie kodu…” | E2-Q2  |
+
+<Canvas of={Stories.ZWidocznymTekstem} />
+
+## 9. Responsywność
+
+Bez zmian na 320, 768 i 1440 px: stały rozmiar ikony, tekst obok zawija się.
+
+## 10. API
+
+| Prop        | Typ      | Domyślnie | Opis                                                             |
+| ----------- | -------- | --------- | ---------------------------------------------------------------- |
+| `label`     | `string` | –         | tekst ogłaszany przez czytnik; bez niego wskaźnik jest dekoracją |
+| `className` | `string` | –         | np. `size-icon-standalone`                                       |
+
+## 11. Kod
+
+Minimalny:
+
+```tsx
+<Spinner label="Sprawdzanie zaproszenia…" />
+```
+
+Typowy w produkcie (przycisk, E2-Q2): wskaźnik dodaje `Button` sam:
+
+```tsx
+<Button loading={mutation.isPending} loadingText="Zapisywanie…">
+  Zapisz wydatek
+</Button>
+```
+
+<Canvas of={Stories.Playground} />
+
+## 12. Dobrze i źle
+
+| Dobrze                                         | Źle                                                                                |
+| ---------------------------------------------- | ---------------------------------------------------------------------------------- |
+| Wskaźnik z tekstem „Sprawdzanie zaproszenia…”. | Sam kręcący się wskaźnik: czytnik nic nie ogłasza, a widzący nie wie, na co czeka. |
+| Szkielet w miejscu listy kopert.               | Wskaźnik na środku ekranu przy wczytywaniu listy (ekran przeskoczy).               |
+
+Różnica dotyczy treści i miejsca, nie wyglądu wskaźnika, więc pary są tabelą.
+
+## 13. Powiązane
+
+- Mylony z: **szkieletem ładowania** (kształt treści), **przyciskiem z `loading`** (wskaźnik w przycisku).
+- Występuje we wzorcach: formularz (wysyłanie), otwarcie zaproszenia, logowanie linkiem.

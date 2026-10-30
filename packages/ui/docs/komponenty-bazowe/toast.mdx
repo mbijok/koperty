@@ -1,0 +1,114 @@
+import { Canvas, Meta } from "@storybook/addon-docs/blocks";
+import * as Stories from "../../src/primitives/toast.stories";
+
+<Meta of={Stories} name="Dokumentacja" />
+
+# Toast
+
+`import { Toaster, showToast } from "@koperty/ui/primitives/toast";`
+
+## 1. Do czego służy
+
+Potwierdza na chwilę, że czynność się udała, gdy nic więcej nie trzeba robić.
+
+## 2. Kiedy używać
+
+| Sytuacja w produkcie                                              | Treść              | Źródło       |
+| ----------------------------------------------------------------- | ------------------ | ------------ |
+| Skopiowanie linku zaproszenia                                     | „Link skopiowany”  | US-07        |
+| Nowy wydatek: po zapisie ekran wraca do kopert, wydatku nie widać | „Zapisano wydatek” | US-17, E5-P2 |
+| Usunięcie operacji po potwierdzeniu                               | „Usunięto wydatek” | US-19        |
+
+## 3. Kiedy nie używać
+
+| Sytuacja                                                              | Zamiast                                                              | Źródło                                   |
+| --------------------------------------------------------------------- | -------------------------------------------------------------------- | ---------------------------------------- |
+| Błąd, który wymaga działania                                          | błąd pola, alert albo stan błędu – `showToast` nie ma wariantu błędu | E2-Q4, polecenie budowy („Czego unikać”) |
+| Informacja potrzebna później (np. link do skopiowania)                | treść na ekranie                                                     | WCAG 2.2.1                               |
+| Kilka komunikatów naraz                                               | jeden – nowy zastępuje poprzedni                                     | E2-Q4                                    |
+| Potwierdzenie, które i tak widać (wydatek pojawia się na liście obok) | nic                                                                  | propozycja (E2-P13)                      |
+
+## 4. Anatomia
+
+| Część                  | Opcjonalna | Uwagi                                                                               |
+| ---------------------- | ---------- | ----------------------------------------------------------------------------------- |
+| Region „Powiadomienia” | nie        | `Toaster` raz w korzeniu aplikacji; `aria-live="polite"`                            |
+| Toast                  | nie        | `surface-overlay`, `border-subtle`, `shadow-overlay`, wnętrze `space-panel-compact` |
+| Ikona `CircleCheck`    | nie        | `text-muted`, dekoracyjna                                                           |
+| Tekst                  | nie        | `text-body`, jedno zdanie                                                           |
+
+## 5. Warianty
+
+Jeden: potwierdzenie (`showToast`). Wariantów błędu, ostrzeżenia i akcji nie ma (E2-Q4).
+
+## 6. Stany
+
+<Canvas of={Stories.JedenNaRaz} />
+
+| Stan                               | Zachowanie                                        | Źródło            |
+| ---------------------------------- | ------------------------------------------------- | ----------------- |
+| Pojawia się                        | na dole ekranu, z marginesem strony, przenikanie  | E2-Q4, P6         |
+| Widoczny                           | 5 s; najechanie zatrzymuje odliczanie             | E2-Q4, WCAG 2.2.1 |
+| Kolejny toast                      | zastępuje poprzedni (jeden naraz) – sprawdza test | E2-Q4             |
+| Najechanie, fokus, błąd, ładowanie | nie dotyczy                                       | –                 |
+
+## 7. Zachowanie i dostępność
+
+| Zasada                                                                                     | Źródło            |
+| ------------------------------------------------------------------------------------------ | ----------------- |
+| Region „Powiadomienia” ogłasza tekst grzecznie, bez przenoszenia fokusu (sprawdza test).   | WCAG 4.1.3        |
+| Toast znika sam, więc nie może zawierać niczego, czego użytkownik potrzebuje do działania. | WCAG 2.2.1, E2-Q4 |
+| Skrót Alt+T przenosi fokus do regionu (wbudowany w `sonner`).                              | WCAG 2.1.1        |
+
+## 8. Treść
+
+| Zasada                                      | Przykład                              | Źródło              |
+| ------------------------------------------- | ------------------------------------- | ------------------- |
+| Czasownik w czasie przeszłym i obiekt       | „Zapisano wydatek”, „Link skopiowany” | propozycja (E2-P13) |
+| Jedno zdanie, bez kropki i wykrzyknika      | –                                     | AC1                 |
+| Długi tekst się zawija, toast rośnie w górę | –                                     | WCAG 1.4.10         |
+
+<Canvas of={Stories.DlugaTresc} />
+
+## 9. Responsywność
+
+| Szerokość     | Zachowanie                                                               |
+| ------------- | ------------------------------------------------------------------------ |
+| 320 px        | na pełną szerokość z marginesem 16 px, na dole ekranu (w zasięgu kciuka) |
+| 768 i 1440 px | wyśrodkowany na dole, stała szerokość                                    |
+
+## 10. API
+
+| Element                      | Opis                                                      |
+| ---------------------------- | --------------------------------------------------------- |
+| `<Toaster />`                | raz w korzeniu aplikacji; ustawienia z E2-Q4 są wbudowane |
+| `showToast(message: string)` | pokazuje potwierdzenie                                    |
+
+## 11. Kod
+
+Minimalny i typowy w produkcie (kopiowanie linku, US-07):
+
+```tsx
+// apps/web: raz w głównym układzie
+<Toaster />;
+
+// w komponencie
+await navigator.clipboard.writeText(link);
+showToast("Link skopiowany");
+```
+
+<Canvas of={Stories.Playground} />
+
+## 12. Dobrze i źle
+
+| Dobrze                                         | Źle                                                                              |
+| ---------------------------------------------- | -------------------------------------------------------------------------------- |
+| „Link skopiowany” po kliknięciu „Kopiuj link”. | „Nie udało się zapisać wydatku” w toaście: znika po 5 s, a dane trzeba poprawić. |
+| Jeden toast, nowy zastępuje stary.             | Stos trzech toastów zasłaniający przycisk „Zapisz”.                              |
+
+Toast jest przypięty do dołu ekranu, więc pary są tabelą; wygląd pokazują stories w osobnych ramkach.
+
+## 13. Powiązane
+
+- Mylony z: **alertem** (komunikat zostaje na ekranie), **błędem pola**.
+- Występuje we wzorcach: formularz (sukces po potwierdzeniu z serwera), potwierdzenie usunięcia, zaproszenie.

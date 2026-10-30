@@ -1,0 +1,116 @@
+import { Canvas, Meta } from "@storybook/addon-docs/blocks";
+import * as Stories from "../../src/product/expenses/operation-row.stories";
+
+<Meta of={Stories} name="Dokumentacja" />
+
+# Wiersz operacji
+
+`import { OperationRow, type Operation } from "@koperty/ui/product/expenses/operation-row";`
+
+## 1. Do czego służy
+
+Pokazuje jeden przychód lub wydatek: ile, na co, z których kopert i kto go zapisał.
+
+## 2. Kiedy używać
+
+| Sytuacja w produkcie                                 | Źródło       |
+| ---------------------------------------------------- | ------------ |
+| Wiersz na liście operacji miesiąca                   | US-20        |
+| Wejście do edycji i usuwania operacji (także cudzej) | US-15, US-19 |
+
+## 3. Kiedy nie używać
+
+| Sytuacja                                | Zamiast                            | Źródło |
+| --------------------------------------- | ---------------------------------- | ------ |
+| Pełne dane wydatku z częściami podziału | widok szczegółów wydatku (wzorzec) | US-19  |
+| Saldo koperty                           | karta koperty                      | US-21  |
+
+## 4. Anatomia
+
+| Część            | Opcjonalna | Uwagi                                                               |
+| ---------------- | ---------- | ------------------------------------------------------------------- |
+| Awatar autora    | nie        | inicjały, dekoracyjny                                               |
+| Opis             | nie        | opis albo „Wydatek bez opisu” / „Przychód bez opisu” w `text-muted` |
+| Metadane         | nie        | koperta albo „Podział: Jedzenie, Chemia” · autor                    |
+| Kwota            | nie        | przychód z „+”, wydatek bez znaku (P7)                              |
+| „Edytuj”, „Usuń” | tak        | przyciski ikonowe 32 px z podpowiedzią (dwie akcje widoczne, E2-P9) |
+
+## 5. Warianty
+
+| Rodzaj   | Różnica                                           |
+| -------- | ------------------------------------------------- |
+| Wydatek  | koperta lub podział w metadanych, kwota bez znaku |
+| Przychód | bez kopert, kwota z „+”                           |
+
+## 6. Stany
+
+<Canvas of={Stories.Stany} />
+
+| Stan danych                | Zachowanie                                                    | Źródło                    |
+| -------------------------- | ------------------------------------------------------------- | ------------------------- |
+| Pełne dane                 | opis, koperty, autor, kwota                                   | US-20                     |
+| Częściowe dane: brak opisu | „Wydatek bez opisu” w `text-muted` (opis jest opcjonalny)     | US-17, propozycja (E3-P4) |
+| Konto autora usunięte      | „Usunięty użytkownik” i inicjały „UU”                         | US-03                     |
+| Bez uprawnień do akcji     | bez przycisków                                                | –                         |
+| Ładowanie, pusto, błąd     | na poziomie listy operacji                                    | –                         |
+| Długie teksty              | opis i metadane zawijają się; kwota i akcje zostają po prawej | WCAG 1.4.10               |
+
+## 7. Zachowanie i dostępność
+
+| Zasada                                                                             | Źródło                  |
+| ---------------------------------------------------------------------------------- | ----------------------- |
+| Przyciski z rodzajem i opisem w nazwie: „Usuń wydatek: Biedronka” (sprawdza test). | WCAG 2.4.6, 4.1.2       |
+| „Usuń” nie usuwa od razu – ekran otwiera dialog potwierdzenia.                     | US-19, polecenie budowy |
+| Cel: 32 px (akcje wiersza, P2).                                                    | WCAG 2.5.8              |
+
+## 8. Treść
+
+| Zasada                                          | Przykład                    | Źródło |
+| ----------------------------------------------- | --------------------------- | ------ |
+| Opis taki, jak wpisał użytkownik                | „Biedronka”                 | US-17  |
+| Podział: „Podział:” i nazwy kopert po przecinku | „Podział: Jedzenie, Chemia” | US-18  |
+| Autor: nazwa wyświetlana                        | „Ala Kowalska”              | US-24  |
+
+<Canvas of={Stories.DlugaTresc} />
+
+## 9. Responsywność
+
+Na 320 px opis i metadane się zawijają, kwota i akcje zostają w wierszu; na 768 i 1440 px wiersz w `max-w-content`.
+
+## 10. API
+
+| Prop                 | Typ                     | Opis                                      |
+| -------------------- | ----------------------- | ----------------------------------------- |
+| `type`               | `"income" \| "expense"` | rodzaj                                    |
+| `amount`             | `number`                | grosze, dodatnie                          |
+| `date`               | `string`                | `RRRR-MM-DD` (nagłówek dnia rysuje lista) |
+| `description`        | `string`                | opcjonalny opis                           |
+| `envelopes`          | `string[]`              | nazwy kopert części                       |
+| `author`             | `string`                | nazwa autora                              |
+| `onEdit`, `onDelete` | `() => void`            | akcje                                     |
+
+## 11. Kod
+
+Typowy w produkcie (najczęściej przez `OperationList`):
+
+```tsx
+<OperationRow
+  {...operation}
+  onEdit={() => openEdit(operation.id)}
+  onDelete={() => confirmDelete(operation)}
+/>
+```
+
+<Canvas of={Stories.Playground} />
+
+## 12. Dobrze i źle
+
+| Dobrze                                                  | Źle                      |
+| ------------------------------------------------------- | ------------------------ |
+| „Usuń wydatek: Biedronka” otwiera dialog potwierdzenia. | „Usuń” usuwa od razu.    |
+| „Wydatek bez opisu” w kolorze drugorzędnym.             | Pusty wiersz bez tytułu. |
+
+## 13. Powiązane
+
+- Mylony z: **kartą koperty**, **widokiem szczegółów wydatku**.
+- Występuje we wzorcach: lista z filtrem miesiąca, potwierdzenie usunięcia.

@@ -1,0 +1,160 @@
+/*
+ * Koperty design system stylesheet. Import after `@import "tailwindcss";`.
+ * Maps semantic tokens (tokens/tokens.css) to Tailwind utilities. Tailwind's default palette, spacing
+ * scale, font sizes, radii and shadows are switched off, so only token classes exist
+ * (e.g. bg-surface-card, text-muted, p-panel, h-control, rounded-control, shadow-card).
+ */
+@import "@fontsource-variable/oxanium";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@import "./tokens/tokens.css";
+
+@source "./";
+
+@theme inline {
+  --color-*: initial;
+  --spacing: initial;
+  --spacing-*: initial;
+  --text-*: initial;
+  --radius-*: initial;
+  --shadow-*: initial;
+  --font-*: initial;
+  --container-*: initial;
+
+  --color-transparent: transparent;
+  --color-current: currentColor;
+
+  --background-color-surface-page: var(--surface-page);
+  --background-color-surface-card: var(--surface-card);
+  --background-color-surface-muted: var(--surface-muted);
+  --background-color-surface-overlay: var(--surface-overlay);
+  --background-color-surface-scrim: var(--surface-scrim);
+  --background-color-action-primary: var(--action-primary);
+  --background-color-action-primary-hover: var(--action-primary-hover);
+  --background-color-action-primary-pressed: var(--action-primary-pressed);
+  --background-color-action-secondary: var(--action-secondary);
+  --background-color-action-secondary-hover: var(--action-secondary-hover);
+  --background-color-action-danger: var(--action-danger);
+  --background-color-action-danger-hover: var(--action-danger-hover);
+  --background-color-switch-thumb-off: var(--switch-thumb-off);
+  --background-color-switch-thumb-on: var(--switch-thumb-on);
+
+  --text-color-default: var(--text-default);
+  --text-color-muted: var(--text-muted);
+  --text-color-link: var(--text-link);
+  --text-color-danger: var(--text-danger);
+  --text-color-on-action: var(--text-on-action);
+  --text-color-on-secondary: var(--text-on-secondary);
+  --text-color-on-danger: var(--text-on-danger);
+
+  --border-color-subtle: var(--border-subtle);
+  --border-color-control: var(--border-control);
+  --border-color-invalid: var(--border-invalid);
+  --border-color-tabs-indicator: var(--tabs-indicator);
+  --outline-color-focus: var(--focus-ring);
+
+  --font-sans: var(--font-family-sans);
+  --font-mono: var(--font-family-mono);
+
+  --text-page: var(--type-page-size);
+  --text-page--line-height: var(--type-page-leading);
+  --text-page--font-weight: 600;
+  --text-section: var(--type-section-size);
+  --text-section--line-height: var(--type-section-leading);
+  --text-section--font-weight: 600;
+  --text-body: var(--type-body-size);
+  --text-body--line-height: var(--type-body-leading);
+  --text-label: var(--type-body-size);
+  --text-label--line-height: var(--type-body-leading);
+  --text-label--font-weight: 500;
+  --text-input: var(--type-input-size);
+  --text-input--line-height: var(--type-input-leading);
+  --text-meta: var(--type-meta-size);
+  --text-meta--line-height: var(--type-meta-leading);
+  --text-amount: var(--type-body-size);
+  --text-amount--line-height: var(--type-body-leading);
+  --text-amount--font-weight: 500;
+  --text-amount-lg: var(--type-amount-lg-size);
+  --text-amount-lg--line-height: var(--type-amount-lg-leading);
+  --text-amount-lg--font-weight: 600;
+
+  --spacing-0: 0px;
+  --spacing-inline: var(--space-inline);
+  --spacing-group: var(--space-group);
+  --spacing-between-groups: var(--space-between-groups);
+  --spacing-panel: var(--space-panel);
+  --spacing-panel-compact: var(--space-panel-compact);
+  --spacing-section: var(--space-section);
+  --spacing-gutter: var(--page-gutter);
+  --spacing-gutter-wide: var(--page-gutter-wide);
+  --spacing-control-x: var(--control-padding-x);
+  --spacing-switch-travel: var(--switch-thumb-travel);
+  --spacing-safe-bottom: var(--safe-area-bottom);
+  --spacing-bottom-nav: var(--bottom-nav-height);
+
+  --height-control: var(--control-height);
+  --height-control-sm: var(--control-height-sm);
+  --height-badge: var(--badge-height);
+  --height-menu-item: var(--menu-item-height);
+  --height-switch: var(--switch-height);
+  --height-overlay: var(--overlay-max-height);
+  --width-switch: var(--switch-width);
+  --size-control: var(--control-height);
+  --size-control-sm: var(--control-height-sm);
+  --size-icon: var(--icon-size);
+  --size-icon-standalone: var(--icon-size-standalone);
+  --size-switch-thumb: var(--switch-thumb-size);
+  --size-avatar: var(--avatar-size);
+
+  --container-content: var(--content-max);
+  --container-content-wide: var(--content-max-wide);
+  --container-measure: var(--measure-text);
+
+  --radius-control: var(--radius-control);
+  --radius-card: var(--radius-card);
+  --radius-overlay: var(--radius-overlay);
+
+  --shadow-card: var(--shadow-card);
+  --shadow-overlay: var(--shadow-overlay);
+
+  --transition-duration-fast: var(--duration-fast);
+  --transition-duration-base: var(--duration-base);
+  --ease-standard: var(--ease-standard);
+}
+
+@layer base {
+  * {
+    border-color: var(--border-subtle);
+  }
+
+  html {
+    font-family: var(--font-family-sans);
+    font-size: 100%;
+    background-color: var(--surface-page);
+    color: var(--text-default);
+  }
+
+  body {
+    font-size: var(--type-body-size);
+    line-height: var(--type-body-leading);
+  }
+
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+
+  :focus-visible {
+    outline: var(--focus-width) solid var(--focus-ring);
+    outline-offset: var(--focus-offset);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    ::before,
+    ::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
