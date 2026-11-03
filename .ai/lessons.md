@@ -14,6 +14,7 @@ Przed dodaniem sprawdź, czy podobny wniosek już istnieje; jeśli tak, zaktuali
 
 - Nie polegaj na domyślnych uprawnieniach Supabase: nadawaj jawne `grant`, domyślne `EXECUTE` dla `PUBLIC` wyłączaj globalnym `alter default privileges` (nie `in schema`) i testuj to w pgTAP. ([szczegóły](lessons/2026-10-19-supabase-local-api-exposure.md))
 - Uruchamiaj Supabase CLI przez `vp exec supabase`; nie twórz `.gitkeep` w `supabase/migrations` i nie instaluj pgTAP w testach; przed `test db` wykonaj `db reset`, bo `db start` nie odświeża działającej bazy. ([szczegóły](lessons/2026-10-19-supabase-cli-local-setup.md))
+- Nie traktuj kart jednej przeglądarki jako osobnych urządzeń: dzielą sesję Supabase; „inne urządzenie” to osobny kontekst przeglądarki. ([szczegóły](lessons/2026-11-03-browser-tabs-share-session.md))
 
 ## Frontend
 
